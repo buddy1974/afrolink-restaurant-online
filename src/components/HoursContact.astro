@@ -1,0 +1,281 @@
+---
+import Icon from './Icon.astro';
+import { groupHours, openingHours, timeZone } from '../data/hours';
+import { business, mapsHref, phones, social, whatsapp } from '../data/business';
+
+const groups = groupHours();
+---
+
+<section class="section on-paper visit" aria-label="Opening hours and contact">
+  <div class="wrap visit__grid">
+    <div class="hours" id="hours">
+      <header class="section-head">
+        <p class="eyebrow">Visit</p>
+        <h2 class="section-title">Opening Hours</h2>
+      </header>
+
+      <dl class="hours__list" data-hours data-tz={timeZone}>
+        {
+          groups.map((g) => (
+            <div class="hours__row" data-days={g.days.join(',')}>
+              <dt>
+                {g.label}
+                <span class="hours__today">Today</span>
+              </dt>
+              <dd>
+                <time datetime={g.opens}>{g.opens}</time>
+                <span aria-hidden="true">–</span>
+                <span class="visually-hidden">to</span>
+                <time datetime={g.closes}>{g.closes}</time>
+              </dd>
+            </div>
+          ))
+        }
+      </dl>
+
+      <details class="hours__daily">
+        <summary>Show each day</summary>
+        <table>
+          <caption class="visually-hidden">Opening hours by day</caption>
+          <tbody>
+            {
+              openingHours.map((h) => (
+                <tr>
+                  <th scope="row">{h.day}</th>
+                  <td>
+                    {h.opens} – {h.closes}
+                  </td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </details>
+    </div>
+
+    <div class="contact" id="contact">
+      <header class="section-head">
+        <p class="eyebrow">Get in touch</p>
+        <h2 class="section-title">Contact</h2>
+      </header>
+
+      <ul role="list" class="phones">
+        <li class="phone">
+          <p class="phone__label">{phones.landline.label}</p>
+          <a class="phone__num" href={phones.landline.href}>{phones.landline.display}</a>
+          <p class="phone__intl">{phones.landline.international}</p>
+        </li>
+        <li class="phone">
+          <p class="phone__label">{phones.mobile.label}</p>
+          <a class="phone__num" href={phones.mobile.href}>{phones.mobile.display}</a>
+        </li>
+      </ul>
+
+      <div class="contact__ctas">
+        <a class="btn btn--solid" href={whatsapp.href} target="_blank" rel="noopener">
+          <Icon name="whatsapp" /> WhatsApp {whatsapp.display}<span class="visually-hidden"> (opens WhatsApp)</span>
+        </a>
+        <a class="btn btn--line" href={phones.landline.href}><Icon name="phone" /> Call</a>
+      </div>
+
+      <address class="address">
+        <p class="phone__label">Address</p>
+        <p class="address__lines">
+          {business.name}<br />
+          {business.address.street}<br />
+          {business.address.postalCode} {business.address.city}
+        </p>
+        <a class="link-arrow" href={mapsHref} target="_blank" rel="noopener">
+          <Icon name="pin" /> Directions in Google Maps<span class="visually-hidden"> (opens in a new tab)</span>
+        </a>
+      </address>
+
+      <div class="social">
+        <p class="phone__label">Follow</p>
+        <ul role="list" class="social__list">
+          {
+            social.map((s) => (
+              <li>
+                <a class="link-arrow" href={s.href} target="_blank" rel="noopener">
+                  {s.name} <span class="social__handle">{s.handle}</span>
+                  <span class="visually-hidden"> (opens in a new tab)</span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Highlight today's row using the restaurant's local time (Europe/Berlin).
+  const list = document.querySelector<HTMLElement>('[data-hours]');
+  if (list) {
+    const now = new Date();
+    const tz = list.dataset.tz || 'Europe/Berlin';
+    const parts = new Intl.DateTimeFormat('en-GB', { timeZone: tz, weekday: 'long', hour: '2-digit', hourCycle: 'h23' }).formatToParts(now);
+    let day = parts.find((p) => p.type === 'weekday')?.value ?? '';
+    const hour = Number(parts.find((p) => p.type === 'hour')?.value ?? 12);
+    // Before 05:00 the guest is still in the previous evening's service.
+    if (hour < 5) {
+      const prev = new Date(now.getTime() - 6 * 3600 * 1000);
+      day = new Intl.DateTimeFormat('en-GB', { timeZone: tz, weekday: 'long' }).format(prev);
+    }
+    list.querySelectorAll<HTMLElement>('[data-days]').forEach((row) => {
+      if (row.dataset.days!.split(',').includes(day)) row.classList.add('is-today');
+    });
+  }
+</script>
+
+<style>
+  .visit__grid {
+    display: grid;
+    gap: var(--section);
+  }
+  @media (min-width: 64em) {
+    .visit__grid {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: clamp(3rem, 1rem + 5vw, 6rem);
+    }
+  }
+
+  .hours__list {
+    border-top: 1px solid var(--on-paper);
+  }
+  .hours__row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.25rem 1rem;
+    padding-block: 1rem;
+    border-bottom: 1px solid var(--paper-line);
+  }
+  .hours__row dt {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    font-size: var(--step-1);
+    font-weight: 500;
+  }
+  .hours__row dd {
+    display: flex;
+    gap: 0.4rem;
+    font-size: var(--step-1);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+  .hours__today {
+    display: none;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--terracotta);
+  }
+  .hours__row.is-today .hours__today {
+    display: inline;
+  }
+  .hours__row.is-today {
+    border-bottom-color: var(--terracotta);
+  }
+
+  .hours__daily {
+    margin-top: 1.25rem;
+    font-size: var(--step-0);
+  }
+  .hours__daily summary {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    cursor: pointer;
+    color: var(--on-paper-muted);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+  .hours__daily table {
+    width: 100%;
+    max-width: 24rem;
+    margin-top: 0.5rem;
+    border-collapse: collapse;
+    font-variant-numeric: tabular-nums;
+  }
+  .hours__daily th,
+  .hours__daily td {
+    padding-block: 0.35rem;
+    text-align: left;
+    font-weight: 400;
+    border-bottom: 1px solid var(--paper-line);
+  }
+  .hours__daily td {
+    text-align: right;
+  }
+
+  .phones {
+    display: grid;
+    gap: 1.75rem;
+    border-top: 1px solid var(--on-paper);
+    padding-top: 1.5rem;
+  }
+  .phone__label {
+    font-size: var(--step--1);
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--terracotta);
+  }
+  .phone__num {
+    display: inline-block;
+    margin-top: 0.25rem;
+    font-family: var(--font-serif);
+    font-size: var(--step-3);
+    line-height: 1.15;
+    text-decoration: none;
+    font-variant-numeric: lining-nums;
+    border-bottom: 1px solid transparent;
+  }
+  .phone__num:hover {
+    border-bottom-color: currentColor;
+  }
+  .phone__intl {
+    color: var(--on-paper-muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .contact__ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 2rem;
+  }
+
+  .address {
+    margin-top: 2.5rem;
+    font-style: normal;
+  }
+  .address__lines {
+    margin-block: 0.4rem 0.75rem;
+    font-size: var(--step-1);
+  }
+  .address :global(svg),
+  .social :global(svg) {
+    width: 1.1em;
+    height: 1.1em;
+  }
+
+  .social {
+    margin-top: 2.5rem;
+  }
+  .social__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 2rem;
+    margin-top: 0.5rem;
+  }
+  .social__handle {
+    font-weight: 400;
+    color: var(--on-paper-muted);
+  }
+</style>

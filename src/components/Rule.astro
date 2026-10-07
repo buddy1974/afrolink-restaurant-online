@@ -1,0 +1,47 @@
+---
+/**
+ * The site's single graphic device: a hairline interrupted by a stepped
+ * lozenge cluster (small–large–small diamonds), echoing the diamond divider
+ * on Afrolink's printed menu. Use it — and only it — as ornament.
+ */
+interface Props {
+  align?: 'start' | 'center';
+  class?: string;
+}
+const { align = 'start', class: className } = Astro.props;
+---
+
+<div class:list={['rule', `rule--${align}`, className]} aria-hidden="true">
+  <span class="rule__line"></span>
+  <svg class="rule__mark" viewBox="0 0 44 12" width="44" height="12">
+    <path d="M6 2.5 9.5 6 6 9.5 2.5 6Z" />
+    <path d="M22 0l6 6-6 6-6-6Z" />
+    <path d="M38 2.5 41.5 6 38 9.5 34.5 6Z" />
+  </svg>
+  <span class="rule__line"></span>
+</div>
+
+<style>
+  .rule {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--terracotta);
+  }
+  :global(.on-ink) .rule {
+    color: var(--ochre);
+  }
+  .rule__line {
+    flex: 1;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.55;
+  }
+  .rule--start .rule__line:first-child {
+    flex: 0 0 2.5rem;
+  }
+  .rule__mark {
+    flex: none;
+    fill: currentColor;
+  }
+</style>

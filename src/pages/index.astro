@@ -1,0 +1,28 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import MenuNav from '../components/MenuNav.astro';
+import FoodMenu from '../components/FoodMenu.astro';
+import Drinks from '../components/Drinks.astro';
+import Gallery from '../components/Gallery.astro';
+import About from '../components/About.astro';
+import HoursContact from '../components/HoursContact.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Base>
+  <Header />
+  <main id="main">
+    <Hero />
+    <div class="menus">
+      <MenuNav />
+      <FoodMenu />
+      <Drinks />
+    </div>
+    <Gallery />
+    <About />
+    <HoursContact />
+  </main>
+  <Footer />
+</Base>

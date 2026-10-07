@@ -1,0 +1,56 @@
+---
+import '@fontsource-variable/archivo/wdth.css';
+import '@fontsource-variable/newsreader/index.css';
+import '@fontsource-variable/newsreader/wght-italic.css';
+import '../styles/global.css';
+import { siteUrl } from '../data/business';
+import { seo, restaurantJsonLd } from '../data/seo';
+
+const ogImage = `${siteUrl}/og-image.jpg`;
+const jsonLd = restaurantJsonLd(ogImage, `${siteUrl}/icon-512.png`);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{seo.title}</title>
+    <meta name="description" content={seo.description} />
+    <link rel="canonical" href={seo.canonical} />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="theme-color" content={seo.themeColor} />
+    <meta name="format-detection" content="telephone=no" />
+
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <meta property="og:type" content="restaurant" />
+    <meta property="og:site_name" content="Afrolink Restaurant & Bar" />
+    <meta property="og:title" content={seo.title} />
+    <meta property="og:description" content={seo.description} />
+    <meta property="og:url" content={seo.canonical} />
+    <meta property="og:locale" content={seo.locale} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Afrolink Restaurant logo beside a plate of Nkwobi" />
+    <meta property="restaurant:contact_info:street_address" content="Berzeliusstraße 7" />
+    <meta property="restaurant:contact_info:locality" content="Essen" />
+    <meta property="restaurant:contact_info:postal_code" content="45144" />
+    <meta property="restaurant:contact_info:country_name" content="Germany" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={seo.title} />
+    <meta name="twitter:description" content={seo.description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  </head>
+  <body>
+    <a class="skip-link" href="#menu">Skip to menu</a>
+    <slot />
+  </body>
+</html>

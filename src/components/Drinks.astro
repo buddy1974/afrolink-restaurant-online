@@ -1,0 +1,111 @@
+---
+import { drinksMenu } from '../data/drinks';
+import { formatPrice } from '../data/format';
+
+// Empty categories (e.g. Hot Drinks, not yet supplied) are not rendered.
+const categories = drinksMenu
+  .map((c) => ({ ...c, items: c.items.filter((i) => i.available !== false) }))
+  .filter((c) => c.items.length > 0);
+---
+
+<section class="section on-ink drinks" id="drinks" aria-labelledby="drinks-title">
+  <div class="wrap">
+    <header class="section-head">
+      <p class="eyebrow">Bar</p>
+      <h2 id="drinks-title" class="section-title">Drinks</h2>
+    </header>
+
+    <div class="drink-grid">
+      {
+        categories.map((cat) => (
+          <section class="dcat" aria-labelledby={`d-${cat.id}`}>
+            <h3 class="dcat__title" id={`d-${cat.id}`}>{cat.title}</h3>
+            {cat.subtitle && <p class="dcat__sub">{cat.subtitle}</p>}
+            <ul role="list" class="drows">
+              {cat.items.map((d) => (
+                <li class="drow" data-size-unverified={d.size && !d.size.verified ? '' : undefined}>
+                  <span class="drow__name">{d.name}</span>
+                  <span class="drow__leader" aria-hidden="true" />
+                  {d.size && <span class="drow__size">{d.size.value}</span>}
+                  <span class="drow__price">{formatPrice(d.price, 'always')}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .drink-grid {
+    display: grid;
+    gap: 3rem clamp(2.5rem, 1rem + 4vw, 5rem);
+  }
+  @media (min-width: 48em) {
+    .drink-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 75em) {
+    .drink-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .dcat__title {
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--on-ink);
+    font-family: var(--font-serif);
+    font-size: var(--step-2);
+    font-weight: 450;
+    line-height: 1.15;
+  }
+  .dcat__sub {
+    margin-top: 0.6rem;
+    font-family: var(--font-serif);
+    font-style: italic;
+    color: var(--on-ink-muted);
+  }
+
+  .drow {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    padding-block: 0.6rem;
+    border-bottom: 1px solid var(--ink-line);
+  }
+  .drow:last-child {
+    border-bottom: 0;
+  }
+  .drow__name {
+    min-width: 0;
+    font-size: var(--step-1);
+    font-weight: 500;
+    line-height: 1.3;
+  }
+  .drow__leader {
+    flex: 1 1 1rem;
+    min-width: 1rem;
+    border-bottom: 1px dotted rgb(243 237 227 / 0.3);
+    transform: translateY(-0.3em);
+  }
+  .drow__size {
+    flex: none;
+    font-size: var(--step--1);
+    color: var(--on-ink-muted);
+    font-variant-numeric: tabular-nums;
+    min-width: 3.4em;
+    text-align: right;
+  }
+  .drow__price {
+    flex: none;
+    min-width: 4.2em;
+    text-align: right;
+    font-size: var(--step-1);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums lining-nums;
+    color: var(--ochre);
+  }
+</style>

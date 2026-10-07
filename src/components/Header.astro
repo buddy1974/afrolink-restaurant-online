@@ -1,0 +1,306 @@
+---
+import { Image } from 'astro:assets';
+import logo from '../assets/brand/afrolink-logo.png';
+import Icon from './Icon.astro';
+import { phones, whatsapp } from '../data/business';
+
+const nav = [
+  { href: '#menu', label: 'Menu' },
+  { href: '#drinks', label: 'Drinks' },
+  { href: '#gallery', label: 'Gallery' },
+  { href: '#about', label: 'About' },
+  { href: '#hours', label: 'Opening Hours' },
+  { href: '#contact', label: 'Contact' },
+];
+---
+
+<header class="site-header on-ink" data-header>
+  <div class="wrap site-header__inner">
+    <a class="brand" href="#top" aria-label="Afrolink Restaurant & Bar — back to top">
+      <Image src={logo} alt="" width={44} height={42} densities={[1, 2]} loading="eager" class="brand__logo" />
+      <span class="brand__text" aria-hidden="true">
+        <span class="brand__name">Afrolink</span>
+        <span class="brand__sub">Restaurant &amp; Bar</span>
+      </span>
+    </a>
+
+    <nav class="site-nav" aria-label="Main">
+      <ul role="list">
+        {nav.map((n) => <li><a href={n.href}>{n.label}</a></li>)}
+      </ul>
+    </nav>
+
+    <div class="header-actions">
+      <a class="hact" href={phones.landline.href}>
+        <Icon name="phone" /><span class="hact__label">Call</span><span class="visually-hidden"> {phones.landline.display}</span>
+      </a>
+      <a class="hact hact--wa" href={whatsapp.href} target="_blank" rel="noopener">
+        <Icon name="whatsapp" /><span class="hact__label">WhatsApp</span><span class="visually-hidden"> (opens WhatsApp)</span>
+      </a>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav" data-menu-toggle>
+        <span class="menu-toggle__bars" aria-hidden="true"></span>
+        <span class="visually-hidden">Open navigation</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="mobile-nav" id="mobile-nav" data-mobile-nav hidden>
+    <nav class="wrap" aria-label="Main (mobile)">
+      <ul role="list" class="mobile-nav__list">
+        {nav.map((n) => <li><a href={n.href} data-close-nav>{n.label}</a></li>)}
+      </ul>
+      <div class="mobile-nav__actions">
+        <a class="btn btn--solid" href={phones.landline.href}><Icon name="phone" /> Call {phones.landline.display}</a>
+        <a class="btn btn--line" href={whatsapp.href} target="_blank" rel="noopener"><Icon name="whatsapp" /> WhatsApp</a>
+        <a class="btn btn--line" href={phones.mobile.href}><Icon name="phone" /> Mobile {phones.mobile.display}</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
+  const panel = document.querySelector<HTMLElement>('[data-mobile-nav]');
+  const label = toggle?.querySelector('.visually-hidden');
+
+  function setOpen(open: boolean) {
+    if (!toggle || !panel) return;
+    toggle.setAttribute('aria-expanded', String(open));
+    panel.hidden = !open;
+    document.documentElement.classList.toggle('nav-open', open);
+    if (label) label.textContent = open ? 'Close navigation' : 'Open navigation';
+    if (open) panel.querySelector<HTMLElement>('a')?.focus();
+  }
+
+  toggle?.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
+  panel?.querySelectorAll('[data-close-nav]').forEach((a) => a.addEventListener('click', () => setOpen(false)));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && toggle?.getAttribute('aria-expanded') === 'true') {
+      setOpen(false);
+      toggle.focus();
+    }
+  });
+  matchMedia('(min-width: 75em)').addEventListener('change', (e) => e.matches && setOpen(false));
+</script>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    border-bottom: 1px solid var(--ink-line);
+  }
+  .site-header__inner {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    height: var(--header-h);
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    text-decoration: none;
+    margin-right: auto;
+    min-height: 2.75rem;
+  }
+  .brand__logo {
+    width: 2.6rem;
+    height: auto;
+  }
+  .brand__text {
+    display: grid;
+    line-height: 1.05;
+  }
+  .brand__name {
+    white-space: nowrap;
+    font-size: 1.05rem;
+    font-weight: 650;
+    font-stretch: 122%;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .brand__sub {
+    white-space: nowrap;
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--on-ink-muted);
+  }
+
+  .site-nav {
+    display: none;
+  }
+  .site-nav ul {
+    display: flex;
+    gap: clamp(1rem, 0.2rem + 1.4vw, 1.9rem);
+  }
+  .site-nav a {
+    display: block;
+    white-space: nowrap;
+    padding-block: 0.6rem;
+    font-size: 0.8125rem;
+    font-weight: 550;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--on-ink-muted);
+    border-bottom: 1px solid transparent;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .site-nav a:hover {
+    color: var(--on-ink);
+    border-color: var(--ochre);
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: stretch;
+    gap: 0.25rem;
+  }
+  .hact {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+    padding-inline: 0.6rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--on-ink);
+    border: 1px solid var(--ink-line);
+    border-radius: 2px;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+  }
+  .hact :global(svg) {
+    width: 1.15rem;
+    height: 1.15rem;
+  }
+  .hact:hover {
+    border-color: var(--ochre);
+    color: var(--ochre);
+  }
+  .hact--wa {
+    background: var(--ochre);
+    border-color: var(--ochre);
+    color: var(--ink);
+  }
+  .hact--wa:hover {
+    background: var(--on-ink);
+    border-color: var(--on-ink);
+    color: var(--ink);
+  }
+  .hact__label {
+    display: none;
+  }
+
+  .menu-toggle {
+    display: inline-grid;
+    place-items: center;
+    width: 2.75rem;
+    min-height: 2.75rem;
+    margin-left: 0.25rem;
+    background: none;
+    border: 0;
+    cursor: pointer;
+  }
+  .menu-toggle__bars,
+  .menu-toggle__bars::before,
+  .menu-toggle__bars::after {
+    display: block;
+    width: 1.25rem;
+    height: 1.5px;
+    background: currentColor;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+  .menu-toggle__bars {
+    position: relative;
+  }
+  .menu-toggle__bars::before,
+  .menu-toggle__bars::after {
+    content: '';
+    position: absolute;
+    left: 0;
+  }
+  .menu-toggle__bars::before {
+    top: -6px;
+  }
+  .menu-toggle__bars::after {
+    top: 6px;
+  }
+  .menu-toggle[aria-expanded='true'] .menu-toggle__bars {
+    background: transparent;
+  }
+  .menu-toggle[aria-expanded='true'] .menu-toggle__bars::before {
+    transform: translateY(6px) rotate(45deg);
+  }
+  .menu-toggle[aria-expanded='true'] .menu-toggle__bars::after {
+    transform: translateY(-6px) rotate(-45deg);
+  }
+
+  .mobile-nav {
+    position: fixed;
+    inset: var(--header-h) 0 0 0;
+    overflow-y: auto;
+    background: var(--ink);
+    border-top: 1px solid var(--ink-line);
+    padding-block: 1.5rem 3rem;
+  }
+  .mobile-nav__list a {
+    display: flex;
+    align-items: center;
+    min-height: 3.5rem;
+    font-family: var(--font-serif);
+    font-size: 1.75rem;
+    text-decoration: none;
+    border-bottom: 1px solid var(--ink-line);
+  }
+  .mobile-nav__actions {
+    display: grid;
+    gap: 0.75rem;
+    margin-top: 2rem;
+  }
+
+  :global(html.nav-open) {
+    overflow: hidden;
+  }
+
+  @media (max-width: 23.99em) {
+    .brand__sub {
+      letter-spacing: 0.08em;
+    }
+    .brand__logo {
+      width: 2.25rem;
+    }
+  }
+
+  @media (min-width: 30em) {
+    .hact__label {
+      display: inline;
+    }
+    .hact {
+      padding-inline: 0.85rem;
+    }
+  }
+
+  @media (min-width: 75em) {
+    .site-nav {
+      display: block;
+    }
+    .menu-toggle {
+      display: none;
+    }
+    .brand {
+      margin-right: 0;
+    }
+    .site-nav {
+      margin-inline: auto;
+    }
+  }
+</style>

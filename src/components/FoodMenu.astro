@@ -1,0 +1,171 @@
+---
+import { foodMenu, type MenuItem } from '../data/menu';
+import { formatPrice } from '../data/format';
+
+const categories = foodMenu
+  .map((c) => ({ ...c, items: c.items.filter((i: MenuItem) => i.available !== false) }))
+  .filter((c) => c.items.length > 0);
+---
+
+<section class="section on-paper food" id="menu" aria-labelledby="menu-title">
+  <div class="wrap">
+    <header class="section-head">
+      <p class="eyebrow">Food</p>
+      <h2 id="menu-title" class="section-title">Menu</h2>
+      <p class="section-lede">Traditional West African cooking — for dine-in and takeaway.</p>
+    </header>
+
+    <div class="menu-cols">
+      {
+        categories.map((cat, ci) => (
+          <section class="cat" id={cat.id} aria-labelledby={`${cat.id}-title`}>
+            <h3 class="cat__title" id={`${cat.id}-title`}>
+              <span class="cat__num" aria-hidden="true">{String(ci + 1).padStart(2, '0')}</span>
+              {cat.title}
+            </h3>
+            <ul role="list" class="items">
+              {cat.items.map((item) => (
+                <li class="item">
+                  {item.variants ? (
+                    <>
+                      <p class="item__name">{item.name}</p>
+                      <ul role="list" class="variants">
+                        {item.variants.map((v) => (
+                          <li class="line line--variant">
+                            <span class="line__name">{v.label}</span>
+                            <span class="line__leader" aria-hidden="true" />
+                            <span class="line__price">{formatPrice(v.price)}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </>
+                  ) : (
+                    <p class="line">
+                      <span class="line__name item__name">{item.name}</span>
+                      <span class="line__leader" aria-hidden="true" />
+                      <span class="line__price">{formatPrice(item.price!)}</span>
+                    </p>
+                  )}
+                  {item.note && <p class="item__note">{item.note}</p>}
+                  {item.label && <p class="item__label">{item.label}</p>}
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .menu-cols {
+    display: grid;
+    gap: 3rem;
+  }
+  @media (min-width: 48em) {
+    .menu-cols {
+      display: block;
+      columns: 2;
+      column-gap: clamp(2.5rem, 1rem + 4vw, 5rem);
+    }
+    .cat {
+      break-inside: avoid;
+      padding-bottom: 3.25rem;
+    }
+  }
+  @media (min-width: 75em) {
+    .menu-cols {
+      columns: 3;
+      column-rule: 1px solid var(--paper-line);
+    }
+  }
+
+  .cat__title {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
+    border-bottom: 1px solid var(--on-paper);
+    font-family: var(--font-serif);
+    font-size: var(--step-2);
+    font-weight: 450;
+    line-height: 1.15;
+  }
+  .cat__num {
+    font-family: var(--font-sans);
+    font-size: var(--step--1);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--terracotta);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .item {
+    padding-block: 0.7rem;
+    border-bottom: 1px solid var(--paper-line);
+  }
+  .item:last-child {
+    border-bottom: 0;
+  }
+
+  .line {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+  }
+  .item__name {
+    font-size: var(--step-1);
+    font-weight: 500;
+    line-height: 1.3;
+  }
+  .line__name {
+    min-width: 0;
+  }
+  .line__leader {
+    flex: 1 1 1.5rem;
+    min-width: 1.5rem;
+    border-bottom: 1px dotted rgb(31 26 22 / 0.35);
+    transform: translateY(-0.3em);
+  }
+  .line__price {
+    flex: none;
+    font-size: var(--step-1);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums lining-nums;
+    min-width: 2.6em;
+    text-align: right;
+  }
+
+  .variants {
+    margin-top: 0.3rem;
+    padding-left: 1rem;
+    border-left: 1px solid var(--paper-line);
+  }
+  .line--variant {
+    padding-block: 0.15rem;
+  }
+  .line--variant .line__name {
+    color: var(--on-paper-muted);
+  }
+
+  .item__note {
+    margin-top: 0.2rem;
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: var(--step-0);
+    color: var(--on-paper-muted);
+  }
+  .item__label {
+    display: inline-block;
+    margin-top: 0.35rem;
+    padding: 0.15rem 0.45rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--burgundy);
+    border: 1px solid currentColor;
+  }
+</style>
