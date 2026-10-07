@@ -17,7 +17,7 @@
 | R-005 | Gallery photos are phone/WhatsApp quality with mixed lighting; some only 720×960 | Quality | Low | Professional shoot recommended; the gallery is data-driven, so swapping is trivial | Marcel | Open |
 | R-006 | Photo usage rights assumed (photos come from the client folder) | Legal | Low | Confirm with Afrolink | Marcel | Open |
 | R-007 | Gallery captions inferred from the client's file names (e.g. PLANTAINS-SUYA, PEPPERSOUP) | Content | Low | Afrolink confirms; uncertain photos have descriptive alt text and no caption | Marcel | Open |
-| R-008 | Domain not yet pointed at Vercel; QR codes must not be printed before it resolves | Ops | Medium | Configure the domain at the deploy step and test the QR code live | Marcel | Open |
+| R-008 | Domain added in Vercel but DNS (Cloudflare, `asa`/`kirk.ns.cloudflare.com`) still points to a Hostinger default page; the printed QR code shows that page until DNS is changed | Ops | **High** | In Cloudflare set `@` and `www` → `A 76.76.21.21`, proxy off (DNS only), remove old Hostinger records; then verify HTTPS | Marcel | Open — action required |
 | R-009 | The logo is a 2025 raster PNG (cartoon style); the 2026 gold "AFROLINK Restaurant & Bar" lockup exists only inside the menu PSD | Brand | Low | Supply a vector/transparent export of the current lockup if preferred | Marcel | Open |
 
 ## Security Concerns

@@ -1,5 +1,11 @@
 # Change Log — `afrolink-restaurant-online`
 
+## 2026-10-07 — Production deployment
+- GitHub repo renamed `afropages-online` → `afrolink-restaurant-online`.
+- Vercel project `afrolink-restaurant-online` created and connected to GitHub; production deployed (https://afrolink-restaurant-online.vercel.app).
+- Domains `www.afrolink-restaurant.online` and `afrolink-restaurant.online` added; apex → www 308 redirect set in Vercel.
+- DNS change in Cloudflare still required (R-008).
+
 ## 2026-10-07 — Afrolink digital menu site (unreleased, local only)
 - Replaced the Afropages placeholder (moved to `legacy/afropages-mvp/` with `git mv`) with an Astro 7 static site.
 - Structured content data: food menu (33 price lines), drinks (28 lines; Hot Drinks slot empty), business, hours, gallery, SEO.

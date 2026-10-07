@@ -6,7 +6,7 @@
 | Repository name | afrolink-restaurant-online (GitHub: buddy1974/afrolink-restaurant-online, renamed from afropages-online 2026-10-07; local dir still `afropages.online`) |
 | Owner (DRI) | Marcel — Maxpromo Digital |
 | Repository class | Client (Afrolink Restaurant & Bar, Essen) |
-| Lifecycle stage | MVP — built locally, awaiting visual approval; not deployed |
+| Lifecycle stage | Production deployment on Vercel (2026-10-07); custom-domain DNS pending |
 | Security tier | S0 — static public site, no user data, no forms, no backend |
 | Review cadence | On every menu/price change |
 | Last reviewed | 2026-10-07 |

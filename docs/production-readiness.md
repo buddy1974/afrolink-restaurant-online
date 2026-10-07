@@ -19,5 +19,6 @@
 | Impressum / Datenschutz | — | **MISSING (R-001)** |
 | Marcel visual approval | Local build accepted 2026-10-07 | Done |
 | GitHub repository decision | Renamed to afrolink-restaurant-online | Done |
-| Vercel project + domain | — | Not started |
-| Lighthouse on deployed preview | — | To run on the Vercel preview |
+| Vercel project + domain | Project `afrolink-restaurant-online` (GitHub-connected), production deployed 2026-10-07; www + apex added, apex → www 308 | Done — **DNS pending in Cloudflare (R-008)** |
+| Production smoke test | afrolink-restaurant-online.vercel.app: 200, menu/drinks/gallery, tel/WhatsApp links, address, 272 assets OK | PASS |
+| Lighthouse on production | — | To run once the custom domain resolves |
