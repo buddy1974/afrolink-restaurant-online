@@ -121,9 +121,10 @@ import { business, whatsapp } from '../data/business';
   }
   .hero__img {
     width: 100%;
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 1 / 1;
     object-fit: cover;
-    object-position: 50% 45%;
+    /* enhanced photo carries the Afrolink watermark bottom-right — keep it in frame */
+    object-position: 50% 100%;
   }
   .hero__caption {
     margin-top: 0.6rem;

@@ -2,10 +2,13 @@
 import Base from '../layouts/Base.astro';
 import Header from '../components/Header.astro';
 import Hero from '../components/Hero.astro';
+import FeaturedVideo from '../components/FeaturedVideo.astro';
 import MenuNav from '../components/MenuNav.astro';
 import FoodMenu from '../components/FoodMenu.astro';
 import Drinks from '../components/Drinks.astro';
 import Gallery from '../components/Gallery.astro';
+import Reserve from '../components/Reserve.astro';
+import Videos from '../components/Videos.astro';
 import About from '../components/About.astro';
 import HoursContact from '../components/HoursContact.astro';
 import Footer from '../components/Footer.astro';
@@ -15,12 +18,15 @@ import Footer from '../components/Footer.astro';
   <Header />
   <main id="main">
     <Hero />
+    <FeaturedVideo />
     <div class="menus">
       <MenuNav />
       <FoodMenu />
       <Drinks />
     </div>
+    <Reserve />
     <Gallery />
+    <Videos />
     <About />
     <HoursContact />
   </main>

@@ -20,5 +20,11 @@
 | R-008 | Domain added in Vercel but DNS (Cloudflare, `asa`/`kirk.ns.cloudflare.com`) still points to a Hostinger default page; the printed QR code shows that page until DNS is changed | Ops | **High** | In Cloudflare set `@` and `www` → `A 76.76.21.21`, proxy off (DNS only), remove old Hostinger records; then verify HTTPS | Marcel | Open — action required |
 | R-009 | The logo is a 2025 raster PNG (cartoon style); the 2026 gold "AFROLINK Restaurant & Bar" lockup exists only inside the menu PSD | Brand | Low | Supply a vector/transparent export of the current lockup if preferred | Marcel | Open |
 
+| R-010 | 2026-10-08 brief says "do not assume the landline is the WhatsApp number"; 2026-10-07 brief stated it **is**. WhatsApp links (`wa.me/4920184674196`) kept | Content | Medium | Marcel to re-confirm; change one constant in `business.ts` if wrong | Marcel | Open |
+| R-011 | Monday opening changed to 16:00 by the 2026-10-08 brief (was 15:00) | Content | Low | Applied; confirm with Afrolink and update Google Business Profile to match | Marcel | Open |
+| R-012 | `public/` contains 34 untracked images incl. ChatGPT re-renders; if deployed by CLI from this folder they would become public URLs | Process | Medium | Not committed; deploy via git only, or move them out of `public/` | Marcel | Open |
+| R-013 | Instagram `@afrolinkrestaurant` could not be verified without login (TikTok, YouTube, Facebook, Google link verified) | Content | Low | Marcel to open the link once | Marcel | Open |
+| R-014 | TikTok handle switched to `@afrolink_restaurant` (166 followers); old `@afrolink.de` has 71k followers — may be the real main account | Content | Medium | Marcel to confirm the correct handle | Marcel | Open |
+
 ## Security Concerns
 None material: static site, no forms, no cookies, no third-party scripts, no secrets. Security headers are set in `vercel.json`.

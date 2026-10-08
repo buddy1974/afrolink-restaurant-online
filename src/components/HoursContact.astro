@@ -1,7 +1,7 @@
 ---
 import Icon from './Icon.astro';
 import { groupHours, openingHours, timeZone } from '../data/hours';
-import { business, mapsHref, phones, social, whatsapp } from '../data/business';
+import { business, googleReviews, mapsHref, phones, social, whatsapp } from '../data/business';
 
 const groups = groupHours();
 ---
@@ -103,6 +103,12 @@ const groups = groupHours();
               </li>
             ))
           }
+          <li>
+            <a class="link-arrow" href={googleReviews.href} target="_blank" rel="noopener">
+              Google <span class="social__handle">Reviews</span>
+              <span class="visually-hidden"> (opens in a new tab)</span>
+            </a>
+          </li>
         </ul>
       </div>
     </div>

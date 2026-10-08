@@ -28,6 +28,11 @@ export interface MenuItem {
 export interface MenuCategory {
   id: string;
   title: string;
+  /**
+   * Optional genuine Afrolink photo (file in src/assets/gallery) of a dish in this category.
+   * `watermarked: true` keeps the bottom-right Afrolink watermark in frame when cropped.
+   */
+  image?: { file: string; alt: string; watermarked?: boolean };
   items: MenuItem[];
 }
 
@@ -35,6 +40,7 @@ export const foodMenu: MenuCategory[] = [
   {
     id: 'soups',
     title: 'Soups',
+    image: { file: 'egusi-yam.jpg', alt: 'Egusi soup served with boiled yam', watermarked: true },
     items: [
       { name: 'Egusi Soup', price: 1500 },
       { name: 'Afang Soup', price: 1700 },
@@ -53,6 +59,7 @@ export const foodMenu: MenuCategory[] = [
   {
     id: 'rice',
     title: 'Rice',
+    image: { file: 'jollof-rice.jpg', alt: 'Jollof rice with fried meat' },
     items: [
       { name: 'Fried Rice', price: 1700 },
       { name: 'Jollof Rice', price: 1500 },
@@ -63,6 +70,7 @@ export const foodMenu: MenuCategory[] = [
   {
     id: 'beans-yam-plantain',
     title: 'Beans, Yam & Plantain',
+    image: { file: 'porridge-yam.jpg', alt: 'Porridge yam in a red palm-oil sauce' },
     items: [
       { name: 'Beans & Plantain', price: 1700 },
       { name: 'Porridge Yam', price: 1700 },
@@ -73,6 +81,7 @@ export const foodMenu: MenuCategory[] = [
   {
     id: 'specialities',
     title: 'Specialities',
+    image: { file: 'pepper-soup.jpg', alt: 'Pepper soup with meat and yam in a copper bowl', watermarked: true },
     items: [
       { name: 'Suya', price: 1700 },
       { name: 'Pepper Soup', price: 1500, note: 'Served with rice or yam.' },
@@ -93,6 +102,7 @@ export const foodMenu: MenuCategory[] = [
   {
     id: 'fish',
     title: 'Fish',
+    image: { file: 'grilled-fish-plantain.jpg', alt: 'Whole grilled fish topped with peppers and onions, with plantain' },
     items: [
       {
         name: 'Tilapia',

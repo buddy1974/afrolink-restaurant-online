@@ -1,0 +1,143 @@
+---
+import type { ImageMetadata } from 'astro';
+import VideoCard from './VideoCard.astro';
+import egusiYam from '../assets/gallery/egusi-yam.jpg';
+import plantainMeat from '../assets/gallery/plantain-peppered-meat.jpg';
+import { videos } from '../data/videos';
+import { googleReviews, social } from '../data/business';
+
+// Posters only where the photo shows the dish the video's own caption names.
+const posters: Record<string, { image: ImageMetadata; alt: string }> = {
+  '24293417526931827': { image: egusiYam, alt: 'Egusi soup with boiled yam' },
+  '2417411605311803': { image: plantainMeat, alt: 'Fried plantain with peppered beef and bell peppers' },
+};
+---
+
+<section class="section on-ink videos" id="videos" aria-labelledby="videos-title">
+  <div class="wrap">
+    <header class="section-head">
+      <p class="eyebrow">Watch &amp; follow</p>
+      <h2 id="videos-title" class="section-title">Afrolink on video</h2>
+      <p class="section-lede">Short clips from our kitchen and tables. Videos play from YouTube or Facebook when you start them.</p>
+    </header>
+
+    <ul role="list" class="vrow" aria-label="Videos">
+      {
+        videos.map((v) => (
+          <li>
+            <VideoCard
+              video={v}
+              poster={posters[v.id]?.image}
+              posterAlt={posters[v.id]?.alt}
+              posterWatermarked
+              sizes="(min-width: 75em) 14rem, (min-width: 48em) 30vw, 62vw"
+            />
+          </li>
+        ))
+      }
+    </ul>
+
+    <div class="community">
+      <div class="community__follow">
+        <h3 class="community__h">Follow Afrolink</h3>
+        <ul role="list" class="community__list">
+          {
+            social.map((s) => (
+              <li>
+                <a class="community__link" href={s.href} target="_blank" rel="noopener">
+                  <span class="community__name">{s.name}</span>
+                  <span class="community__handle">{s.handle}</span>
+                  <span class="visually-hidden"> (opens in a new tab)</span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      <div class="community__reviews">
+        <h3 class="community__h">Eaten with us?</h3>
+        <p class="community__p">Read what guests say on Google, or share your own experience.</p>
+        <a class="btn btn--solid" href={googleReviews.href} target="_blank" rel="noopener">
+          Google reviews<span class="visually-hidden"> (opens in a new tab)</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .vrow {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: min(62vw, 15rem);
+    gap: 1rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    margin-inline: calc(-1 * var(--gutter));
+    padding: 0 var(--gutter) 1rem;
+    scroll-padding-inline: var(--gutter);
+    scrollbar-width: thin;
+    scrollbar-color: var(--ink-line) transparent;
+  }
+  .vrow > li {
+    scroll-snap-align: start;
+  }
+  @media (min-width: 75em) {
+    .vrow {
+      grid-auto-flow: row;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      overflow: visible;
+      margin-inline: 0;
+      padding-inline: 0;
+    }
+  }
+
+  .community {
+    display: grid;
+    gap: 2.5rem;
+    margin-top: clamp(3rem, 2rem + 3vw, 5rem);
+    padding-top: 2.5rem;
+    border-top: 1px solid var(--ink-line);
+  }
+  @media (min-width: 56em) {
+    .community {
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+      gap: clamp(2rem, 1rem + 4vw, 5rem);
+    }
+  }
+  .community__h {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: var(--step-2);
+  }
+  .community__list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0;
+    margin-top: 1rem;
+  }
+  .community__link {
+    display: grid;
+    gap: 0.1rem;
+    padding: 0.9rem 0;
+    min-height: 3rem;
+    text-decoration: none;
+    border-bottom: 1px solid var(--ink-line);
+  }
+  .community__name {
+    font-weight: 600;
+  }
+  .community__handle {
+    font-size: var(--step--1);
+    color: var(--on-ink-muted);
+    overflow-wrap: anywhere;
+  }
+  .community__link:hover .community__name {
+    color: var(--ochre);
+  }
+  .community__p {
+    margin-block: 0.75rem 1.5rem;
+    color: var(--on-ink-muted);
+  }
+</style>

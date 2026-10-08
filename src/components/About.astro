@@ -2,6 +2,7 @@
 import { Picture } from 'astro:assets';
 import interior from '../assets/venue/interior.jpg';
 import welcome from '../assets/venue/welcome-sign.jpg';
+import kitchen from '../assets/venue/kitchen-pot.jpg';
 import Rule from './Rule.astro';
 import { business, services } from '../data/business';
 ---
@@ -24,6 +25,17 @@ import { business, services } from '../data/business';
     </div>
 
     <div class="about__media">
+      <figure class="about__fig about__fig--kitchen">
+        <Picture
+          src={kitchen}
+          formats={['avif', 'webp']}
+          widths={[480, 800, 1200]}
+          sizes="(min-width: 64em) 40vw, 100vw"
+          alt="A large pot of soup with meat and vegetables simmering on the Afrolink stove"
+          loading="lazy"
+        />
+        <figcaption>Soup on the stove in our kitchen</figcaption>
+      </figure>
       <figure class="about__fig about__fig--main">
         <Picture
           src={interior}
@@ -116,6 +128,10 @@ import { business, services } from '../data/business';
     width: 100%;
     aspect-ratio: 16 / 9;
     object-fit: cover;
+  }
+  .about__fig--kitchen :global(img) {
+    aspect-ratio: 4 / 3;
+    object-position: 100% 100%;
   }
   .about__fig figcaption {
     margin-top: 0.5rem;

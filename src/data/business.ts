@@ -43,6 +43,11 @@ export const phones = {
   },
 } as const;
 
+/**
+ * WhatsApp: Marcel's brief of 2026-10-07 states the 0201 landline is ALSO the
+ * official WhatsApp number. The brief of 2026-10-08 says not to assume this —
+ * kept as previously verified, flagged for re-confirmation (docs/known-risks R-010).
+ */
 export const whatsapp = {
   href: 'https://wa.me/4920184674196',
   display: '0201 84674196',
@@ -52,10 +57,18 @@ const addressQuery = `${business.name}, ${business.address.street}, ${business.a
 
 export const mapsHref = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addressQuery)}`;
 
+/** Official profiles (brief 2026-10-08). */
 export const social = [
   { name: 'Facebook', handle: 'afrolink24', href: 'https://www.facebook.com/afrolink24' },
-  { name: 'TikTok', handle: '@afrolink.de', href: 'https://www.tiktok.com/@afrolink.de' },
+  { name: 'Instagram', handle: '@afrolinkrestaurant', href: 'https://www.instagram.com/afrolinkrestaurant' },
+  { name: 'TikTok', handle: '@afrolink_restaurant', href: 'https://www.tiktok.com/@afrolink_restaurant' },
+  { name: 'YouTube', handle: '@afrolink45144', href: 'https://www.youtube.com/@afrolink45144' },
 ] as const;
+
+/** Google Business Profile (reviews). Link only — no ratings are reproduced on the site. */
+export const googleReviews = {
+  href: 'https://share.google/4DyZ4gz5CwbrWi8qv',
+} as const;
 
 /** Services as confirmed. Afrolink does NOT offer delivery — never add it. */
 export const services = [

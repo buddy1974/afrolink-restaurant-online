@@ -8,7 +8,8 @@ import { existsSync, readFileSync } from 'node:fs';
 import { foodMenu } from '../src/data/menu.ts';
 import { drinksMenu } from '../src/data/drinks.ts';
 import { openingHours, groupHours } from '../src/data/hours.ts';
-import { business, phones, whatsapp, services } from '../src/data/business.ts';
+import { business, phones, whatsapp, services, social, googleReviews } from '../src/data/business.ts';
+import { featuredVideo, videos } from '../src/data/videos.ts';
 import { formatPrice } from '../src/data/format.ts';
 
 const flatFood = () =>
@@ -119,7 +120,7 @@ test('opening hours are exact and grouped correctly', () => {
   assert.deepEqual(
     openingHours.map((h) => `${h.day} ${h.opens}-${h.closes}`),
     [
-      'Monday 15:00-00:00',
+      'Monday 16:00-00:00',
       'Tuesday 15:00-00:00',
       'Wednesday 15:00-00:00',
       'Thursday 15:00-00:00',
@@ -130,7 +131,7 @@ test('opening hours are exact and grouped correctly', () => {
   );
   assert.deepEqual(
     groupHours().map((g) => `${g.label} ${g.opens}-${g.closes}`),
-    ['Monday – Thursday 15:00-00:00', 'Friday – Saturday 15:00-01:00', 'Sunday 16:00-00:00'],
+    ['Tuesday – Thursday 15:00-00:00', 'Friday – Saturday 15:00-01:00', 'Sunday – Monday 16:00-00:00'],
   );
 });
 
@@ -145,6 +146,39 @@ test('contact data is exact', () => {
   assert.equal(whatsapp.href, 'https://wa.me/4920184674196');
 });
 
+test('social profiles and Google reviews link match the 2026-10-08 brief', () => {
+  assert.deepEqual(
+    social.map((s) => s.href),
+    [
+      'https://www.facebook.com/afrolink24',
+      'https://www.instagram.com/afrolinkrestaurant',
+      'https://www.tiktok.com/@afrolink_restaurant',
+      'https://www.youtube.com/@afrolink45144',
+    ],
+  );
+  assert.equal(googleReviews.href, 'https://share.google/4DyZ4gz5CwbrWi8qv');
+});
+
+test('videos: featured David On The Go video, unique ids, official sources only', () => {
+  assert.equal(featuredVideo.id, '51D8Zxd5_84');
+  const all = [featuredVideo, ...videos];
+  assert.equal(new Set(all.map((v) => v.id)).size, all.length, 'duplicate video id');
+  assert.deepEqual(
+    videos.map((v) => `${v.platform}:${v.id}`),
+    [
+      'youtube:FYzFX_LzRLU',
+      'youtube:TZjJoRjCMXg',
+      'facebook:24293417526931827',
+      'facebook:2417411605311803',
+      'facebook:1006924598092438',
+      'facebook:1201502541298754',
+    ],
+  );
+  for (const v of videos.filter((v) => v.platform === 'facebook')) {
+    assert.ok(v.url.startsWith('https://www.facebook.com/afrolink24/videos/'), v.url);
+  }
+});
+
 test('services never advertise delivery', () => {
   assert.ok(!services.some((s) => /deliver|liefer/i.test(s)));
 });
@@ -154,6 +188,8 @@ test('rendered page claims no delivery, ratings or reviews', { skip: !existsSync
   const text = html.replace(/<script[\s\S]*?<\/script>/g, (m) => (m.includes('application/ld+json') ? m : '')).toLowerCase();
   assert.ok(!/deliver|lieferung|lieferdienst/.test(text), 'page mentions delivery');
   assert.ok(!/aggregaterating|ratingvalue|"review"/.test(text), 'page contains rating/review markup');
+  assert.ok(!/<iframe/.test(html), 'no iframe may load before the visitor presses play');
+  assert.ok(!/autoplay=1[^"]*"[^>]*src=|<video[^>]+autoplay/.test(html), 'no autoplaying media on load');
   for (const must of ['berzeliusstraße 7', '45144 essen', '0201 84674196', '+49 1521 7130788', 'tel:+4920184674196', 'tel:+4915217130788', 'https://wa.me/4920184674196', 'https://www.afrolink-restaurant.online/']) {
     assert.ok(text.includes(must), `page is missing ${must}`);
   }

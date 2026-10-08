@@ -1,5 +1,14 @@
 # Change Log — `afrolink-restaurant-online`
 
+## 2026-10-08 — Redesign & correction (branch `redesign-2026-10`, preview only)
+- Imagery: 17 enhanced, watermarked Afrolink photos replace the weaker originals; watermark-aware cropping; kitchen photo in About.
+- Menu: real dish photo per category (portrait photos matted, uncropped); prices/dishes unchanged.
+- Video: "David On The Go" featured under the hero; new "Afrolink on video" section with 2 YouTube Shorts + 4 Facebook videos; click-to-play, one at a time, no third-party request before play.
+- Social & reviews: Facebook, Instagram, TikTok (@afrolink_restaurant), YouTube; Google reviews CTA (no ratings shown).
+- Reservation band (call / WhatsApp / mobile).
+- Hours: Monday 16:00 (brief 2026-10-08); grouping Tue–Thu / Fri–Sat / Sun–Mon.
+- Header nav: + Videos. Tests extended (social, videos, no iframe/autoplay on load).
+
 ## 2026-10-07 — Production deployment
 - GitHub repo renamed `afropages-online` → `afrolink-restaurant-online`.
 - Vercel project `afrolink-restaurant-online` created and connected to GitHub; production deployed (https://afrolink-restaurant-online.vercel.app).

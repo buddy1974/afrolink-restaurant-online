@@ -1,0 +1,73 @@
+---
+import VideoCard from './VideoCard.astro';
+import poster from '../assets/gallery/rice-plantain-fish.jpg';
+import { featuredVideo } from '../data/videos';
+---
+
+<section class="featured on-ink" aria-labelledby="featured-title">
+  <div class="wrap featured__grid">
+    <div class="featured__text">
+      <p class="eyebrow">As seen on YouTube</p>
+      <h2 id="featured-title" class="featured__title">David On The Go eats at Afrolink</h2>
+      <p class="featured__lede">
+        Travel creator David On The Go visited Afrolink to try Nigerian food in Germany. Watch his visit, then see what's on
+        our menu.
+      </p>
+      <p class="featured__links">
+        <a class="link-arrow" href="#menu">See the menu</a>
+        <a class="link-arrow" href="#videos">More videos</a>
+      </p>
+    </div>
+    <div class="featured__video">
+      <VideoCard
+        video={featuredVideo}
+        poster={poster}
+        posterAlt="Jollof rice with fried plantain and fish from the Afrolink kitchen"
+        size="feature"
+        sizes="(min-width: 64em) 44rem, 100vw"
+      />
+      <p class="featured__note">The video loads from YouTube when you press play.</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .featured {
+    padding-block: clamp(2.5rem, 1.5rem + 4vw, 5rem);
+    border-top: 1px solid var(--ink-line);
+  }
+  .featured__grid {
+    display: grid;
+    gap: 2rem;
+    align-items: center;
+  }
+  @media (min-width: 56em) {
+    .featured__grid {
+      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.4fr);
+      gap: clamp(2rem, 1rem + 4vw, 5rem);
+    }
+  }
+  .featured__title {
+    margin-top: 0.75rem;
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: var(--step-3);
+    line-height: 1.1;
+  }
+  .featured__lede {
+    max-width: 28rem;
+    margin-top: 1rem;
+    color: var(--on-ink-muted);
+  }
+  .featured__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.75rem;
+    margin-top: 1.5rem;
+  }
+  .featured__note {
+    margin-top: 0.5rem;
+    font-size: var(--step--1);
+    color: var(--on-ink-muted);
+  }
+</style>

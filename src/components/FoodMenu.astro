@@ -1,9 +1,20 @@
 ---
+import { Picture } from 'astro:assets';
 import { foodMenu, type MenuItem } from '../data/menu';
 import { formatPrice } from '../data/format';
+import { galleryImage } from '../lib/images';
 
 const categories = foodMenu
-  .map((c) => ({ ...c, items: c.items.filter((i: MenuItem) => i.available !== false) }))
+  .map((c) => ({
+    ...c,
+    items: c.items.filter((i: MenuItem) => i.available !== false),
+    photo: c.image
+      ? (() => {
+          const src = galleryImage(c.image.file, `menu.ts (${c.id})`);
+          return { src, alt: c.image.alt, wm: !!c.image.watermarked, portrait: src.height > src.width };
+        })()
+      : null,
+  }))
   .filter((c) => c.items.length > 0);
 ---
 
@@ -19,6 +30,18 @@ const categories = foodMenu
       {
         categories.map((cat, ci) => (
           <section class="cat" id={cat.id} aria-labelledby={`${cat.id}-title`}>
+            {cat.photo && (
+              <Picture
+                src={cat.photo.src}
+                formats={['avif', 'webp']}
+                widths={[400, 640, 900]}
+                sizes="(min-width: 56em) 34rem, 100vw"
+                alt={cat.photo.alt}
+                loading="lazy"
+                decoding="async"
+                class:list={['cat__img', { 'is-watermarked': cat.photo.wm, 'is-portrait': cat.photo.portrait }]}
+              />
+            )}
             <h3 class="cat__title" id={`${cat.id}-title`}>
               <span class="cat__num" aria-hidden="true">{String(ci + 1).padStart(2, '0')}</span>
               {cat.title}
@@ -63,22 +86,35 @@ const categories = foodMenu
     display: grid;
     gap: 3rem;
   }
-  @media (min-width: 48em) {
+  @media (min-width: 56em) {
     .menu-cols {
       display: block;
       columns: 2;
-      column-gap: clamp(2.5rem, 1rem + 4vw, 5rem);
+      column-gap: clamp(3rem, 1rem + 5vw, 6rem);
+      column-rule: 1px solid var(--paper-line);
     }
     .cat {
       break-inside: avoid;
-      padding-bottom: 3.25rem;
+      padding-bottom: 4rem;
     }
   }
-  @media (min-width: 75em) {
-    .menu-cols {
-      columns: 3;
-      column-rule: 1px solid var(--paper-line);
-    }
+
+  .cat__img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    margin-bottom: 1.25rem;
+    background: var(--paper-sunk);
+  }
+  .cat__img.is-watermarked {
+    /* keep the Afrolink watermark (bottom-right) in frame */
+    object-position: 100% 100%;
+  }
+  .cat__img.is-portrait {
+    /* portrait photos are shown whole, matted on paper — no dish or watermark is cropped */
+    object-fit: contain;
+    object-position: 50% 50%;
+    padding: 0.75rem;
   }
 
   .cat__title {
