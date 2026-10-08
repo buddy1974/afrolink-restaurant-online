@@ -22,7 +22,7 @@
 
 | R-010 | 2026-10-08 brief says "do not assume the landline is the WhatsApp number"; 2026-10-07 brief stated it **is**. WhatsApp links (`wa.me/4920184674196`) kept | Content | Medium | Marcel to re-confirm; change one constant in `business.ts` if wrong | Marcel | Open |
 | R-011 | Monday opening changed to 16:00 by the 2026-10-08 brief (was 15:00) | Content | Low | Applied; confirm with Afrolink and update Google Business Profile to match | Marcel | Open |
-| R-012 | `public/` contains 34 untracked images incl. ChatGPT re-renders; if deployed by CLI from this folder they would become public URLs | Process | Medium | Not committed; deploy via git only, or move them out of `public/` | Marcel | Open |
+| R-012 | `public/` contains 34 untracked images incl. ChatGPT re-renders; if deployed by CLI from this folder they would become public URLs | Process | Medium | Moved (not deleted) to git-ignored `owner-assets/public-candidates/`; `.vercelignore` excludes it from CLI deploys | Marcel | Resolved 2026-10-08 |
 | R-013 | Instagram `@afrolinkrestaurant` could not be verified without login (TikTok, YouTube, Facebook, Google link verified) | Content | Low | Marcel to open the link once | Marcel | Open |
 | R-014 | TikTok handle switched to `@afrolink_restaurant` (166 followers); old `@afrolink.de` has 71k followers — may be the real main account | Content | Medium | Marcel to confirm the correct handle | Marcel | Open |
 
