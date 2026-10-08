@@ -1,0 +1,97 @@
+---
+/** Impressum per § 5 DDG — renders only supplied facts; missing items show "pending". */
+import LegalShell from './LegalShell.astro';
+import { business, phones } from '../data/business';
+import { legal, legalComplete } from '../data/legal';
+import { imprintCopy } from '../i18n/legal-content';
+import { type Lang } from '../i18n/config';
+import { useT } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const c = imprintCopy[lang];
+const t = useT(lang);
+const pending = t.legal.pending;
+---
+
+<LegalShell lang={lang} route="imprint" title={c.title} lede={c.lede} incomplete={!legalComplete()}>
+  <dl class="imprint">
+    <div>
+      <dt>{c.operator}</dt>
+      <dd class:list={{ pending: !legal.operatorName }}>{legal.operatorName ?? pending}</dd>
+    </div>
+    <div>
+      <dt>{c.legalForm}</dt>
+      <dd class:list={{ pending: !legal.legalForm }}>{legal.legalForm ?? pending}</dd>
+    </div>
+    <div>
+      <dt>{c.representative} {c.ifApplicable}</dt>
+      <dd class:list={{ pending: !legal.representative }}>{legal.representative ?? pending}</dd>
+    </div>
+    <div>
+      <dt>{c.address}</dt>
+      <dd>
+        {business.name}<br />
+        {business.address.street}<br />
+        {business.address.postalCode} {business.address.city}
+        {!legal.addressConfirmed && <span class="note">{c.addressNote}</span>}
+      </dd>
+    </div>
+    <div>
+      <dt>{c.contact}</dt>
+      <dd>
+        {c.phone}: <a href={phones.landline.href}>{phones.landline.international}</a><br />
+        {c.mobile}: <a href={phones.mobile.href}>{phones.mobile.international}</a><br />
+        {c.email}:{' '}
+        {legal.email ? <a href={`mailto:${legal.email}`}>{legal.email}</a> : <span class="pending">{pending}</span>}
+      </dd>
+    </div>
+    <div>
+      <dt>{c.register} {c.ifApplicable}</dt>
+      <dd class:list={{ pending: !legal.register }}>{legal.register ?? pending}</dd>
+    </div>
+    <div>
+      <dt>{c.vat} {c.ifApplicable}</dt>
+      <dd class:list={{ pending: !legal.vatId }}>{legal.vatId ?? pending}</dd>
+    </div>
+    <div>
+      <dt>{c.content}</dt>
+      <dd class:list={{ pending: !legal.contentResponsible }}>{legal.contentResponsible ?? pending}</dd>
+    </div>
+  </dl>
+</LegalShell>
+
+<style>
+  .imprint {
+    border-top: 1px solid var(--on-paper);
+  }
+  .imprint > div {
+    display: grid;
+    gap: 0.25rem 2rem;
+    padding-block: 1rem;
+    border-bottom: 1px solid var(--paper-line);
+  }
+  @media (min-width: 48em) {
+    .imprint > div {
+      grid-template-columns: 16rem 1fr;
+    }
+  }
+  .imprint dt {
+    font-weight: 600;
+  }
+  .imprint dd {
+    margin: 0;
+  }
+  .pending {
+    color: var(--burgundy);
+    font-style: italic;
+  }
+  .note {
+    display: block;
+    margin-top: 0.4rem;
+    font-size: var(--step--1);
+    color: var(--burgundy);
+  }
+</style>

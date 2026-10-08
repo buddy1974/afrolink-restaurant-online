@@ -1,0 +1,108 @@
+---
+/** Dietary guidance: no pork (owner), heat, vegetarian/vegan enquiries, allergies → staff. */
+import { routes, type Lang } from '../i18n/config';
+import { useT } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useT(lang);
+const d = t.dietary;
+const cards = [
+  { title: d.porkTitle, text: d.porkText },
+  { title: d.spiceTitle, text: d.spiceText },
+  { title: d.vegTitle, text: d.vegText },
+  { title: d.allergyTitle, text: d.allergyText, link: { href: routes.allergens[lang], label: t.menu.allergenLink } },
+];
+---
+
+<section class="section on-paper dietary" id="dietary" aria-labelledby="dietary-title">
+  <div class="wrap">
+    <header class="section-head dietary__head">
+      <div>
+        <p class="eyebrow">{d.eyebrow}</p>
+        <h2 id="dietary-title" class="section-title">{d.title}</h2>
+      </div>
+      <p class="section-lede">{d.lede}</p>
+    </header>
+    <ul role="list" class="dcards">
+      {
+        cards.map((c, i) => (
+          <li class="dcard">
+            <p class="dcard__num" aria-hidden="true">
+              {String(i + 1).padStart(2, '0')}
+            </p>
+            <h3 class="dcard__title">{c.title}</h3>
+            <p class="dcard__text">{c.text}</p>
+            {c.link && (
+              <a class="link-arrow" href={c.link.href}>
+                {c.link.label}
+              </a>
+            )}
+          </li>
+        ))
+      }
+    </ul>
+    <p class="dietary__cta">
+      <a class="btn btn--solid" href="#enquiry" data-enquiry="dietary">{d.cta}</a>
+    </p>
+  </div>
+</section>
+
+<style>
+  .dietary__head {
+    align-items: end;
+  }
+  @media (min-width: 64em) {
+    .dietary__head {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 4rem;
+    }
+  }
+  .dcards {
+    display: grid;
+    gap: 1px;
+    background: var(--paper-line);
+    border: 1px solid var(--paper-line);
+  }
+  @media (min-width: 48em) {
+    .dcards {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 75em) {
+    .dcards {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+  .dcard {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    padding: clamp(1.25rem, 1rem + 1vw, 1.75rem);
+    background: var(--paper);
+  }
+  .dcard__num {
+    font-size: var(--step--1);
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--terracotta);
+  }
+  .dcard__title {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: var(--step-2);
+    line-height: 1.15;
+  }
+  .dcard__text {
+    color: var(--on-paper-muted);
+  }
+  .dcard .link-arrow {
+    align-self: flex-start;
+    margin-top: auto;
+  }
+  .dietary__cta {
+    margin-top: 2rem;
+  }
+</style>

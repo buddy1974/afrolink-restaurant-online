@@ -1,0 +1,150 @@
+---
+/** Delivery & catering (by arrangement) + the enquiry builder. */
+import Enquiry from './Enquiry.astro';
+import { type Lang } from '../i18n/config';
+import { useT } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useT(lang);
+---
+
+<section class="section on-ink services" id="services" aria-labelledby="services-title">
+  <div class="wrap">
+    <header class="section-head">
+      <p class="eyebrow">{t.services.eyebrow}</p>
+      <h2 id="services-title" class="section-title">{t.services.title}</h2>
+      <p class="section-lede">{t.services.lede}</p>
+    </header>
+
+    <div class="offers">
+      <article class="offer" id="delivery" aria-labelledby="delivery-title">
+        <p class="offer__num" aria-hidden="true">01</p>
+        <h3 class="offer__title" id="delivery-title">{t.services.deliveryTitle}</h3>
+        <p class="offer__text">{t.services.deliveryText}</p>
+        <p class="offer__sub">{t.services.deliveryHow}</p>
+        <ol class="steps">
+          {t.services.deliverySteps.map((step) => <li>{step}</li>)}
+        </ol>
+        <a class="btn btn--solid" href="#enquiry" data-enquiry="delivery">{t.actions.delivery}</a>
+      </article>
+      <article class="offer" id="catering" aria-labelledby="catering-title">
+        <p class="offer__num" aria-hidden="true">02</p>
+        <h3 class="offer__title" id="catering-title">{t.services.cateringTitle}</h3>
+        <p class="offer__text">{t.services.cateringText}</p>
+        <p class="offer__sub">{t.services.occasions}</p>
+        <ul role="list" class="occasions">
+          {t.services.occasionList.map((o) => <li>{o}</li>)}
+        </ul>
+        <a class="btn btn--solid" href="#enquiry" data-enquiry="catering">{t.actions.catering}</a>
+      </article>
+    </div>
+    <p class="services__note">{t.services.note}</p>
+
+    <Enquiry lang={lang} />
+  </div>
+</section>
+
+<style>
+  .offers {
+    display: grid;
+    gap: 1.25rem;
+  }
+  @media (min-width: 56em) {
+    .offers {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  .offer {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.9rem;
+    padding: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+    background: var(--ink-raised);
+    border-top: 3px solid var(--ochre);
+  }
+  .offer__num {
+    font-size: var(--step--1);
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--ochre);
+  }
+  .offer__title {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: var(--step-3);
+    line-height: 1.1;
+  }
+  .offer__text {
+    color: var(--on-ink-muted);
+    max-width: 34rem;
+  }
+  .offer__sub {
+    font-size: var(--step--1);
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ochre);
+  }
+  .occasions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 1.5rem;
+    width: 100%;
+  }
+  .occasions li {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding-block: 0.45rem;
+    border-bottom: 1px solid var(--ink-line);
+  }
+  .occasions li::before {
+    content: '';
+    flex: none;
+    width: 0.4rem;
+    height: 0.4rem;
+    background: var(--ochre);
+    transform: rotate(45deg);
+  }
+  .steps {
+    display: grid;
+    gap: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: step;
+  }
+  .steps li {
+    counter-increment: step;
+    display: grid;
+    grid-template-columns: 2rem 1fr;
+    gap: 0.5rem;
+    padding-block: 0.55rem;
+    border-bottom: 1px solid var(--ink-line);
+  }
+  .steps li::before {
+    content: counter(step, decimal-leading-zero);
+    font-size: var(--step--1);
+    font-weight: 600;
+    color: var(--ochre);
+    font-variant-numeric: tabular-nums;
+  }
+  .offer .btn {
+    margin-top: auto;
+  }
+  .services__note {
+    margin-top: 1rem;
+    font-size: var(--step--1);
+    color: var(--on-ink-muted);
+  }
+  @media (max-width: 29.99em) {
+    .occasions {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,81 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from './Header.astro';
+import Footer from './Footer.astro';
+import { routes, type Lang, type RouteKey } from '../i18n/config';
+import { useT } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+  route: RouteKey;
+  title: string;
+  lede?: string;
+  /** Show the "incomplete — details pending" notice. */
+  incomplete?: boolean;
+}
+const { lang, route, title, lede, incomplete = false } = Astro.props;
+const t = useT(lang);
+---
+
+<Base lang={lang} route={route} title={`${title} – Afrolink Restaurant & Bar`} description={lede}>
+  <Header lang={lang} route={route} />
+  <main id="main" class="legal on-paper">
+    <div class="wrap legal__wrap">
+      <header class="legal__head">
+        <h1 class="section-title">{title}</h1>
+        {lede && <p class="section-lede">{lede}</p>}
+      </header>
+      {incomplete && <p class="legal__draft" role="note">{t.legal.draft}</p>}
+      {
+        lang !== 'de' && (
+          <p class="legal__binding">
+            {t.legal.germanBinding}{' '}
+            <a href={routes[route].de} lang="de" hreflang="de">
+              {t.legal.germanVersion}
+            </a>
+          </p>
+        )
+      }
+      <slot />
+      <p class="legal__back"><a class="link-arrow" href={routes.home[lang]}>{t.legal.back}</a></p>
+    </div>
+  </main>
+  <Footer lang={lang} route={route} />
+</Base>
+
+<style>
+  .legal {
+    padding-block: clamp(2.5rem, 2rem + 3vw, 5rem);
+  }
+  .legal__wrap {
+    max-width: calc(52rem + 2 * var(--gutter));
+  }
+  .legal__head {
+    display: grid;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+  }
+  .legal__draft {
+    margin-bottom: 2rem;
+    padding: 1rem 1.25rem;
+    background: var(--paper-sunk);
+    border-left: 3px solid var(--burgundy);
+    font-weight: 550;
+  }
+  .legal__binding {
+    margin-bottom: 1.5rem;
+    color: var(--on-paper-muted);
+  }
+  .legal :global(h2) {
+    margin-block: 2.25rem 0.75rem;
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: var(--step-2);
+  }
+  .legal :global(p + p) {
+    margin-top: 0.75rem;
+  }
+  .legal__back {
+    margin-top: 3rem;
+  }
+</style>

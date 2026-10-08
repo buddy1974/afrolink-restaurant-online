@@ -13,6 +13,9 @@
 - **No** third-party scripts, cookies, analytics or embedded maps (Google Maps is an outbound link).
 - **Hosting target:** Vercel (static). `vercel.json`: apex → www 301, immutable caching for `/_astro/*`, security headers.
 
+## Multilingual
+German at `/` (x-default), English `/en/`, French `/fr/`, plus localized legal pages (`/impressum/`, `/datenschutz/`, `/allergene/` and EN/FR equivalents). Interface strings in `src/i18n/ui.ts` (type- and test-enforced key parity); localized data fields use `L10n` objects. A head script on `/` only redirects first-time visitors whose browser prefers EN/FR; bots and explicit choices are respected.
+
 ## Content architecture
 All content lives in `src/data/*.ts` as typed data:
 - prices in **euro cents**, formatted by `format.ts` (food `€15`, drinks `€3.50`)

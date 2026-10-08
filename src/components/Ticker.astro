@@ -1,0 +1,158 @@
+---
+/**
+ * Restrained information strip. Only publishable claims (src/data/claims.ts) are shown.
+ * Moves slowly; pauses on hover/focus and via a button (WCAG 2.2.2); static under reduced motion.
+ */
+import { publishableClaims } from '../data/claims';
+import { type Lang } from '../i18n/config';
+import { useT } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useT(lang);
+const items = publishableClaims().map((c) => c.text[lang]);
+---
+
+{
+  items.length > 0 && (
+    <section class="ticker on-ink" aria-label={t.ticker.label} data-ticker>
+      <div class="ticker__viewport">
+        <ul role="list" class="ticker__track">
+          {items.map((text) => (
+            <li class="ticker__item">{text}</li>
+          ))}
+          {items.map((text) => (
+            <li class="ticker__item" aria-hidden="true">
+              {text}
+            </li>
+          ))}
+        </ul>
+      </div>
+      <button class="ticker__toggle" type="button" aria-pressed="false" data-ticker-toggle data-pause={t.ticker.pause} data-play={t.ticker.play}>
+        <span class="visually-hidden">{t.ticker.pause}</span>
+        <svg class="ticker__icon-pause" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M8 5h3v14H8zM13 5h3v14h-3z" fill="currentColor" />
+        </svg>
+        <svg class="ticker__icon-play" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M8 5.5v13l11-6.5z" fill="currentColor" />
+        </svg>
+      </button>
+    </section>
+  )
+}
+
+<script>
+  const ticker = document.querySelector<HTMLElement>('[data-ticker]');
+  // Do not animate while the strip is off screen (saves CPU/battery).
+  if (ticker && 'IntersectionObserver' in window) {
+    new IntersectionObserver(([e]) => ticker.classList.toggle('is-offscreen', !e.isIntersecting)).observe(ticker);
+  }
+  const btn = ticker?.querySelector<HTMLButtonElement>('[data-ticker-toggle]');
+  btn?.addEventListener('click', () => {
+    const paused = ticker!.classList.toggle('is-paused');
+    btn.setAttribute('aria-pressed', String(paused));
+    const label = btn.querySelector('.visually-hidden');
+    if (label) label.textContent = (paused ? btn.dataset.play : btn.dataset.pause) ?? '';
+  });
+</script>
+
+<style>
+  .ticker {
+    position: relative;
+    display: flex;
+    align-items: center;
+    border-top: 1px solid var(--ink-line);
+    border-bottom: 1px solid var(--ink-line);
+    background: var(--ink-raised);
+  }
+  .ticker__viewport {
+    flex: 1;
+    overflow: hidden;
+  }
+  .ticker__track {
+    display: flex;
+    width: max-content;
+    /* compositor-only animation (transform) — no per-frame repaint */
+    will-change: transform;
+    animation: ticker 60s linear infinite;
+  }
+  .ticker:hover .ticker__track,
+  .ticker:focus-within .ticker__track,
+  .ticker.is-paused .ticker__track,
+  .ticker.is-offscreen .ticker__track {
+    animation-play-state: paused;
+  }
+  .ticker__item {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 0.85rem 0 0.85rem 1.5rem;
+    white-space: nowrap;
+    font-size: var(--step--1);
+    font-weight: 550;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--on-ink-muted);
+  }
+  .ticker__item::after {
+    content: '';
+    width: 0.4rem;
+    height: 0.4rem;
+    background: var(--ochre);
+    transform: rotate(45deg);
+  }
+  .ticker__toggle {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    margin-inline: 0.25rem;
+    border: 0;
+    background: none;
+    color: var(--on-ink-muted);
+    cursor: pointer;
+  }
+  .ticker__toggle:hover {
+    color: var(--ochre);
+  }
+  .ticker__toggle svg {
+    width: 1rem;
+    height: 1rem;
+  }
+  .ticker__icon-play,
+  .ticker.is-paused .ticker__icon-pause {
+    display: none;
+  }
+  .ticker.is-paused .ticker__icon-play {
+    display: block;
+  }
+
+  @keyframes ticker {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    /* static, wrapped list — no motion, no duplicates */
+    .ticker__track {
+      will-change: auto;
+      animation: none;
+      width: auto;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding-inline: var(--gutter);
+    }
+    .ticker__item[aria-hidden='true'],
+    .ticker__toggle {
+      display: none;
+    }
+    .ticker__item {
+      white-space: normal;
+      padding-block: 0.5rem;
+    }
+  }
+</style>

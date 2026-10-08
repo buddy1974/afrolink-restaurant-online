@@ -19,6 +19,11 @@
 | ADR-007 | 2026-10-08 | Gallery/menu imagery from client's enhanced watermarked photos; ChatGPT re-renders not used | Proposed — pending Marcel |
 | ADR-008 | 2026-10-08 | Click-to-play video facades (YouTube nocookie / Facebook plugin), one video at a time | Accepted |
 | ADR-009 | 2026-10-08 | Brief 2026-10-08 data applied: Monday 16:00, new TikTok handle, Instagram, YouTube, Google reviews | Accepted (per brief) |
+| ADR-010 | 2026-10-08 | Trilingual site: DE at `/` (x-default), EN `/en/`, FR `/fr/`; first-visit browser-language redirect from `/` only | Proposed — pending Marcel |
+| ADR-011 | 2026-10-08 | Allergen/additive data model: nothing declared without kitchen sign-off; website becomes the electronic record once verified | Proposed — pending Marcel |
+| ADR-012 | 2026-10-08 | Enquiry builder composes WhatsApp text client-side; no form backend, no stored data, no ordering/payment | Proposed — pending Marcel |
+| ADR-013 | 2026-10-08 | Claims register gates marketing claims by verification status | Accepted |
+| ADR-014 | 2026-10-08 | Hero image: genuine watermarked Egusi + pounded yam (883x540); Nkwobi moved to Specialities/gallery | Accepted (per brief) |
 
 ## ADR Records
 
@@ -50,6 +55,18 @@ All videos render as local posters (or typographic cards) and load the platform 
 
 ### ADR-009 — 2026-10-08 brief data
 Monday changed 15:00 → 16:00 (display grouping Tue–Thu / Fri–Sat / Sun–Mon). TikTok changed `@afrolink.de` → `@afrolink_restaurant` (both exist; the old one is a much larger account named "Afrolink" — confirm which is Afrolink's). Added Instagram, YouTube channel, Google reviews link (no ratings reproduced). WhatsApp kept on the landline as verified in the 2026-10-07 brief, despite the 2026-10-08 caution — see R-010.
+
+### ADR-010 — Multilingual architecture
+Distinct URLs per language (SEO, shareable, no reliance on browser translation). `/` stays German because the printed QR codes point there and German is the sensible fallback in Germany. A head script redirects first-time visitors whose browser prefers English or French (before German) to `/en/` or `/fr/`; it never runs for bots, never on `/en/` or `/fr/`, and always respects a language the visitor chose (`localStorage` key `afl-lang`). hreflang (de-DE, en, fr, x-default) on every page and in the sitemap. Dish names are never translated; descriptions are.
+
+### ADR-011 — Allergens & additives
+Research (LMIV Art. 9/44/Annex II, LMIDV § 4, LMZDV § 5, FrSaftErfrischGetrV § 6, LAVES guidance, Verbraucherzentrale NRW) in `docs/compliance/legal-requirements-matrix.md`. Each dish/drink has a record (`pending` until the kitchen signs off with name + date). "Possible" allergens are internal, sourced only from Afrolink's own menu text, the dish name or product type. The public page shows "being verified – ask staff" and does not claim a written record exists. `npm run allergen-matrix` exports the kitchen worksheet.
+
+### ADR-012 — Enquiries
+Delivery, catering, reservations, dietary questions and group orders are enquiries. The builder composes a message in the browser (WhatsApp deep link, copy, or call). Nothing is stored or transmitted by the site. No checkout/payment until an ordering and fulfilment model is approved.
+
+### ADR-013 — Claims register
+`src/data/claims.ts` holds every marketing claim with status (verified / owner-provided / customer-opinion / awaiting) and evidence. Only enabled verified or owner-provided claims (or attributed opinions) render; tests enforce it. "500+ regulars", "20+ years" and "No. 1 in Essen" are disabled pending evidence.
 
 ### Tooling note
 `eslint-plugin-jsx-a11y` does not support ESLint 10; the maintained fork `eslint-plugin-jsx-a11y-x` (officially supported by `eslint-plugin-astro`) is used. `role="list"` on styled lists is allowed on purpose (Safari/VoiceOver drops list semantics otherwise).

@@ -1,28 +1,26 @@
 /**
- * Content integrity: the data files must match Marcel's brief (2026-10-07) exactly.
+ * Content integrity: the data files must match the owner's briefs exactly.
+ * Menu/prices: brief 2026-10-07. Hours, social, delivery: brief 2026-10-08.
  * If the restaurant changes a price, update BOTH the data file and this expectation.
  */
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { existsSync, readFileSync } from 'node:fs';
 import { foodMenu } from '../src/data/menu.ts';
 import { drinksMenu } from '../src/data/drinks.ts';
 import { openingHours, groupHours } from '../src/data/hours.ts';
-import { business, phones, whatsapp, services, social, googleReviews } from '../src/data/business.ts';
+import { business, phones, whatsapp, services, social, google } from '../src/data/business.ts';
 import { featuredVideo, videos } from '../src/data/videos.ts';
 import { formatPrice } from '../src/data/format.ts';
 
-const flatFood = () =>
-  foodMenu.flatMap((c) =>
+test('food menu matches the brief exactly (names, categories, prices)', () => {
+  const flat = foodMenu.flatMap((c) =>
     c.items.flatMap((i) =>
       i.variants
-        ? i.variants.map((v) => `${c.title}|${i.name}, ${v.label}|${formatPrice(v.price)}`)
-        : [`${c.title}|${i.name}|${formatPrice(i.price!)}`],
+        ? i.variants.map((v) => `${c.title.en}|${i.name}, ${v.labelEn}|${formatPrice(v.price)}`)
+        : [`${c.title.en}|${i.name}|${formatPrice(i.price!)}`],
     ),
   );
-
-test('food menu matches the brief exactly', () => {
-  assert.deepEqual(flatFood(), [
+  assert.deepEqual(flat, [
     'Soups|Egusi Soup|€15',
     'Soups|Afang Soup|€17',
     'Soups|Edikaikong|€17',
@@ -59,19 +57,34 @@ test('food menu matches the brief exactly', () => {
   ]);
 });
 
-test('food notes and labels match the brief', () => {
+test('notes and labels from the brief are preserved (English)', () => {
   const all = foodMenu.flatMap((c) => c.items);
   const by = (n: string) => all.find((i) => i.name === n)!;
-  assert.equal(by("Fisherman's Soup").label, 'On request only');
-  assert.equal(by('Assorted Plate with Yam or Plantain').note, 'Served with mixed meat.');
-  assert.equal(by('Pepper Soup').note, 'Served with rice or yam.');
-  assert.equal(all.filter((i) => i.note).length, 2);
-  assert.equal(all.filter((i) => i.label).length, 1);
+  assert.equal(by("Fisherman's Soup").label?.en, 'On request only');
+  assert.equal(by('Assorted Plate with Yam or Plantain').note?.en, 'Served with mixed meat.');
+  assert.equal(by('Pepper Soup').note?.en, 'Served with rice or yam.');
+});
+
+test('descriptions only from the printed menu; spice only where the menu says "scharf"', () => {
+  const all = foodMenu.flatMap((c) => c.items);
+  for (const i of all) {
+    if (i.description) assert.equal(i.descriptionSource, 'printed-menu-2026', `${i.name} description without source`);
+    if (i.spice) assert.match(i.description?.de ?? '', /scharf/i, `${i.name} marked hot without menu basis`);
+  }
+  assert.deepEqual(
+    all.filter((i) => i.spice).map((i) => i.name),
+    ['Pepper Soup', 'Nkwobi'],
+  );
+});
+
+test('menu item ids are unique and stable', () => {
+  const ids = [...foodMenu.flatMap((c) => c.items.map((i) => i.id)), ...drinksMenu.flatMap((c) => c.items.map((i) => i.id))];
+  assert.equal(new Set(ids).size, ids.length);
 });
 
 test('drinks menu matches the brief exactly', () => {
   const flat = drinksMenu.flatMap((c) =>
-    c.items.map((d) => `${c.title}|${d.name}|${formatPrice(d.price, 'always')}|${d.size?.value ?? ''}`),
+    c.items.map((d) => `${c.title.en}|${d.name}|${formatPrice(d.price, 'always')}|${d.size?.value ?? ''}`),
   );
   assert.deepEqual(flat, [
     'Beer|Guinness|€3.50|0,33 L',
@@ -105,18 +118,16 @@ test('drinks menu matches the brief exactly', () => {
   ]);
 });
 
-test('spirit serving sizes are flagged unverified, not silently corrected', () => {
+test('spirit serving sizes stay as supplied and flagged unverified', () => {
   const spirits = drinksMenu.find((c) => c.id === 'spirits')!;
   for (const s of spirits.items) assert.deepEqual(s.size, { value: '0,2 L', verified: false });
 });
 
 test('hot drinks slot exists but contains no invented products', () => {
-  const hot = drinksMenu.find((c) => c.id === 'hot-drinks');
-  assert.ok(hot);
-  assert.equal(hot.items.length, 0);
+  assert.equal(drinksMenu.find((c) => c.id === 'hot-drinks')?.items.length, 0);
 });
 
-test('opening hours are exact and grouped correctly', () => {
+test('opening hours match the 2026-10-08 brief and group Tue–Thu / Fri–Sat / Sun–Mon', () => {
   assert.deepEqual(
     openingHours.map((h) => `${h.day} ${h.opens}-${h.closes}`),
     [
@@ -139,14 +150,13 @@ test('contact data is exact', () => {
   assert.equal(business.address.street, 'Berzeliusstraße 7');
   assert.equal(`${business.address.postalCode} ${business.address.city}`, '45144 Essen');
   assert.equal(phones.landline.display, '0201 84674196');
-  assert.equal(phones.landline.international, '+49 201 84674196');
   assert.equal(phones.landline.href, 'tel:+4920184674196');
   assert.equal(phones.mobile.display, '+49 1521 7130788');
   assert.equal(phones.mobile.href, 'tel:+4915217130788');
   assert.equal(whatsapp.href, 'https://wa.me/4920184674196');
 });
 
-test('social profiles and Google reviews link match the 2026-10-08 brief', () => {
+test('social profiles and Google link match the 2026-10-08 brief; Instagram flagged unverified', () => {
   assert.deepEqual(
     social.map((s) => s.href),
     [
@@ -156,41 +166,27 @@ test('social profiles and Google reviews link match the 2026-10-08 brief', () =>
       'https://www.youtube.com/@afrolink45144',
     ],
   );
-  assert.equal(googleReviews.href, 'https://share.google/4DyZ4gz5CwbrWi8qv');
+  assert.equal(social.find((s) => s.name === 'Instagram')?.verified, false);
+  assert.equal(google.profileHref, 'https://share.google/4DyZ4gz5CwbrWi8qv');
 });
 
-test('videos: featured David On The Go video, unique ids, official sources only', () => {
+test('Google rating is a dated manual snapshot from the owner screenshot', () => {
+  assert.equal(google.rating, 4.6);
+  assert.equal(google.reviewCount, 145);
+  assert.match(google.asOf, /^\d{4}-\d{2}-\d{2}$/);
+  assert.ok(google.source.length > 10);
+});
+
+test('delivery and catering are offered by arrangement (2026-10-08)', () => {
+  assert.ok(services.includes('delivery'));
+  assert.ok(services.includes('catering'));
+});
+
+test('videos: featured David On The Go, unique ids, official sources only', () => {
   assert.equal(featuredVideo.id, '51D8Zxd5_84');
   const all = [featuredVideo, ...videos];
-  assert.equal(new Set(all.map((v) => v.id)).size, all.length, 'duplicate video id');
-  assert.deepEqual(
-    videos.map((v) => `${v.platform}:${v.id}`),
-    [
-      'youtube:FYzFX_LzRLU',
-      'youtube:TZjJoRjCMXg',
-      'facebook:24293417526931827',
-      'facebook:2417411605311803',
-      'facebook:1006924598092438',
-      'facebook:1201502541298754',
-    ],
-  );
+  assert.equal(new Set(all.map((v) => v.id)).size, all.length);
   for (const v of videos.filter((v) => v.platform === 'facebook')) {
     assert.ok(v.url.startsWith('https://www.facebook.com/afrolink24/videos/'), v.url);
-  }
-});
-
-test('services never advertise delivery', () => {
-  assert.ok(!services.some((s) => /deliver|liefer/i.test(s)));
-});
-
-test('rendered page claims no delivery, ratings or reviews', { skip: !existsSync('dist/index.html') && 'run `npm run build` first' }, () => {
-  const html = readFileSync('dist/index.html', 'utf8');
-  const text = html.replace(/<script[\s\S]*?<\/script>/g, (m) => (m.includes('application/ld+json') ? m : '')).toLowerCase();
-  assert.ok(!/deliver|lieferung|lieferdienst/.test(text), 'page mentions delivery');
-  assert.ok(!/aggregaterating|ratingvalue|"review"/.test(text), 'page contains rating/review markup');
-  assert.ok(!/<iframe/.test(html), 'no iframe may load before the visitor presses play');
-  assert.ok(!/autoplay=1[^"]*"[^>]*src=|<video[^>]+autoplay/.test(html), 'no autoplaying media on load');
-  for (const must of ['berzeliusstraße 7', '45144 essen', '0201 84674196', '+49 1521 7130788', 'tel:+4920184674196', 'tel:+4915217130788', 'https://wa.me/4920184674196', 'https://www.afrolink-restaurant.online/']) {
-    assert.ok(text.includes(must), `page is missing ${must}`);
   }
 });

@@ -3,23 +3,72 @@ import '@fontsource-variable/archivo/wdth.css';
 import '@fontsource-variable/newsreader/index.css';
 import '@fontsource-variable/newsreader/wght-italic.css';
 import '../styles/global.css';
+// Critical fonts for the hero (preloaded to speed up first paint and avoid late swaps).
+import archivoWdth from '@fontsource-variable/archivo/files/archivo-latin-wdth-normal.woff2?url';
+import newsreaderItalic from '@fontsource-variable/newsreader/files/newsreader-latin-wght-italic.woff2?url';
 import { siteUrl } from '../data/business';
-import { seo, restaurantJsonLd } from '../data/seo';
+import { absolute, alternates, restaurantJsonLd, themeColor } from '../data/seo';
+import { htmlLang, ogLocale, locales, routes, type Lang, type RouteKey } from '../i18n/config';
+import { useT } from '../i18n/ui';
 
+interface Props {
+  lang: Lang;
+  route: RouteKey;
+  title?: string;
+  description?: string;
+  /** Emit Restaurant JSON-LD (home pages only). */
+  structuredData?: boolean;
+}
+
+const { lang, route, title, description, structuredData = false } = Astro.props;
+const t = useT(lang);
+const pageTitle = title ?? t.meta.title;
+const pageDescription = description ?? t.meta.description;
+const canonical = absolute(routes[route][lang]);
 const ogImage = `${siteUrl}/og-image.jpg`;
-const jsonLd = restaurantJsonLd(ogImage, `${siteUrl}/icon-512.png`);
+const jsonLd = structuredData ? restaurantJsonLd(lang, ogImage, `${siteUrl}/icon-512.png`) : null;
+// Language auto-detection runs only on the German home page (the QR-code destination).
+const detectLanguage = route === 'home' && lang === 'de';
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={htmlLang[lang]}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>{seo.title}</title>
-    <meta name="description" content={seo.description} />
-    <link rel="canonical" href={seo.canonical} />
+    {
+      detectLanguage && (
+        <script is:inline>
+          (function () {
+            try {
+              if (/bot|crawl|spider|slurp|lighthouse|headless|preview/i.test(navigator.userAgent)) return;
+              const saved = localStorage.getItem('afl-lang');
+              let target = null;
+              if (saved === 'en' || saved === 'fr') target = saved;
+              else if (!saved) {
+                const prefs = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language];
+                for (let i = 0; i < prefs.length; i++) {
+                  const c = String(prefs[i] || '').slice(0, 2).toLowerCase();
+                  if (c === 'de') break;
+                  if (c === 'en' || c === 'fr') { target = c; break; }
+                }
+              }
+              if (target) location.replace('/' + target + '/' + location.search + location.hash);
+            } catch {
+              /* storage unavailable */
+            }
+          })();
+        </script>
+      )
+    }
+    <link rel="preload" href={archivoWdth} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={newsreaderItalic} as="font" type="font/woff2" crossorigin />
+    <title>{pageTitle}</title>
+    <meta name="description" content={pageDescription} />
+    <link rel="canonical" href={canonical} />
+    {alternates(route).map((a) => <link rel="alternate" hreflang={a.hreflang} href={a.href} />)}
     <meta name="robots" content="index, follow, max-image-preview:large" />
-    <meta name="theme-color" content={seo.themeColor} />
+    <meta name="theme-color" content={themeColor} />
     <meta name="format-detection" content="telephone=no" />
 
     <link rel="icon" href="/favicon.ico" sizes="48x48" />
@@ -29,28 +78,29 @@ const jsonLd = restaurantJsonLd(ogImage, `${siteUrl}/icon-512.png`);
 
     <meta property="og:type" content="restaurant" />
     <meta property="og:site_name" content="Afrolink Restaurant & Bar" />
-    <meta property="og:title" content={seo.title} />
-    <meta property="og:description" content={seo.description} />
-    <meta property="og:url" content={seo.canonical} />
-    <meta property="og:locale" content={seo.locale} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content={ogLocale[lang]} />
+    {locales.filter((l) => l !== lang).map((l) => <meta property="og:locale:alternate" content={ogLocale[l]} />)}
     <meta property="og:image" content={ogImage} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Afrolink Restaurant logo beside a plate of Nkwobi" />
+    <meta property="og:image:alt" content={t.meta.ogAlt} />
     <meta property="restaurant:contact_info:street_address" content="Berzeliusstraße 7" />
     <meta property="restaurant:contact_info:locality" content="Essen" />
     <meta property="restaurant:contact_info:postal_code" content="45144" />
     <meta property="restaurant:contact_info:country_name" content="Germany" />
 
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={seo.title} />
-    <meta name="twitter:description" content={seo.description} />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={pageDescription} />
     <meta name="twitter:image" content={ogImage} />
 
-    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
   </head>
   <body>
-    <a class="skip-link" href="#menu">Skip to menu</a>
+    <a class="skip-link" href={route === 'home' ? '#menu' : '#main'}>{route === 'home' ? t.a11y.skipToMenu : t.a11y.skipToContent}</a>
     <slot />
   </body>
 </html>

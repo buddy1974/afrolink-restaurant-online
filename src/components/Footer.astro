@@ -2,8 +2,17 @@
 import { Image } from 'astro:assets';
 import logo from '../assets/brand/afrolink-logo.png';
 import Rule from './Rule.astro';
+import LanguageSwitcher from './LanguageSwitcher.astro';
 import { business, phones } from '../data/business';
+import { routes, type Lang, type RouteKey } from '../i18n/config';
+import { useT } from '../i18n/ui';
 
+interface Props {
+  lang: Lang;
+  route: RouteKey;
+}
+const { lang, route } = Astro.props;
+const t = useT(lang);
 const year = new Date().getFullYear();
 ---
 
@@ -12,22 +21,30 @@ const year = new Date().getFullYear();
     <Rule align="center" />
     <div class="footer__grid">
       <div class="footer__brand">
-        <Image src={logo} alt="Afrolink Restaurant logo" width={72} height={69} densities={[1, 2]} loading="lazy" />
+        <Image src={logo} alt="Afrolink Restaurant" width={72} height={69} densities={[1, 2]} loading="lazy" />
         <p>
           <strong>{business.name}</strong><br />
-          {business.category}
+          {business.address.street}<br />
+          {business.address.postalCode} {business.address.city}
         </p>
       </div>
-      <p class="footer__addr">
-        {business.address.street}<br />
-        {business.address.postalCode} {business.address.city}
-      </p>
       <p class="footer__tel">
         <a href={phones.landline.href}>{phones.landline.display}</a><br />
         <a href={phones.mobile.href}>{phones.mobile.display}</a>
       </p>
+      <nav class="footer__legal" aria-label={t.footer.legal}>
+        <ul role="list">
+          <li><a href={routes.imprint[lang]}>{t.footer.imprint}</a></li>
+          <li><a href={routes.privacy[lang]}>{t.footer.privacy}</a></li>
+          <li><a href={routes.allergens[lang]}>{t.footer.allergens}</a></li>
+        </ul>
+      </nav>
+      <div class="footer__langs">
+        <p class="footer__label">{t.footer.language}</p>
+        <LanguageSwitcher lang={lang} route={route} variant="full" label={t.footer.langNav} />
+      </div>
     </div>
-    <p class="footer__legal">© {year} {business.name}</p>
+    <p class="footer__copy">© {year} {business.name}</p>
   </div>
 </footer>
 
@@ -39,13 +56,13 @@ const year = new Date().getFullYear();
   }
   .footer__grid {
     display: grid;
-    gap: 1.5rem;
+    gap: 2rem;
     margin-top: 2.5rem;
   }
   @media (min-width: 48em) {
     .footer__grid {
-      grid-template-columns: 2fr 1fr 1fr;
-      align-items: center;
+      grid-template-columns: 2fr 1fr 1.3fr 1fr;
+      align-items: start;
     }
   }
   .footer__brand {
@@ -62,13 +79,16 @@ const year = new Date().getFullYear();
   }
   .footer a {
     display: inline-block;
-    padding-block: 0.25rem;
+    padding-block: 0.35rem;
     text-decoration: none;
   }
   .footer a:hover {
     color: var(--ochre);
   }
-  .footer__legal {
+  .footer__label {
+    margin-bottom: 0.25rem;
+  }
+  .footer__copy {
     margin-top: 2.5rem;
     padding-top: 1.25rem;
     border-top: 1px solid var(--ink-line);

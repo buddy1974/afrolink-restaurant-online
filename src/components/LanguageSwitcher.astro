@@ -1,0 +1,86 @@
+---
+/** DE / EN / FR switcher. Links to the same page in each language; remembers the choice. */
+import { langName, locales, routes, type Lang, type RouteKey } from '../i18n/config';
+import { useT } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+  route: RouteKey;
+  variant?: 'compact' | 'full';
+  /** Unique landmark label (several switchers can be on one page). */
+  label?: string;
+}
+const { lang, route, variant = 'compact', label } = Astro.props;
+const t = useT(lang);
+---
+
+<nav class:list={['langs', `langs--${variant}`]} aria-label={label ?? t.a11y.langSwitch}>
+  <ul role="list">
+    {
+      locales.map((l) => (
+        <li>
+          <a
+            href={routes[route][l]}
+            hreflang={l}
+            lang={l}
+            data-set-lang={l}
+            aria-current={l === lang ? 'true' : undefined}
+            title={langName[l]}
+          >
+            {variant === 'full' ? langName[l] : l.toUpperCase()}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>
+
+<script>
+  document.querySelectorAll<HTMLAnchorElement>('[data-set-lang]').forEach((a) =>
+    a.addEventListener('click', () => {
+      try {
+        localStorage.setItem('afl-lang', a.dataset.setLang!);
+      } catch {
+        /* storage unavailable — the URL still carries the language */
+      }
+    }),
+  );
+</script>
+
+<style>
+  .langs ul {
+    display: flex;
+    gap: 0.15rem;
+  }
+  .langs a {
+    display: inline-grid;
+    place-items: center;
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+    padding-inline: 0.35rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-decoration: none;
+    color: var(--on-ink-muted);
+    border-bottom: 2px solid transparent;
+  }
+  .langs a:hover {
+    color: var(--on-ink);
+  }
+  .langs a[aria-current] {
+    color: var(--on-ink);
+    border-bottom-color: var(--ochre);
+  }
+  .langs--full ul {
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+  }
+  .langs--full a {
+    min-width: 0;
+    padding-inline: 0;
+    font-size: var(--step-0);
+    letter-spacing: 0;
+    font-weight: 500;
+  }
+</style>

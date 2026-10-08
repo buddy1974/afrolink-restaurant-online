@@ -24,7 +24,7 @@
 
   /* type */
   --font-sans: 'Archivo Variable', 'Archivo Fallback', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-serif: 'Newsreader Variable', Georgia, 'Times New Roman', serif;
+  --font-serif: 'Newsreader Variable', 'Newsreader Fallback', Georgia, 'Times New Roman', serif;
 
   --step--1: clamp(0.8125rem, 0.79rem + 0.1vw, 0.875rem);
   --step-0: clamp(1rem, 0.97rem + 0.15vw, 1.0625rem);
@@ -44,10 +44,15 @@
 }
 
 @font-face {
-  /* metric-matched fallback reduces layout shift while webfonts load */
+  /* metric-matched fallbacks reduce layout shift while webfonts load */
   font-family: 'Archivo Fallback';
   src: local('Arial');
   size-adjust: 102%;
+}
+@font-face {
+  font-family: 'Newsreader Fallback';
+  src: local('Georgia');
+  size-adjust: 92%;
 }
 
 *,
@@ -135,6 +140,11 @@ button {
 
 .on-ink :focus-visible {
   outline-color: var(--ochre);
+}
+
+/* The hidden attribute always wins over component display rules. */
+[hidden] {
+  display: none !important;
 }
 
 .visually-hidden {

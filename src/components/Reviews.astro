@@ -1,0 +1,263 @@
+---
+/**
+ * Reputation: Google rating (manual, dated snapshot), review excerpts (only genuine ones from
+ * src/data/reviews.ts), read/write CTAs, and the David On The Go video.
+ */
+import VideoCard from './VideoCard.astro';
+import poster from '../assets/gallery/rice-plantain-fish.jpg';
+import { google } from '../data/business';
+import { reviewExcerpts } from '../data/reviews';
+import { featuredVideo } from '../data/videos';
+import { gallery } from '../data/gallery';
+import { type Lang } from '../i18n/config';
+import { fmt, useT } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useT(lang);
+const locale = lang === 'en' ? 'en-GB' : lang;
+const rating = google.rating.toLocaleString(locale, { minimumFractionDigits: 1 });
+const asOf = new Date(`${google.asOf}T12:00:00`).toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' });
+const writeHref = google.writeReviewHref ?? google.profileHref;
+const posterAlt = gallery.find((g) => g.file === 'rice-plantain-fish.jpg')?.alt[lang] ?? '';
+const full = Math.floor(google.rating);
+const partial = google.rating - full;
+---
+
+<section class="section on-paper reviews" id="reviews" aria-labelledby="reviews-title">
+  <div class="wrap">
+    <header class="section-head">
+      <p class="eyebrow">{t.reviews.eyebrow}</p>
+      <h2 id="reviews-title" class="section-title">{t.reviews.title}</h2>
+    </header>
+
+    <div class="reviews__grid">
+      <div class="score">
+        <p class="score__value">
+          <span class="score__num">{rating}</span>
+          <span class="score__of">{t.reviews.outOf}</span>
+        </p>
+        <p class="score__stars" role="img" aria-label={`${rating} ${t.reviews.outOf}`}>
+          {
+            [0, 1, 2, 3, 4].map((i) => (
+              <span class="star" style={`--fill:${i < full ? 1 : i === full ? partial : 0}`} aria-hidden="true">
+                ★
+              </span>
+            ))
+          }
+        </p>
+        <p class="score__count">{fmt(t.reviews.basedOn, { n: google.reviewCount })}</p>
+        <div class="score__ctas">
+          <a class="btn btn--solid" href={google.profileHref} target="_blank" rel="noopener">
+            {t.reviews.readAll}<span class="visually-hidden"> {t.a11y.opensNewTab}</span>
+          </a>
+          <a class="btn btn--line" href={writeHref} target="_blank" rel="noopener">
+            {t.reviews.write}<span class="visually-hidden"> {t.a11y.opensNewTab}</span>
+          </a>
+        </div>
+        {!google.writeReviewHref && <p class="score__hint">{t.reviews.writeHint}</p>}
+        <p class="score__asof">{fmt(t.reviews.asOf, { date: asOf })}</p>
+      </div>
+
+      <div class="david" id="david">
+        <VideoCard
+          lang={lang}
+          video={featuredVideo}
+          poster={poster}
+          posterAlt={posterAlt}
+          size="feature"
+          tone="paper"
+          sizes="(min-width: 64em) 40rem, 100vw"
+        />
+        <p class="david__text">{t.reviews.videoText}</p>
+        <p class="david__note">{t.reviews.videoNote}</p>
+      </div>
+    </div>
+
+    {
+      reviewExcerpts.length > 0 && (
+        <div class="quotes" aria-roledescription="carousel" aria-label={t.reviews.carousel}>
+          <div class="quotes__scroller" role="region" aria-label={t.reviews.carousel} tabindex="0" data-quotes>
+          <ul role="list" class="quotes__track">
+            {reviewExcerpts.map((r) => (
+              <li class="quote">
+                <blockquote lang={r.lang === 'other' ? undefined : r.lang}>
+                  <p>{r.excerpt}</p>
+                </blockquote>
+                <p class="quote__meta">
+                  <span aria-label={`${r.rating} ${t.reviews.outOf}`}>{'★'.repeat(r.rating)}</span> {r.author} ·{' '}
+                  <a href={r.href} target="_blank" rel="noopener">
+                    {t.reviews.source}
+                    <span class="visually-hidden"> {t.a11y.opensNewTab}</span>
+                  </a>
+                </p>
+              </li>
+            ))}
+          </ul>
+          </div>
+          <div class="quotes__ctrl">
+            <button type="button" data-quotes-prev>
+              <span class="visually-hidden">{t.reviews.prev}</span>‹
+            </button>
+            <button type="button" data-quotes-next>
+              <span class="visually-hidden">{t.reviews.next}</span>›
+            </button>
+          </div>
+        </div>
+      )
+    }
+  </div>
+</section>
+
+<script>
+  const track = document.querySelector<HTMLElement>('[data-quotes]');
+  const step = () => (track?.querySelector('li')?.getBoundingClientRect().width ?? 300) + 16;
+  document.querySelector('[data-quotes-prev]')?.addEventListener('click', () => track?.scrollBy({ left: -step(), behavior: 'smooth' }));
+  document.querySelector('[data-quotes-next]')?.addEventListener('click', () => track?.scrollBy({ left: step(), behavior: 'smooth' }));
+</script>
+
+<style>
+  .reviews__grid {
+    display: grid;
+    gap: 3rem;
+    align-items: start;
+  }
+  @media (min-width: 64em) {
+    .reviews__grid {
+      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+      gap: clamp(3rem, 1rem + 4vw, 6rem);
+    }
+  }
+
+  .score {
+    padding: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+    background: var(--ink);
+    color: var(--on-ink);
+  }
+  .score__value {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+  }
+  .score__num {
+    font-family: var(--font-serif);
+    font-size: clamp(3.5rem, 2.5rem + 3vw, 5rem);
+    line-height: 1;
+  }
+  .score__of {
+    color: var(--on-ink-muted);
+  }
+  .score__stars {
+    display: flex;
+    gap: 0.2rem;
+    margin-top: 0.5rem;
+    font-size: 1.6rem;
+    line-height: 1;
+  }
+  .star {
+    /* partial fill for the fractional star */
+    background: linear-gradient(90deg, var(--ochre) calc(var(--fill) * 100%), rgb(243 237 227 / 0.25) 0);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .score__count {
+    margin-top: 0.6rem;
+    font-weight: 600;
+  }
+  .score__ctas {
+    display: grid;
+    gap: 0.6rem;
+    margin-top: 1.5rem;
+  }
+  .score .btn {
+    letter-spacing: 0.06em;
+    text-align: center;
+  }
+  /* dark card inside a paper section: use the on-ink button scheme */
+  .score .btn--solid {
+    background: var(--ochre);
+    border-color: var(--ochre);
+    color: var(--ink);
+  }
+  .score .btn--solid:hover {
+    background: var(--on-ink);
+    border-color: var(--on-ink);
+  }
+  .score .btn--line {
+    color: var(--on-ink);
+    border-color: var(--on-ink);
+  }
+  .score .btn--line:hover {
+    background: var(--on-ink);
+    color: var(--ink);
+  }
+  .score :focus-visible {
+    outline-color: var(--ochre);
+  }
+  .score__hint,
+  .score__asof {
+    margin-top: 0.75rem;
+    font-size: var(--step--1);
+    color: var(--on-ink-muted);
+  }
+  .score__asof {
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--ink-line);
+  }
+
+  .david__text {
+    margin-top: 1rem;
+    max-width: 38rem;
+  }
+  .david__note {
+    margin-top: 0.4rem;
+    font-size: var(--step--1);
+    color: var(--on-paper-muted);
+  }
+
+  .quotes {
+    margin-top: 3rem;
+  }
+  .quotes__scroller {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 1rem;
+  }
+  .quotes__track {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: min(85%, 24rem);
+    gap: 1rem;
+  }
+  .quote {
+    scroll-snap-align: start;
+    padding: 1.5rem;
+    border: 1px solid var(--paper-line);
+    background: #fffdf8;
+  }
+  .quote blockquote {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: var(--step-1);
+  }
+  .quote__meta {
+    margin-top: 1rem;
+    font-size: var(--step--1);
+    color: var(--on-paper-muted);
+  }
+  .quotes__ctrl {
+    display: flex;
+    gap: 0.5rem;
+  }
+  .quotes__ctrl button {
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 1px solid var(--on-paper);
+    background: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+</style>

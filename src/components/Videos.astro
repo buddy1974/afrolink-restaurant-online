@@ -4,28 +4,39 @@ import VideoCard from './VideoCard.astro';
 import egusiYam from '../assets/gallery/egusi-yam.jpg';
 import plantainMeat from '../assets/gallery/plantain-peppered-meat.jpg';
 import { videos } from '../data/videos';
-import { googleReviews, social } from '../data/business';
+import { gallery } from '../data/gallery';
+import { social } from '../data/business';
+import { type Lang } from '../i18n/config';
+import { useT } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useT(lang);
+const altOf = (file: string) => gallery.find((g) => g.file === file)?.alt[lang] ?? '';
 
 // Posters only where the photo shows the dish the video's own caption names.
 const posters: Record<string, { image: ImageMetadata; alt: string }> = {
-  '24293417526931827': { image: egusiYam, alt: 'Egusi soup with boiled yam' },
-  '2417411605311803': { image: plantainMeat, alt: 'Fried plantain with peppered beef and bell peppers' },
+  '24293417526931827': { image: egusiYam, alt: altOf('egusi-yam.jpg') },
+  '2417411605311803': { image: plantainMeat, alt: altOf('plantain-peppered-meat.jpg') },
 };
 ---
 
 <section class="section on-ink videos" id="videos" aria-labelledby="videos-title">
   <div class="wrap">
     <header class="section-head">
-      <p class="eyebrow">Watch &amp; follow</p>
-      <h2 id="videos-title" class="section-title">Afrolink on video</h2>
-      <p class="section-lede">Short clips from our kitchen and tables. Videos play from YouTube or Facebook when you start them.</p>
+      <p class="eyebrow">{t.videos.eyebrow}</p>
+      <h2 id="videos-title" class="section-title">{t.videos.title}</h2>
+      <p class="section-lede">{t.videos.lede}</p>
     </header>
 
-    <ul role="list" class="vrow" aria-label="Videos">
+    <ul role="list" class="vrow">
       {
         videos.map((v) => (
           <li>
             <VideoCard
+              lang={lang}
               video={v}
               poster={posters[v.id]?.image}
               posterAlt={posters[v.id]?.alt}
@@ -37,30 +48,21 @@ const posters: Record<string, { image: ImageMetadata; alt: string }> = {
       }
     </ul>
 
-    <div class="community">
-      <div class="community__follow">
-        <h3 class="community__h">Follow Afrolink</h3>
-        <ul role="list" class="community__list">
-          {
-            social.map((s) => (
-              <li>
-                <a class="community__link" href={s.href} target="_blank" rel="noopener">
-                  <span class="community__name">{s.name}</span>
-                  <span class="community__handle">{s.handle}</span>
-                  <span class="visually-hidden"> (opens in a new tab)</span>
-                </a>
-              </li>
-            ))
-          }
-        </ul>
-      </div>
-      <div class="community__reviews">
-        <h3 class="community__h">Eaten with us?</h3>
-        <p class="community__p">Read what guests say on Google, or share your own experience.</p>
-        <a class="btn btn--solid" href={googleReviews.href} target="_blank" rel="noopener">
-          Google reviews<span class="visually-hidden"> (opens in a new tab)</span>
-        </a>
-      </div>
+    <div class="follow">
+      <h3 class="follow__h">{t.videos.follow}</h3>
+      <ul role="list" class="follow__list">
+        {
+          social.map((s) => (
+            <li>
+              <a class="follow__link" href={s.href} target="_blank" rel="noopener">
+                <span class="follow__name">{s.name}</span>
+                <span class="follow__handle">{s.handle}</span>
+                <span class="visually-hidden"> {t.a11y.opensNewTab}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
     </div>
   </div>
 </section>
@@ -92,32 +94,28 @@ const posters: Record<string, { image: ImageMetadata; alt: string }> = {
       padding-inline: 0;
     }
   }
-
-  .community {
-    display: grid;
-    gap: 2.5rem;
-    margin-top: clamp(3rem, 2rem + 3vw, 5rem);
-    padding-top: 2.5rem;
+  .follow {
+    margin-top: clamp(2.5rem, 2rem + 2vw, 4rem);
+    padding-top: 2rem;
     border-top: 1px solid var(--ink-line);
   }
-  @media (min-width: 56em) {
-    .community {
-      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
-      gap: clamp(2rem, 1rem + 4vw, 5rem);
-    }
-  }
-  .community__h {
+  .follow__h {
     font-family: var(--font-serif);
     font-weight: 400;
     font-size: var(--step-2);
   }
-  .community__list {
+  .follow__list {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0;
     margin-top: 1rem;
   }
-  .community__link {
+  @media (min-width: 56em) {
+    .follow__list {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0 2rem;
+    }
+  }
+  .follow__link {
     display: grid;
     gap: 0.1rem;
     padding: 0.9rem 0;
@@ -125,19 +123,15 @@ const posters: Record<string, { image: ImageMetadata; alt: string }> = {
     text-decoration: none;
     border-bottom: 1px solid var(--ink-line);
   }
-  .community__name {
+  .follow__name {
     font-weight: 600;
   }
-  .community__handle {
+  .follow__handle {
     font-size: var(--step--1);
     color: var(--on-ink-muted);
     overflow-wrap: anywhere;
   }
-  .community__link:hover .community__name {
+  .follow__link:hover .follow__name {
     color: var(--ochre);
-  }
-  .community__p {
-    margin-block: 0.75rem 1.5rem;
-    color: var(--on-ink-muted);
   }
 </style>

@@ -1,0 +1,189 @@
+---
+/**
+ * Allergen & additive information page. Shows ONLY verified declarations (status 'verified'
+ * with kitchen sign-off). Everything else is shown as "being verified – ask staff".
+ * German is the legally relevant language; EN/FR link to it prominently.
+ */
+import LegalShell from './LegalShell.astro';
+import { ALLERGENS, ADDITIVES, allergenRecords, recordFor } from '../data/allergens';
+import { foodMenu } from '../data/menu';
+import { drinksMenu } from '../data/drinks';
+import { allergenCopy } from '../i18n/legal-content';
+import { routes, type Lang } from '../i18n/config';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const c = allergenCopy[lang];
+const allPending = allergenRecords.every((r) => r.status !== 'verified');
+
+const rows = (kind: 'food' | 'drink') =>
+  (kind === 'food' ? foodMenu : drinksMenu).flatMap((cat) =>
+    cat.items
+      .filter((i) => i.available !== false)
+      .map((i) => {
+        const rec = recordFor(i.id);
+        const name = 'display' in i && i.display ? i.display[lang] : i.name;
+        return { id: i.id, name, category: cat.title[lang], rec };
+      }),
+  );
+
+function statusText(rec: ReturnType<typeof recordFor>): string {
+  if (!rec || rec.status !== 'verified') return c.pending;
+  const codes = [...(rec.allergens ?? []), ...(rec.additives ?? [])];
+  const base = codes.length ? `${c.contains}: ${codes.join(', ')}` : c.noneDeclared;
+  return `${base} (${c.verifiedOn} ${rec.verifiedOn})`;
+}
+---
+
+<LegalShell lang={lang} route="allergens" title={c.title} lede={c.lede}>
+  {
+    lang !== 'de' && (
+      <p class="german">
+        {c.germanLink}{' '}
+        <a href={routes.allergens.de} lang="de" hreflang="de">
+          Allergene &amp; Zusatzstoffe (Deutsch)
+        </a>
+      </p>
+    )
+  }
+
+  <section class="status" aria-labelledby="status-title">
+    <h2 id="status-title">{c.statusTitle}</h2>
+    <p>{allPending ? c.statusText : c.askStaff}</p>
+  </section>
+
+  {
+    (['food', 'drink'] as const).map((kind) => (
+      <section aria-labelledby={`t-${kind}`}>
+        <h2 id={`t-${kind}`}>{kind === 'food' ? c.food : c.drinks}</h2>
+        <div class="tablewrap">
+          <table class="atable">
+            <thead>
+              <tr>
+                <th scope="col">{c.tableDish}</th>
+                <th scope="col">{c.tableStatus}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows(kind).map((r) => (
+                <tr data-status={r.rec?.status ?? 'pending'}>
+                  <th scope="row">
+                    {r.name}
+                    <span class="cat">{r.category}</span>
+                  </th>
+                  <td>{statusText(r.rec)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    ))
+  }
+
+  <section aria-labelledby="legend-a">
+    <h2 id="legend-a">{c.legendAllergens}</h2>
+    <dl class="legend">
+      {
+        ALLERGENS.map((a) => (
+          <div>
+            <dt>{a.code}</dt>
+            <dd>{a.name[lang]}</dd>
+          </div>
+        ))
+      }
+    </dl>
+  </section>
+
+  <section aria-labelledby="legend-z">
+    <h2 id="legend-z">{c.legendAdditives}</h2>
+    <dl class="legend">
+      {
+        ADDITIVES.map((a) => (
+          <div>
+            <dt>{a.code}</dt>
+            <dd lang="de">{a.de}</dd>
+          </div>
+        ))
+      }
+    </dl>
+    <p class="fine">{c.additivesNote}</p>
+  </section>
+</LegalShell>
+
+<style>
+  .german {
+    padding: 1rem 1.25rem;
+    background: var(--paper-sunk);
+    border-left: 3px solid var(--terracotta);
+    font-weight: 550;
+  }
+  .status p {
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--on-paper);
+  }
+  .tablewrap {
+    overflow-x: auto;
+  }
+  .atable {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .atable th,
+  .atable td {
+    padding: 0.6rem 0.5rem;
+    text-align: left;
+    vertical-align: top;
+    border-bottom: 1px solid var(--paper-line);
+  }
+  .atable thead th {
+    font-size: var(--step--1);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--terracotta);
+    border-bottom: 1px solid var(--on-paper);
+  }
+  .atable tbody th {
+    font-weight: 550;
+  }
+  .atable td {
+    color: var(--on-paper-muted);
+  }
+  .cat {
+    display: block;
+    font-weight: 400;
+    font-size: var(--step--1);
+    color: var(--on-paper-muted);
+  }
+  .legend {
+    display: grid;
+    gap: 0;
+  }
+  @media (min-width: 48em) {
+    .legend {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: 2rem;
+    }
+  }
+  .legend > div {
+    display: grid;
+    grid-template-columns: 2.5rem 1fr;
+    gap: 0.75rem;
+    padding-block: 0.5rem;
+    border-bottom: 1px solid var(--paper-line);
+  }
+  .legend dt {
+    font-weight: 700;
+    color: var(--terracotta);
+  }
+  .legend dd {
+    margin: 0;
+  }
+  .fine {
+    margin-top: 0.75rem;
+    font-size: var(--step--1);
+    color: var(--on-paper-muted);
+  }
+</style>

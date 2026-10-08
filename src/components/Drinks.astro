@@ -1,6 +1,14 @@
 ---
 import { drinksMenu } from '../data/drinks';
 import { formatPrice } from '../data/format';
+import { type Lang } from '../i18n/config';
+import { useT } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useT(lang);
 
 // Empty categories (e.g. Hot Drinks, not yet supplied) are not rendered.
 const categories = drinksMenu
@@ -8,28 +16,38 @@ const categories = drinksMenu
   .filter((c) => c.items.length > 0);
 ---
 
-<section class="section on-ink drinks" id="drinks" aria-labelledby="drinks-title">
+<section class="drinks on-ink" id="drinks" aria-labelledby="drinks-title">
   <div class="wrap">
-    <header class="section-head">
-      <p class="eyebrow">Bar</p>
-      <h2 id="drinks-title" class="section-title">Drinks</h2>
+    <header class="drinks__head">
+      <p class="eyebrow">{t.drinks.eyebrow}</p>
+      <h3 id="drinks-title" class="drinks__title">{t.drinks.title}</h3>
     </header>
 
     <div class="drink-grid">
       {
         categories.map((cat) => (
-          <section class="dcat" aria-labelledby={`d-${cat.id}`}>
-            <h3 class="dcat__title" id={`d-${cat.id}`}>{cat.title}</h3>
-            {cat.subtitle && <p class="dcat__sub">{cat.subtitle}</p>}
+          <section class="dcat" aria-labelledby={`d-${cat.id}`} data-cat id={`drinks-${cat.id}`}>
+            <h4 class="dcat__title" id={`d-${cat.id}`}>
+              {cat.title[lang]}
+            </h4>
+            {cat.subtitle && <p class="dcat__sub">{cat.subtitle[lang]}</p>}
             <ul role="list" class="drows">
-              {cat.items.map((d) => (
-                <li class="drow" data-size-unverified={d.size && !d.size.verified ? '' : undefined}>
-                  <span class="drow__name">{d.name}</span>
-                  <span class="drow__leader" aria-hidden="true" />
-                  {d.size && <span class="drow__size">{d.size.value}</span>}
-                  <span class="drow__price">{formatPrice(d.price, 'always')}</span>
-                </li>
-              ))}
+              {cat.items.map((d) => {
+                const name = d.display ? d.display[lang] : d.name;
+                return (
+                  <li
+                    class="drow"
+                    data-item
+                    data-search={[name, d.name, cat.title[lang], cat.subtitle?.[lang]].filter(Boolean).join(' ')}
+                    data-size-unverified={d.size && !d.size.verified ? '' : undefined}
+                  >
+                    <span class="drow__name">{name}</span>
+                    <span class="drow__leader" aria-hidden="true" />
+                    {d.size && <span class="drow__size">{d.size.value}</span>}
+                    <span class="drow__price">{formatPrice(d.price, 'always')}</span>
+                  </li>
+                );
+              })}
             </ul>
           </section>
         ))
@@ -39,42 +57,74 @@ const categories = drinksMenu
 </section>
 
 <style>
+  .drinks {
+    padding-block: clamp(3rem, 2rem + 3vw, 5rem);
+    /* header + two-row category bar on phones; one row from 64em */
+    scroll-margin-top: calc(var(--header-h) + 7.5rem);
+  }
+  @media (min-width: 64em) {
+    .drinks {
+      scroll-margin-top: calc(var(--header-h) + 3.5rem);
+    }
+  }
+  .drinks__head {
+    display: grid;
+    gap: 0.5rem;
+    margin-bottom: clamp(2rem, 1.5rem + 2vw, 3rem);
+  }
+  .drinks__title {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: var(--step-4);
+    line-height: 1.05;
+  }
   .drink-grid {
     display: grid;
-    gap: 3rem clamp(2.5rem, 1rem + 4vw, 5rem);
+    gap: 2.5rem;
   }
+  /* balanced columns: categories flow top-to-bottom, so short lists never leave a gap */
   @media (min-width: 48em) {
     .drink-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      display: block;
+      columns: 2;
+      column-gap: clamp(2.5rem, 1rem + 4vw, 4.5rem);
+    }
+    .dcat {
+      break-inside: avoid;
+      padding-bottom: 2.5rem;
     }
   }
   @media (min-width: 75em) {
     .drink-grid {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      columns: 3;
     }
   }
-
+  .dcat[hidden] {
+    display: none;
+  }
   .dcat__title {
-    padding-bottom: 0.75rem;
+    padding-bottom: 0.6rem;
     border-bottom: 1px solid var(--on-ink);
     font-family: var(--font-serif);
     font-size: var(--step-2);
-    font-weight: 450;
+    font-weight: 400;
     line-height: 1.15;
   }
   .dcat__sub {
-    margin-top: 0.6rem;
+    margin-top: 0.5rem;
     font-family: var(--font-serif);
     font-style: italic;
     color: var(--on-ink-muted);
   }
-
   .drow {
     display: flex;
     align-items: baseline;
     gap: 0.5rem;
-    padding-block: 0.6rem;
+    padding-block: 0.55rem;
     border-bottom: 1px solid var(--ink-line);
+  }
+  .drow[hidden] {
+    display: none;
   }
   .drow:last-child {
     border-bottom: 0;
@@ -93,11 +143,11 @@ const categories = drinksMenu
   }
   .drow__size {
     flex: none;
+    min-width: 3.4em;
+    text-align: right;
     font-size: var(--step--1);
     color: var(--on-ink-muted);
     font-variant-numeric: tabular-nums;
-    min-width: 3.4em;
-    text-align: right;
   }
   .drow__price {
     flex: none;

@@ -1,0 +1,38 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from './Header.astro';
+import Hero from './Hero.astro';
+import Ticker from './Ticker.astro';
+import MenuExplorer from './MenuExplorer.astro';
+import Reviews from './Reviews.astro';
+import Services from './Services.astro';
+import Dietary from './Dietary.astro';
+import Gallery from './Gallery.astro';
+import Videos from './Videos.astro';
+import About from './About.astro';
+import HoursContact from './HoursContact.astro';
+import Footer from './Footer.astro';
+import type { Lang } from '../i18n/config';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+---
+
+<Base lang={lang} route="home" structuredData>
+  <Header lang={lang} route="home" />
+  <main id="main">
+    <Hero lang={lang} />
+    <Ticker lang={lang} />
+    <MenuExplorer lang={lang} />
+    <Reviews lang={lang} />
+    <Services lang={lang} />
+    <Dietary lang={lang} />
+    <Gallery lang={lang} />
+    <Videos lang={lang} />
+    <About lang={lang} />
+    <HoursContact lang={lang} />
+  </main>
+  <Footer lang={lang} route="home" />
+</Base>

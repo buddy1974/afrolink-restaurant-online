@@ -1,17 +1,26 @@
 ---
 import Icon from './Icon.astro';
 import { groupHours, openingHours, timeZone } from '../data/hours';
-import { business, googleReviews, mapsHref, phones, social, whatsapp } from '../data/business';
+import { business, google, mapsHref, phones, social, whatsapp } from '../data/business';
+import { type Lang } from '../i18n/config';
+import { useT } from '../i18n/ui';
 
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useT(lang);
 const groups = groupHours();
+const dayLabel = (g: (typeof groups)[number]) =>
+  g.days.length === 1 ? t.days[g.days[0]] : `${t.days[g.days[0]]} – ${t.days[g.days.at(-1)!]}`;
 ---
 
-<section class="section on-paper visit" aria-label="Opening hours and contact">
+<section class="section on-paper visit" aria-label={`${t.hours.title} · ${t.contact.title}`}>
   <div class="wrap visit__grid">
     <div class="hours" id="hours">
       <header class="section-head">
-        <p class="eyebrow">Visit</p>
-        <h2 class="section-title">Opening Hours</h2>
+        <p class="eyebrow">{t.hours.eyebrow}</p>
+        <h2 class="section-title">{t.hours.title}</h2>
       </header>
 
       <dl class="hours__list" data-hours data-tz={timeZone}>
@@ -19,13 +28,13 @@ const groups = groupHours();
           groups.map((g) => (
             <div class="hours__row" data-days={g.days.join(',')}>
               <dt>
-                {g.label}
-                <span class="hours__today">Today</span>
+                {dayLabel(g)}
+                <span class="hours__today">{t.hours.today}</span>
               </dt>
               <dd>
                 <time datetime={g.opens}>{g.opens}</time>
                 <span aria-hidden="true">–</span>
-                <span class="visually-hidden">to</span>
+                <span class="visually-hidden">{t.hours.to}</span>
                 <time datetime={g.closes}>{g.closes}</time>
               </dd>
             </div>
@@ -34,14 +43,14 @@ const groups = groupHours();
       </dl>
 
       <details class="hours__daily">
-        <summary>Show each day</summary>
+        <summary>{t.hours.showDaily}</summary>
         <table>
-          <caption class="visually-hidden">Opening hours by day</caption>
+          <caption class="visually-hidden">{t.hours.daily}</caption>
           <tbody>
             {
               openingHours.map((h) => (
                 <tr>
-                  <th scope="row">{h.day}</th>
+                  <th scope="row">{t.days[h.day]}</th>
                   <td>
                     {h.opens} – {h.closes}
                   </td>
@@ -55,58 +64,59 @@ const groups = groupHours();
 
     <div class="contact" id="contact">
       <header class="section-head">
-        <p class="eyebrow">Get in touch</p>
-        <h2 class="section-title">Contact</h2>
+        <p class="eyebrow">{t.contact.eyebrow}</p>
+        <h2 class="section-title">{t.contact.title}</h2>
       </header>
 
       <ul role="list" class="phones">
         <li class="phone">
-          <p class="phone__label">{phones.landline.label}</p>
+          <p class="phone__label">{t.contact.landline} · {t.contact.whatsappNote}</p>
           <a class="phone__num" href={phones.landline.href}>{phones.landline.display}</a>
           <p class="phone__intl">{phones.landline.international}</p>
         </li>
         <li class="phone">
-          <p class="phone__label">{phones.mobile.label}</p>
+          <p class="phone__label">{t.contact.mobile}</p>
           <a class="phone__num" href={phones.mobile.href}>{phones.mobile.display}</a>
         </li>
       </ul>
 
       <div class="contact__ctas">
         <a class="btn btn--solid" href={whatsapp.href} target="_blank" rel="noopener">
-          <Icon name="whatsapp" /> WhatsApp {whatsapp.display}<span class="visually-hidden"> (opens WhatsApp)</span>
+          <Icon name="whatsapp" /> {t.actions.whatsapp} {whatsapp.display}<span class="visually-hidden"> {t.a11y.opensWhatsApp}</span>
         </a>
-        <a class="btn btn--line" href={phones.landline.href}><Icon name="phone" /> Call</a>
+        <a class="btn btn--line" href={phones.landline.href}><Icon name="phone" /> {t.actions.call}</a>
+        <a class="btn btn--line" href="#enquiry" data-enquiry="reservation">{t.actions.reserve}</a>
       </div>
 
       <address class="address">
-        <p class="phone__label">Address</p>
+        <p class="phone__label">{t.contact.address}</p>
         <p class="address__lines">
           {business.name}<br />
           {business.address.street}<br />
           {business.address.postalCode} {business.address.city}
         </p>
         <a class="link-arrow" href={mapsHref} target="_blank" rel="noopener">
-          <Icon name="pin" /> Directions in Google Maps<span class="visually-hidden"> (opens in a new tab)</span>
+          <Icon name="pin" /> {t.actions.directions}<span class="visually-hidden"> {t.a11y.opensNewTab}</span>
         </a>
       </address>
 
       <div class="social">
-        <p class="phone__label">Follow</p>
+        <p class="phone__label">{t.contact.follow}</p>
         <ul role="list" class="social__list">
           {
             social.map((s) => (
               <li>
                 <a class="link-arrow" href={s.href} target="_blank" rel="noopener">
                   {s.name} <span class="social__handle">{s.handle}</span>
-                  <span class="visually-hidden"> (opens in a new tab)</span>
+                  <span class="visually-hidden"> {t.a11y.opensNewTab}</span>
                 </a>
               </li>
             ))
           }
           <li>
-            <a class="link-arrow" href={googleReviews.href} target="_blank" rel="noopener">
-              Google <span class="social__handle">Reviews</span>
-              <span class="visually-hidden"> (opens in a new tab)</span>
+            <a class="link-arrow" href={google.profileHref} target="_blank" rel="noopener">
+              Google <span class="social__handle">{t.contact.reviews}</span>
+              <span class="visually-hidden"> {t.a11y.opensNewTab}</span>
             </a>
           </li>
         </ul>
@@ -121,14 +131,10 @@ const groups = groupHours();
   if (list) {
     const now = new Date();
     const tz = list.dataset.tz || 'Europe/Berlin';
-    const parts = new Intl.DateTimeFormat('en-GB', { timeZone: tz, weekday: 'long', hour: '2-digit', hourCycle: 'h23' }).formatToParts(now);
-    let day = parts.find((p) => p.type === 'weekday')?.value ?? '';
-    const hour = Number(parts.find((p) => p.type === 'hour')?.value ?? 12);
+    const hour = Number(new Intl.DateTimeFormat('en-GB', { timeZone: tz, hour: '2-digit', hourCycle: 'h23' }).format(now));
     // Before 05:00 the guest is still in the previous evening's service.
-    if (hour < 5) {
-      const prev = new Date(now.getTime() - 6 * 3600 * 1000);
-      day = new Intl.DateTimeFormat('en-GB', { timeZone: tz, weekday: 'long' }).format(prev);
-    }
+    const ref = hour < 5 ? new Date(now.getTime() - 6 * 3600 * 1000) : now;
+    const day = new Intl.DateTimeFormat('en-GB', { timeZone: tz, weekday: 'long' }).format(ref);
     list.querySelectorAll<HTMLElement>('[data-days]').forEach((row) => {
       if (row.dataset.days!.split(',').includes(day)) row.classList.add('is-today');
     });
@@ -146,7 +152,6 @@ const groups = groupHours();
       gap: clamp(3rem, 1rem + 5vw, 6rem);
     }
   }
-
   .hours__list {
     border-top: 1px solid var(--on-paper);
   }
@@ -187,10 +192,8 @@ const groups = groupHours();
   .hours__row.is-today {
     border-bottom-color: var(--terracotta);
   }
-
   .hours__daily {
     margin-top: 1.25rem;
-    font-size: var(--step-0);
   }
   .hours__daily summary {
     display: inline-flex;
@@ -218,7 +221,6 @@ const groups = groupHours();
   .hours__daily td {
     text-align: right;
   }
-
   .phones {
     display: grid;
     gap: 1.75rem;
@@ -249,14 +251,12 @@ const groups = groupHours();
     color: var(--on-paper-muted);
     font-variant-numeric: tabular-nums;
   }
-
   .contact__ctas {
     display: flex;
     flex-wrap: wrap;
     gap: 0.75rem;
     margin-top: 2rem;
   }
-
   .address {
     margin-top: 2.5rem;
     font-style: normal;
@@ -270,7 +270,6 @@ const groups = groupHours();
     width: 1.1em;
     height: 1.1em;
   }
-
   .social {
     margin-top: 2.5rem;
   }

@@ -26,5 +26,11 @@
 | R-013 | Instagram `@afrolinkrestaurant` could not be verified without login (TikTok, YouTube, Facebook, Google link verified) | Content | Low | Marcel to open the link once | Marcel | Open |
 | R-014 | TikTok handle switched to `@afrolink_restaurant` (166 followers); old `@afrolink.de` has 71k followers — may be the real main account | Content | Medium | Marcel to confirm the correct handle | Marcel | Open |
 
+| R-015 | **Allergen/additive information not verified** (0/59 items). Website says so and refers guests to staff, but LMIDV § 4 requires a written record for oral information | Legal / safety | **High** | Kitchen completes the matrix; written record (Kladde) in the restaurant; publish verified records | Marcel / kitchen | Open |
+| R-016 | No genuine review texts supplied; carousel hidden. Rating is a manual snapshot that can go stale | Content | Low | Add excerpts to `src/data/reviews.ts`; update `google.asOf` periodically | Marcel | Open |
+| R-017 | Dish descriptions taken from the 2026 printed menu (owner material) — may not match current recipes | Content | Medium | Owner confirms; edit `src/data/menu.ts` | Marcel | Open |
+| R-018 | Delivery offered "by arrangement" — no area, fees or times defined | Business | Medium | Define a delivery policy when ready; until then all via enquiry | Marcel | Open |
+| R-019 | Hero photo is 883x540 — slightly soft on high-density desktop screens | Quality | Low | Supply a higher-resolution Egusi + pounded yam photo | Marcel | Open |
+
 ## Security Concerns
 None material: static site, no forms, no cookies, no third-party scripts, no secrets. Security headers are set in `vercel.json`.

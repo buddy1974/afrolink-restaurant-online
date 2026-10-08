@@ -2,12 +2,20 @@
 import { Picture, getImage } from 'astro:assets';
 import { gallery } from '../data/gallery';
 import { galleryImage } from '../lib/images';
+import { type Lang } from '../i18n/config';
+import { useT } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useT(lang);
 
 const entries = await Promise.all(
   gallery.map(async (entry) => {
     const image = galleryImage(entry.file, 'gallery.ts');
     const full = await getImage({ src: image, width: Math.min(1600, image.width), format: 'webp' });
-    return { ...entry, image, fullSrc: full.src };
+    return { ...entry, image, fullSrc: full.src, alt: entry.alt[lang], caption: entry.caption?.[lang] ?? '' };
   }),
 );
 ---
@@ -15,16 +23,16 @@ const entries = await Promise.all(
 <section class="section on-paper gallery" id="gallery" aria-labelledby="gallery-title">
   <div class="wrap">
     <header class="section-head">
-      <p class="eyebrow">From the kitchen</p>
-      <h2 id="gallery-title" class="section-title">Gallery</h2>
-      <p class="section-lede">Dishes as they leave the Afrolink kitchen.</p>
+      <p class="eyebrow">{t.gallery.eyebrow}</p>
+      <h2 id="gallery-title" class="section-title">{t.gallery.title}</h2>
+      <p class="section-lede">{t.gallery.lede}</p>
     </header>
 
     <ul role="list" class="grid" data-gallery>
       {
         entries.map((e, i) => (
           <li class:list={['tile', { 'tile--feature': e.feature }]}>
-            <a href={e.fullSrc} class="tile__link" data-index={i} data-caption={e.caption ?? ''} data-alt={e.alt}>
+            <a href={e.fullSrc} class="tile__link" data-index={i} data-caption={e.caption} data-alt={e.alt}>
               <Picture
                 src={e.image}
                 formats={['avif', 'webp']}
@@ -40,7 +48,7 @@ const entries = await Promise.all(
                 class:list={['tile__img', { 'is-watermarked': e.watermarked }]}
               />
               {e.caption && <span class="tile__cap">{e.caption}</span>}
-              <span class="visually-hidden">— open larger image</span>
+              <span class="visually-hidden">— {t.gallery.open}</span>
             </a>
           </li>
         ))
@@ -48,7 +56,7 @@ const entries = await Promise.all(
     </ul>
   </div>
 
-  <dialog class="lightbox" aria-label="Photo viewer" data-lightbox>
+  <dialog class="lightbox" aria-label={t.gallery.viewer} data-lightbox>
     <div class="lightbox__frame">
       <img class="lightbox__img" alt="" data-lb-img />
       <div class="lightbox__bar">
@@ -58,15 +66,15 @@ const entries = await Promise.all(
     </div>
     <button class="lb-btn lb-btn--close" type="button" data-lb-close>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5.5 5.5l13 13M18.5 5.5l-13 13"></path></svg>
-      <span class="visually-hidden">Close</span>
+      <span class="visually-hidden">{t.gallery.close}</span>
     </button>
     <button class="lb-btn lb-btn--prev" type="button" data-lb-prev>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg>
-      <span class="visually-hidden">Previous photo</span>
+      <span class="visually-hidden">{t.gallery.prev}</span>
     </button>
     <button class="lb-btn lb-btn--next" type="button" data-lb-next>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg>
-      <span class="visually-hidden">Next photo</span>
+      <span class="visually-hidden">{t.gallery.next}</span>
     </button>
   </dialog>
 </section>
@@ -90,7 +98,6 @@ const entries = await Promise.all(
       img.alt = a.dataset.alt ?? '';
       cap.textContent = a.dataset.caption || '';
       count.textContent = `${index + 1} / ${links.length}`;
-      // Preload the neighbours for snappy navigation.
       [index + 1, index - 1].forEach((n) => {
         const pre = new Image();
         pre.src = links[(n + links.length) % links.length].href;
@@ -105,12 +112,10 @@ const entries = await Promise.all(
         dialog.showModal();
       }),
     );
-
     dialog.querySelector('[data-lb-close]')!.addEventListener('click', () => dialog.close());
     dialog.querySelector('[data-lb-prev]')!.addEventListener('click', () => show(index - 1));
     dialog.querySelector('[data-lb-next]')!.addEventListener('click', () => show(index + 1));
     dialog.addEventListener('close', () => opener?.focus());
-    // Click on the backdrop (outside the frame) closes.
     dialog.addEventListener('click', (ev) => {
       if (ev.target === dialog) dialog.close();
     });
@@ -118,8 +123,6 @@ const entries = await Promise.all(
       if (ev.key === 'ArrowRight') show(index + 1);
       if (ev.key === 'ArrowLeft') show(index - 1);
     });
-
-    // Touch swipe.
     let startX = 0;
     let startY = 0;
     dialog.addEventListener(
@@ -159,7 +162,6 @@ const entries = await Promise.all(
       grid-template-columns: repeat(4, minmax(0, 1fr));
     }
   }
-
   .tile {
     position: relative;
     aspect-ratio: 4 / 5;
@@ -176,7 +178,6 @@ const entries = await Promise.all(
       aspect-ratio: auto;
     }
   }
-
   .tile__link {
     display: block;
     height: 100%;
@@ -195,15 +196,11 @@ const entries = await Promise.all(
   }
   .tile__img {
     object-fit: cover;
-  }
-  .tile__img.is-watermarked {
-    /* keep the Afrolink watermark (bottom-right) in frame */
-    object-position: 100% 100%;
-  }
-  .tile__img {
     transition: transform 0.6s cubic-bezier(0.2, 0.6, 0.2, 1);
   }
-
+  .tile__img.is-watermarked {
+    object-position: 100% 100%;
+  }
   .tile__cap {
     position: absolute;
     left: 0;
@@ -215,7 +212,6 @@ const entries = await Promise.all(
     letter-spacing: 0.04em;
     background: linear-gradient(to top, rgb(26 22 19 / 0.78), rgb(26 22 19 / 0));
   }
-
   @media (hover: hover) {
     .tile__cap {
       opacity: 0;
@@ -232,8 +228,6 @@ const entries = await Promise.all(
       transform: none;
     }
   }
-
-  /* ---- lightbox ---- */
   .lightbox {
     width: 100vw;
     max-width: 100vw;
@@ -275,7 +269,6 @@ const entries = await Promise.all(
   .lightbox__count {
     font-variant-numeric: tabular-nums;
   }
-
   .lb-btn {
     position: absolute;
     display: grid;

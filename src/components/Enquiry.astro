@@ -1,0 +1,431 @@
+---
+/**
+ * Enquiry builder. Composes a message in the browser; nothing is stored or sent by this site.
+ * The visitor chooses to open WhatsApp with the text, copy it, or call instead.
+ * Enquiries are not orders, reservations or dietary guarantees (stated in the UI).
+ */
+import Icon from './Icon.astro';
+import { phones, whatsapp } from '../data/business';
+import { routes, type Lang } from '../i18n/config';
+import { useT } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useT(lang);
+const e = t.enquiry;
+const types = Object.entries(e.types) as [keyof typeof e.types, string][];
+const id = (k: string) => `enq-${k}-${lang}`;
+
+// Which fields each enquiry type shows.
+const show = {
+  date: 'reservation delivery catering group',
+  time: 'reservation delivery group',
+  guests: 'reservation catering group',
+  area: 'delivery',
+  venue: 'catering',
+  occasion: 'catering',
+  dishes: 'delivery catering group',
+  heat: 'reservation delivery catering group dietary',
+  diet: 'reservation delivery catering group dietary',
+  allergies: 'reservation delivery catering group dietary',
+};
+
+const labels = {
+  greeting: e.msgGreeting,
+  intro: e.msgIntro,
+  thanks: e.msgThanks,
+  type: e.msgType,
+  date: e.date,
+  time: e.time,
+  guests: e.guests,
+  area: e.area,
+  venue: e.venue,
+  occasion: e.occasion,
+  dishes: e.dishes,
+  heat: e.heat,
+  diet: e.diet,
+  allergies: e.allergies,
+  message: e.message,
+  name: e.name,
+  copied: e.copied,
+  copy: e.copy,
+};
+---
+
+<div class="enquiry" id="enquiry" aria-labelledby="enquiry-title" role="region">
+  <header class="enquiry__head">
+    <p class="eyebrow">{e.eyebrow}</p>
+    <h3 id="enquiry-title" class="enquiry__title">{e.title}</h3>
+    <p class="enquiry__lede">{e.lede}</p>
+  </header>
+
+  <form class="eform" data-enquiry-form data-labels={JSON.stringify(labels)} data-wa={whatsapp.href} data-locale={lang}>
+    <fieldset class="eform__types">
+      <legend>{e.typeLabel}</legend>
+      <div class="chips">
+        {
+          types.map(([key, label], i) => (
+            <label class="chip">
+              <input type="radio" name="type" value={key} checked={i === 0} data-label={label} />
+              <span>{label}</span>
+            </label>
+          ))
+        }
+      </div>
+    </fieldset>
+
+    <div class="eform__grid">
+      <div class="field" data-show={show.date}>
+        <label for={id('date')}>{e.date}</label>
+        <input id={id('date')} name="date" type="date" />
+      </div>
+      <div class="field" data-show={show.time}>
+        <label for={id('time')}>{e.time}</label>
+        <input id={id('time')} name="time" type="time" />
+      </div>
+      <div class="field" data-show={show.guests}>
+        <label for={id('guests')}>{e.guests}</label>
+        <input id={id('guests')} name="guests" type="number" min="1" max="500" inputmode="numeric" />
+      </div>
+      <div class="field field--wide" data-show={show.area}>
+        <label for={id('area')}>{e.area}</label>
+        <input id={id('area')} name="area" type="text" autocomplete="off" aria-describedby={id('area-hint')} />
+        <p class="hint" id={id('area-hint')}>{e.areaHint}</p>
+      </div>
+      <div class="field" data-show={show.venue}>
+        <label for={id('venue')}>{e.venue}</label>
+        <input id={id('venue')} name="venue" type="text" autocomplete="off" />
+      </div>
+      <div class="field" data-show={show.occasion}>
+        <label for={id('occasion')}>{e.occasion}</label>
+        <select id={id('occasion')} name="occasion">
+          <option value=""></option>
+          {t.services.occasionList.map((o) => <option value={o}>{o}</option>)}
+        </select>
+      </div>
+      <div class="field field--wide" data-show={show.dishes}>
+        <label for={id('dishes')}>{e.dishes}</label>
+        <input id={id('dishes')} name="dishes" type="text" autocomplete="off" />
+      </div>
+      <div class="field" data-show={show.heat}>
+        <label for={id('heat')}>{e.heat}</label>
+        <select id={id('heat')} name="heat">
+          {Object.entries(e.heatOptions).map(([k, v]) => <option value={k === 'any' ? '' : v}>{v}</option>)}
+        </select>
+      </div>
+      <div class="field" data-show={show.diet}>
+        <label for={id('diet')}>{e.diet}</label>
+        <select id={id('diet')} name="diet">
+          {Object.entries(e.dietOptions).map(([k, v]) => <option value={k === 'none' ? '' : v}>{v}</option>)}
+        </select>
+      </div>
+      <div class="field field--wide" data-show={show.allergies}>
+        <label for={id('allergies')}>{e.allergies}</label>
+        <input id={id('allergies')} name="allergies" type="text" autocomplete="off" />
+      </div>
+      <div class="field field--wide">
+        <label for={id('message')}>{e.message}</label>
+        <textarea id={id('message')} name="message" rows="3"></textarea>
+      </div>
+      <div class="field field--wide">
+        <label for={id('name')}>{e.name}</label>
+        <input id={id('name')} name="name" type="text" autocomplete="name" />
+      </div>
+    </div>
+
+    <div class="eform__out">
+      <p class="eform__previewlabel" id={id('preview')}>{e.preview}</p>
+      <output class="eform__preview" aria-labelledby={id('preview')} data-enquiry-preview></output>
+      <div class="eform__actions">
+        <a class="btn btn--solid" href={whatsapp.href} target="_blank" rel="noopener" data-enquiry-send>
+          <Icon name="whatsapp" /> {e.sendWhatsApp}<span class="visually-hidden"> {t.a11y.opensWhatsApp}</span>
+        </a>
+        <button type="button" class="btn btn--line" data-enquiry-copy hidden>{e.copy}</button>
+        <a class="btn btn--line" href={phones.landline.href}><Icon name="phone" /> {e.callInstead}: {phones.landline.display}</a>
+        <a class="btn btn--line" href={phones.mobile.href}><Icon name="phone" /> {phones.mobile.display}</a>
+      </div>
+      <p class="eform__fine">{e.disclaimer}</p>
+      <p class="eform__fine">
+        {e.privacy} <a href={routes.privacy[lang]}>{t.footer.privacy}</a>
+      </p>
+    </div>
+  </form>
+</div>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('[data-enquiry-form]');
+  if (form) {
+    const labels = JSON.parse(form.dataset.labels!) as Record<string, string>;
+    const preview = form.querySelector<HTMLOutputElement>('[data-enquiry-preview]')!;
+    const send = form.querySelector<HTMLAnchorElement>('[data-enquiry-send]')!;
+    const copy = form.querySelector<HTMLButtonElement>('[data-enquiry-copy]');
+    const locale = form.dataset.locale === 'en' ? 'en-GB' : form.dataset.locale!;
+    const order = ['date', 'time', 'guests', 'area', 'venue', 'occasion', 'dishes', 'heat', 'diet', 'allergies'];
+
+    const currentType = () => form.querySelector<HTMLInputElement>('input[name="type"]:checked');
+
+    function updateVisibility() {
+      const type = currentType()?.value ?? '';
+      form!.querySelectorAll<HTMLElement>('[data-show]').forEach((f) => {
+        f.hidden = !f.dataset.show!.split(' ').includes(type);
+      });
+    }
+
+    function value(name: string): string {
+      const el = form!.elements.namedItem(name) as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null;
+      if (!el || el.closest<HTMLElement>('[data-show]')?.hidden) return '';
+      const v = el.value.trim();
+      if (!v) return '';
+      if (name === 'date') {
+        const d = new Date(`${v}T12:00:00`);
+        return isNaN(+d) ? v : d.toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+      }
+      return v;
+    }
+
+    function compose(): string {
+      const lines = [labels.greeting, labels.intro, '', `${labels.type}: ${currentType()?.dataset.label ?? ''}`];
+      for (const k of order) {
+        const v = value(k);
+        if (v) lines.push(`${labels[k]}: ${v}`);
+      }
+      const msg = value('message');
+      if (msg) lines.push('', msg);
+      lines.push('', labels.thanks);
+      const name = value('name');
+      if (name) lines.push(name);
+      return lines.join('\n');
+    }
+
+    function update() {
+      updateVisibility();
+      const text = compose();
+      preview.value = text;
+      send.href = `${form!.dataset.wa}?text=${encodeURIComponent(text)}`;
+    }
+
+    form.addEventListener('input', update);
+    form.addEventListener('change', update);
+    form.addEventListener('submit', (ev) => ev.preventDefault());
+
+    if (copy && navigator.clipboard) {
+      copy.hidden = false;
+      copy.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(compose());
+          copy.textContent = labels.copied;
+          setTimeout(() => (copy.textContent = labels.copy), 2000);
+        } catch {
+          /* clipboard blocked — the preview text can still be selected manually */
+        }
+      });
+    }
+
+    // Any link with data-enquiry="<type>" preselects that type before scrolling here.
+    document.querySelectorAll<HTMLElement>('[data-enquiry]').forEach((link) =>
+      link.addEventListener('click', () => {
+        const radio = form.querySelector<HTMLInputElement>(`input[name="type"][value="${link.dataset.enquiry}"]`);
+        if (radio) {
+          radio.checked = true;
+          update();
+        }
+      }),
+    );
+
+    update();
+  }
+</script>
+
+<style>
+  .enquiry {
+    margin-top: clamp(3rem, 2rem + 3vw, 5rem);
+    padding-top: clamp(2.5rem, 2rem + 2vw, 4rem);
+    border-top: 1px solid var(--ink-line);
+    scroll-margin-top: calc(var(--header-h) + 1rem);
+  }
+  .enquiry__head {
+    display: grid;
+    gap: 0.6rem;
+    margin-bottom: 2rem;
+  }
+  .enquiry__title {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: var(--step-3);
+    line-height: 1.1;
+  }
+  .enquiry__lede {
+    max-width: 40rem;
+    color: var(--on-ink-muted);
+  }
+
+  .eform {
+    display: grid;
+    gap: 2rem;
+  }
+  @media (min-width: 64em) {
+    .eform {
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+      grid-template-areas: 'types types' 'grid out';
+      align-items: start;
+    }
+    .eform__types {
+      grid-area: types;
+    }
+    .eform__grid {
+      grid-area: grid;
+    }
+    .eform__out {
+      grid-area: out;
+      position: sticky;
+      top: calc(var(--header-h) + 1rem);
+    }
+  }
+
+  .eform__types {
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  .eform__types legend {
+    margin-bottom: 0.75rem;
+    font-size: var(--step--1);
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ochre);
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .chip {
+    position: relative;
+  }
+  .chip input {
+    position: absolute;
+    opacity: 0;
+    inset: 0;
+    margin: 0;
+    cursor: pointer;
+  }
+  .chip span {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--ink-line);
+    border-radius: 2px;
+    font-size: var(--step--1);
+    font-weight: 600;
+  }
+  .chip input:checked + span {
+    background: var(--ochre);
+    border-color: var(--ochre);
+    color: var(--ink);
+  }
+  .chip input:focus-visible + span {
+    outline: 2px solid var(--ochre);
+    outline-offset: 2px;
+  }
+
+  .eform__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+  .field {
+    display: grid;
+    gap: 0.35rem;
+    align-content: start;
+  }
+  .field[hidden] {
+    display: none;
+  }
+  .field--wide {
+    grid-column: 1 / -1;
+  }
+  .field label {
+    font-size: var(--step--1);
+    font-weight: 600;
+  }
+  .field input,
+  .field select,
+  .field textarea {
+    width: 100%;
+    min-height: 2.75rem;
+    padding: 0.55rem 0.75rem;
+    font: inherit;
+    font-size: 1rem;
+    color: var(--on-ink);
+    background: var(--ink-raised);
+    border: 1px solid rgb(243 237 227 / 0.3);
+    border-radius: 2px;
+    color-scheme: dark;
+  }
+  .field input:focus-visible,
+  .field select:focus-visible,
+  .field textarea:focus-visible {
+    outline: 2px solid var(--ochre);
+    outline-offset: 1px;
+  }
+  .hint {
+    font-size: var(--step--1);
+    color: var(--on-ink-muted);
+  }
+
+  .eform__out {
+    padding: clamp(1.25rem, 1rem + 1vw, 1.75rem);
+    background: var(--paper);
+    color: var(--on-paper);
+  }
+  .eform__previewlabel {
+    font-size: var(--step--1);
+    font-weight: 650;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--terracotta);
+  }
+  .eform__preview {
+    display: block;
+    margin-top: 0.6rem;
+    padding: 0.9rem 1rem;
+    min-height: 8rem;
+    white-space: pre-wrap;
+    font-size: var(--step--1);
+    line-height: 1.5;
+    background: #fffdf8;
+    border: 1px solid var(--paper-line);
+  }
+  .eform__actions {
+    display: grid;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+  .eform__actions .btn--line:hover {
+    background: var(--on-paper);
+    color: var(--paper);
+  }
+  .eform__actions .btn--solid {
+    background: var(--on-paper);
+    border-color: var(--on-paper);
+    color: var(--paper);
+  }
+  .eform__actions .btn--solid:hover {
+    background: var(--terracotta);
+    border-color: var(--terracotta);
+  }
+  .eform__fine {
+    margin-top: 0.75rem;
+    font-size: var(--step--1);
+    color: var(--on-paper-muted);
+  }
+  @media (max-width: 29.99em) {
+    .eform__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -2,58 +2,78 @@
 import { Image } from 'astro:assets';
 import logo from '../assets/brand/afrolink-logo.png';
 import Icon from './Icon.astro';
+import LanguageSwitcher from './LanguageSwitcher.astro';
 import { phones, whatsapp } from '../data/business';
+import { routes, type Lang, type RouteKey } from '../i18n/config';
+import { useT } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+  route: RouteKey;
+}
+const { lang, route } = Astro.props;
+const t = useT(lang);
+// On sub-pages, section anchors point back to the home page in the same language.
+const base = route === 'home' ? '' : routes.home[lang];
 
 const nav = [
-  { href: '#menu', label: 'Menu' },
-  { href: '#drinks', label: 'Drinks' },
-  { href: '#gallery', label: 'Gallery' },
-  { href: '#videos', label: 'Videos' },
-  { href: '#about', label: 'About' },
-  { href: '#hours', label: 'Opening Hours' },
-  { href: '#contact', label: 'Contact' },
+  { href: `${base}#menu`, label: t.nav.menu },
+  { href: `${base}#services`, label: t.nav.delivery },
+  { href: `${base}#reviews`, label: t.nav.reviews },
+  { href: `${base}#gallery`, label: t.nav.gallery },
+  { href: `${base}#about`, label: t.nav.about },
+  { href: `${base}#contact`, label: t.nav.contact },
 ];
 ---
 
 <header class="site-header on-ink" data-header>
   <div class="wrap site-header__inner">
-    <a class="brand" href="#top" aria-label="Afrolink Restaurant & Bar — back to top">
+    <a class="brand" href={route === 'home' ? '#top' : routes.home[lang]}>
       <Image src={logo} alt="" width={44} height={42} densities={[1, 2]} loading="eager" class="brand__logo" />
-      <span class="brand__text" aria-hidden="true">
+      <span class="brand__text">
         <span class="brand__name">Afrolink</span>
-        <span class="brand__sub">Restaurant &amp; Bar</span>
+        <span class="brand__sub"> Restaurant &amp; Bar</span>
       </span>
+      <span class="visually-hidden"> – {t.a11y.toTop}</span>
     </a>
 
-    <nav class="site-nav" aria-label="Main">
+    <nav class="site-nav" aria-label={t.a11y.mainNav}>
       <ul role="list">
         {nav.map((n) => <li><a href={n.href}>{n.label}</a></li>)}
       </ul>
     </nav>
 
     <div class="header-actions">
+      <div class="header-langs"><LanguageSwitcher lang={lang} route={route} label={t.a11y.langSwitch} /></div>
       <a class="hact" href={phones.landline.href}>
-        <Icon name="phone" /><span class="hact__label">Call</span><span class="visually-hidden"> {phones.landline.display}</span>
+        <Icon name="phone" /><span class="hact__label">{t.actions.call}</span><span class="visually-hidden">
+          {phones.landline.display}</span
+        >
       </a>
       <a class="hact hact--wa" href={whatsapp.href} target="_blank" rel="noopener">
-        <Icon name="whatsapp" /><span class="hact__label">WhatsApp</span><span class="visually-hidden"> (opens WhatsApp)</span>
+        <Icon name="whatsapp" /><span class="hact__label">{t.actions.whatsapp}</span><span class="visually-hidden">
+          {t.a11y.opensWhatsApp}</span
+        >
       </a>
       <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav" data-menu-toggle>
         <span class="menu-toggle__bars" aria-hidden="true"></span>
-        <span class="visually-hidden">Open navigation</span>
+        <span class="visually-hidden" data-open-label={t.a11y.openNav} data-close-label={t.a11y.closeNav}>{t.a11y.openNav}</span>
       </button>
     </div>
   </div>
 
   <div class="mobile-nav" id="mobile-nav" data-mobile-nav hidden>
-    <nav class="wrap" aria-label="Main (mobile)">
+    <nav class="wrap" aria-label={t.a11y.mainNav}>
       <ul role="list" class="mobile-nav__list">
         {nav.map((n) => <li><a href={n.href} data-close-nav>{n.label}</a></li>)}
       </ul>
+      <div class="mobile-nav__langs">
+        <LanguageSwitcher lang={lang} route={route} variant="full" label={`${t.a11y.langSwitch} (${t.a11y.mainNav})`} />
+      </div>
       <div class="mobile-nav__actions">
-        <a class="btn btn--solid" href={phones.landline.href}><Icon name="phone" /> Call {phones.landline.display}</a>
-        <a class="btn btn--line" href={whatsapp.href} target="_blank" rel="noopener"><Icon name="whatsapp" /> WhatsApp</a>
-        <a class="btn btn--line" href={phones.mobile.href}><Icon name="phone" /> Mobile {phones.mobile.display}</a>
+        <a class="btn btn--solid" href={phones.landline.href}><Icon name="phone" /> {t.actions.call} {phones.landline.display}</a>
+        <a class="btn btn--line" href={whatsapp.href} target="_blank" rel="noopener"><Icon name="whatsapp" /> {t.actions.whatsapp}</a>
+        <a class="btn btn--line" href={phones.mobile.href}><Icon name="phone" /> {phones.mobile.display}</a>
       </div>
     </nav>
   </div>
@@ -62,14 +82,14 @@ const nav = [
 <script>
   const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
   const panel = document.querySelector<HTMLElement>('[data-mobile-nav]');
-  const label = toggle?.querySelector('.visually-hidden');
+  const label = toggle?.querySelector<HTMLElement>('.visually-hidden');
 
   function setOpen(open: boolean) {
     if (!toggle || !panel) return;
     toggle.setAttribute('aria-expanded', String(open));
     panel.hidden = !open;
     document.documentElement.classList.toggle('nav-open', open);
-    if (label) label.textContent = open ? 'Close navigation' : 'Open navigation';
+    if (label) label.textContent = (open ? label.dataset.closeLabel : label.dataset.openLabel) ?? '';
     if (open) panel.querySelector<HTMLElement>('a')?.focus();
   }
 
@@ -81,7 +101,7 @@ const nav = [
       toggle.focus();
     }
   });
-  matchMedia('(min-width: 75em)').addEventListener('change', (e) => e.matches && setOpen(false));
+  matchMedia('(min-width: 87.5em)').addEventListener('change', (e) => e.matches && setOpen(false));
 </script>
 
 <style>
@@ -92,9 +112,10 @@ const nav = [
     border-bottom: 1px solid var(--ink-line);
   }
   .site-header__inner {
+    max-width: calc(84rem + 2 * var(--gutter));
     display: flex;
     align-items: center;
-    gap: 1.5rem;
+    gap: 1.25rem;
     height: var(--header-h);
   }
 
@@ -136,7 +157,7 @@ const nav = [
   }
   .site-nav ul {
     display: flex;
-    gap: clamp(1rem, 0.2rem + 1.4vw, 1.9rem);
+    gap: clamp(0.9rem, 0.1rem + 1.2vw, 1.6rem);
   }
   .site-nav a {
     display: block;
@@ -144,7 +165,7 @@ const nav = [
     padding-block: 0.6rem;
     font-size: 0.8125rem;
     font-weight: 550;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
     text-decoration: none;
     color: var(--on-ink-muted);
@@ -158,8 +179,11 @@ const nav = [
 
   .header-actions {
     display: flex;
-    align-items: stretch;
+    align-items: center;
     gap: 0.25rem;
+  }
+  .header-langs {
+    display: none;
   }
   .hact {
     display: inline-flex;
@@ -256,16 +280,19 @@ const nav = [
   .mobile-nav__list a {
     display: flex;
     align-items: center;
-    min-height: 3.5rem;
+    min-height: 3.25rem;
     font-family: var(--font-serif);
-    font-size: 1.75rem;
+    font-size: 1.6rem;
     text-decoration: none;
     border-bottom: 1px solid var(--ink-line);
+  }
+  .mobile-nav__langs {
+    margin-top: 1.5rem;
   }
   .mobile-nav__actions {
     display: grid;
     gap: 0.75rem;
-    margin-top: 2rem;
+    margin-top: 1.5rem;
   }
 
   :global(html.nav-open) {
@@ -280,7 +307,6 @@ const nav = [
       width: 2.25rem;
     }
   }
-
   @media (min-width: 30em) {
     .hact__label {
       display: inline;
@@ -289,19 +315,26 @@ const nav = [
       padding-inline: 0.85rem;
     }
   }
-
-  @media (min-width: 75em) {
+  @media (min-width: 48em) {
+    .header-langs {
+      display: block;
+      margin-right: 0.5rem;
+    }
+    .mobile-nav__langs {
+      display: none;
+    }
+  }
+  /* Full text navigation only where it measurably fits in DE/EN/FR (≥ 1400 px). */
+  @media (min-width: 87.5em) {
     .site-nav {
       display: block;
+      margin-inline: auto;
     }
     .menu-toggle {
       display: none;
     }
     .brand {
       margin-right: 0;
-    }
-    .site-nav {
-      margin-inline: auto;
     }
   }
 </style>

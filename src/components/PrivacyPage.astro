@@ -1,0 +1,32 @@
+---
+import LegalShell from './LegalShell.astro';
+import { privacyCopy } from '../i18n/legal-content';
+import { legalComplete } from '../data/legal';
+import { routes, type Lang } from '../i18n/config';
+import { useT } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const c = privacyCopy[lang];
+const t = useT(lang);
+---
+
+<LegalShell lang={lang} route="privacy" title={c.title} lede={c.lede} incomplete={!legalComplete()}>
+  {
+    c.sections.map((s, i) => (
+      <section>
+        <h2>{s.h}</h2>
+        {s.p.map((p) => (
+          <p>{p}</p>
+        ))}
+        {i === 0 && (
+          <p>
+            <a href={routes.imprint[lang]}>{t.footer.imprint}</a>
+          </p>
+        )}
+      </section>
+    ))
+  }
+</LegalShell>

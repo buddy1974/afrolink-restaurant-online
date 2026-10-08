@@ -1,9 +1,9 @@
 # Afrolink Restaurant & Bar — Digital Menu
 
-One-page digital menu website for **Afrolink Restaurant & Bar**, West African restaurant, Berzeliusstraße 7, 45144 Essen.
+Trilingual (DE / EN / FR) digital menu website for **Afrolink Restaurant & Bar**, West African restaurant, Berzeliusstraße 7, 45144 Essen.
 Destination of the QR codes on Afrolink's printed menu cards.
 
-**Canonical URL:** https://www.afrolink-restaurant.online · **Status:** MVP, local only — not deployed.
+**Canonical URL:** https://www.afrolink-restaurant.online · **Status:** in production since 2026-10-08 (main); upgrades are reviewed on Vercel preview deployments first.
 
 ## Stack
 
@@ -25,12 +25,18 @@ All content is data — no need to touch components:
 
 | What | File |
 |------|------|
-| Food menu & prices | `src/data/menu.ts` |
+| Food menu, prices, descriptions (DE/EN/FR) | `src/data/menu.ts` |
 | Drinks, sizes & prices | `src/data/drinks.ts` |
 | Address, phones, WhatsApp, social, services | `src/data/business.ts` |
 | Opening hours | `src/data/hours.ts` |
 | Gallery photos | `src/data/gallery.ts` + `src/assets/gallery/` |
-| SEO text, schema.org | `src/data/seo.ts` |
+| SEO, schema.org | `src/data/seo.ts` |
+| Interface text DE/EN/FR | `src/i18n/ui.ts` (legal pages: `src/i18n/legal-content.ts`) |
+| Allergens & additives (kitchen-verified only) | `src/data/allergens.ts` -> `npm run allergen-matrix` |
+| Marketing claims (gated by status) | `src/data/claims.ts` |
+| Google rating snapshot, reviews | `src/data/business.ts` (`google`), `src/data/reviews.ts` |
+| Impressum / privacy operator data | `src/data/legal.ts` |
+| Videos | `src/data/videos.ts` |
 
 Prices are stored in euro cents. After any price change, update `tests/content.test.ts` and run `npm run verify`.
 
