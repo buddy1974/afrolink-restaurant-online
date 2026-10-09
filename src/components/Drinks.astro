@@ -21,6 +21,7 @@ const categories = drinksMenu
     <header class="drinks__head">
       <p class="eyebrow">{t.drinks.eyebrow}</p>
       <h3 id="drinks-title" class="drinks__title">{t.drinks.title}</h3>
+      <p class="drinks__note" id="water-note">{t.drinks.waterNote}</p>
     </header>
 
     <div class="drink-grid">
@@ -71,6 +72,13 @@ const categories = drinksMenu
     display: grid;
     gap: 0.5rem;
     margin-bottom: clamp(2rem, 1.5rem + 2vw, 3rem);
+  }
+  .drinks__note {
+    max-width: 40rem;
+    padding-left: 0.9rem;
+    border-left: 2px solid var(--gold);
+    color: var(--on-ink-muted);
+    font-size: var(--step--1);
   }
   .drinks__title {
     font-family: var(--font-serif);

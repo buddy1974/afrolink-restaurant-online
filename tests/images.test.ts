@@ -45,11 +45,45 @@ test('every soup and rice dish uses the image named for it (or none)', () => {
     'fried-rice': 'menu/fried-rice.jpg',
     'jollof-rice': 'menu/jollof.jpg',
     'white-rice': 'menu/white-rice-stew.jpg',
+    'coconut-rice': 'menu/coconut-rice.jpg',
   };
   for (const c of foodMenu.filter((c) => c.id === 'soups' || c.id === 'rice')) {
     for (const i of c.items) {
       if (expected[i.id]) assert.equal(dishImages[i.id]?.file, expected[i.id], i.id);
       else assert.equal(dishImages[i.id], undefined, `${i.id} has an image but no named source file`);
+    }
+  }
+});
+
+test('second owner batch: each image is mapped to the dish it is named for', () => {
+  const expected: Record<string, string> = {
+    'fried-fish-plantain': 'menu/fried-fish-plantain.jpg',
+    'porridge-yam': 'menu/yam-porridge.jpg',
+    abacha: 'menu/abacha.jpg',
+    'beans-plantain': 'menu/beans-plantain.jpg',
+    'coconut-rice': 'menu/coconut-rice.jpg',
+    isiewu: 'menu/isiewu.jpg',
+    'fried-yam-egg-sauce': 'menu/fried-yam-egg-sauce.jpg',
+    okpa: 'menu/okpa.jpg',
+    snail: 'menu/snail.jpg',
+    stockfish: 'menu/stockfish.jpg',
+    suya: 'menu/suya.jpg',
+    'extra-pounded-yam': 'menu/extra-pounded-yam.jpg',
+  };
+  for (const [id, file] of Object.entries(expected)) assert.equal(dishImages[id]?.file, file, id);
+});
+
+test('retired photos (old porridge yam, old grilled fish) are referenced nowhere', () => {
+  const retired = /grilled-fish-plantain|gallery\/porridge-yam|['"]porridge-yam\.jpg/;
+  for (const f of ['src/data/dish-images.ts', 'src/data/gallery.ts', 'src/data/menu.ts']) {
+    assert.ok(!retired.test(readFileSync(f, 'utf8')), f);
+  }
+  assert.ok(!existsSync('src/assets/gallery/grilled-fish-plantain.jpg'));
+  assert.ok(!existsSync('src/assets/gallery/porridge-yam.jpg'));
+  if (existsSync('dist')) {
+    for (const f of ['index.html', 'en/index.html', 'fr/index.html']) {
+      const html = readFileSync(`dist/${f}`, 'utf8');
+      assert.ok(!/grilled-fish-plantain|porridge-yam\./.test(html), `${f} still references a retired photo`);
     }
   }
 });

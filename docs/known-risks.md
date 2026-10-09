@@ -34,6 +34,9 @@
 
 | R-020 | Owner-supplied dish images (2026-10-09) appear to be AI-composited presentation images (Afrolink table settings combined with dish imagery similar to web photos). Rights/provenance unconfirmed; they may not show the dish exactly as served | Legal / content | **Medium** | Labelled on site as serving suggestions; owner to confirm rights and provenance or replace with own photos | Marcel | Open |
 | R-021 | Approved visual mockup not available to the implementer; no pixel comparison possible | Process | Low | Supply the mockup file for a comparison pass | Marcel | Open |
+| R-022 | "Nigerian" wording in SEO copy describes dish origin; owner has not explicitly confirmed positioning | Content | Low | Owner confirmation requested in docs/seo.md | Marcel | Open |
+| R-023 | Search Console / Bing not verified; indexing unconfirmed. GBP data (hours, website, menu link) may differ from the site | SEO | Medium | Owner steps in docs/seo.md | Marcel | Open |
+| R-024 | Owner images for Extra Garri / Extra Rice / Extra Yam supplied, but these extras are not on the verified menu | Content | Low | Owner to confirm; not published | Marcel | Open |
 
 ## Security Concerns
 None material: static site, no forms, no cookies, no third-party scripts, no secrets. Security headers are set in `vercel.json`.

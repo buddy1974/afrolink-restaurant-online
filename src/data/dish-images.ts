@@ -7,7 +7,10 @@
  *   on Afrolink's own table settings; they are labelled on the site as serving suggestions.
  * - 'afrolink-photo': genuine Afrolink photographs from the client folder, identified by the
  *   client's own file names (see src/data/gallery.ts).
- * Only map an image to a dish when the file is named for that dish.
+ * - Second owner batch (same date, same styling) added the remaining dishes; originals kept in
+ *   owner-assets/menu-originals/. extra-garri / extra-rice / extra-yams were supplied too but are
+ *   not on the verified menu, so they are not used (see docs/image-inventory.md).
+ * Only map an image to a dish when the file is named for that dish and the picture shows it.
  * `watermarked: true` keeps the bottom-right Afrolink watermark in frame when cropped.
  */
 import type { L10n } from '../i18n/config';
@@ -40,16 +43,27 @@ export const dishImages: Record<string, DishImage> = {
   // Rice
   'fried-rice': owner('fried-rice.jpg', { de: 'Fried Rice mit Gemüse', en: 'Fried rice with vegetables', fr: 'Riz sauté aux légumes' }),
   'jollof-rice': owner('jollof.jpg', { de: 'Jollof-Reis mit Fleisch und Kochbananen', en: 'Jollof rice with meat and plantain', fr: 'Riz jollof avec viande et banane plantain' }, true),
+  'coconut-rice': owner('coconut-rice.jpg', { de: 'Coconut Rice mit Paprika und Fleisch', en: 'Coconut rice with peppers and meat', fr: 'Riz coco aux poivrons et à la viande' }),
   'white-rice': owner('white-rice-stew.jpg', { de: 'Weißer Reis mit Eintopf und Kochbananen', en: 'White rice with stew and plantain', fr: 'Riz blanc avec ragoût et banane plantain' }),
   // Beans, yam & plantain
-  'porridge-yam': photo('porridge-yam.jpg', { de: 'Porridge Yam in roter Palmölsauce', en: 'Porridge yam in a red palm-oil sauce', fr: 'Porridge d’igname à l’huile de palme' }),
+  'beans-plantain': owner('beans-plantain.jpg', { de: 'Bohnen in roter Sauce mit gebratenen Kochbananen', en: 'Beans in a red sauce with fried plantain', fr: 'Haricots en sauce rouge avec bananes plantain frites' }),
+  'porridge-yam': owner('yam-porridge.jpg', { de: 'Porridge Yam mit Blattgemüse in roter Sauce', en: 'Porridge yam with leafy greens in a red sauce', fr: 'Porridge d’igname aux légumes-feuilles en sauce rouge' }),
+  'fried-yam-egg-sauce': owner('fried-yam-egg-sauce.jpg', { de: 'Gebratene Yamsstücke mit Tomaten-Ei-Sauce', en: 'Fried yam pieces with tomato and egg sauce', fr: 'Morceaux d’igname frite avec sauce tomate aux œufs' }),
   'assorted-plate': owner('assorted.jpg', { de: 'Assorted Plate mit Kochbananen', en: 'Assorted plate with plantain', fr: 'Assiette assortie avec banane plantain' }),
   // Specialities
-  suya: photo('suya-plantain.jpg', { de: 'Suya mit Kochbananen', en: 'Suya with plantain', fr: 'Suya avec banane plantain' }),
+  suya: owner('suya.jpg', { de: 'Suya mit Zwiebelringen, Tomate, Gurke und Chili', en: 'Suya with onion rings, tomato, cucumber and chilli', fr: 'Suya avec rondelles d’oignon, tomate, concombre et piment' }),
+  stockfish: owner('stockfish.jpg', { de: 'Stockfisch in roter Sauce mit Zwiebeln', en: 'Stockfish in a red sauce with onions', fr: 'Stockfisch en sauce rouge aux oignons' }),
+  snail: owner('snail.jpg', { de: 'Riesenschnecken in Tomaten-Zwiebel-Sauce', en: 'Giant snails in a tomato and onion sauce', fr: 'Escargots géants en sauce tomate et oignon' }),
+  okpa: owner('okpa.jpg', { de: 'Okpa in Stücken auf einem Teller', en: 'Okpa cut into pieces on a plate', fr: 'Okpa coupé en morceaux dans une assiette' }),
+  abacha: owner('abacha.jpg', { de: 'Abacha (Cassavasalat) mit frischer Garnitur', en: 'Abacha (cassava salad) with a fresh garnish', fr: 'Abacha (salade de manioc) avec garniture fraîche' }),
+  isiewu: owner('isiewu.jpg', { de: 'Isiewu in einer Holzschale mit roten Zwiebeln und Kräutern', en: 'Isiewu in a wooden bowl with red onion and herbs', fr: 'Isiewu dans un bol en bois, avec oignon rouge et herbes' }),
   'pepper-soup': photo('pepper-soup.jpg', { de: 'Pepper Soup mit Fleisch und Yam', en: 'Pepper soup with meat and yam', fr: 'Pepper soup avec viande et igname' }, true),
   nkwobi: photo('nkwobi.jpg', { de: 'Nkwobi mit Zwiebelringen und Paprika', en: 'Nkwobi with onion rings and pepper', fr: 'Nkwobi aux oignons et poivron' }, true),
   // Fish
-  tilapia: owner('tilapia.jpg', { de: 'Gegrillte Tilapia mit Kochbananen', en: 'Grilled tilapia with plantain', fr: 'Tilapia grillé avec banane plantain' }, true),
+  tilapia: owner('tilapia.jpg', { de: 'Ganze Tilapia mit Kochbananen', en: 'Whole tilapia with plantain', fr: 'Tilapia entier avec banane plantain' }, true),
+  'fried-fish-plantain': owner('fried-fish-plantain.jpg', { de: 'Gebratener Fisch mit Kochbananen, Zwiebelringen und Paprika', en: 'Fried fish with plantain, onion rings and peppers', fr: 'Poisson frit avec banane plantain, rondelles d’oignon et poivrons' }),
+  // Extras
+  'extra-pounded-yam': owner('extra-pounded-yam.jpg', { de: 'Eine Portion Pounded Yam', en: 'A portion of pounded yam', fr: 'Une portion de pounded yam' }),
 };
 
 /** Featured photograph for the soups showcase (owner instruction: give it prominence). */

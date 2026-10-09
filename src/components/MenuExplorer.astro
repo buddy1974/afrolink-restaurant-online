@@ -110,7 +110,7 @@ const askText = `${t.enquiry.msgGreeting}\n${t.menu.askTitle}\n`;
               </span>
               {cat.title[lang]}
             </h3>
-            <p class="mcat__count">{fmt(t.menu.dishCount, { n: cat.items.length })}</p>
+            <p class="mcat__count">{cat.items.length === 1 ? t.menu.dishCountOne : fmt(t.menu.dishCount, { n: cat.items.length })}</p>
             {cat.note && <p class="mcat__note">{cat.note[lang]}</p>}
           </header>
           <ul role="list" class="dishes">

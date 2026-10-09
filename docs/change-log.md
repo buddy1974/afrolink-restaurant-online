@@ -1,5 +1,14 @@
 # Change Log — `afrolink-restaurant-online`
 
+## 2026-10-09 — Image cleanup, menu extras/water, SEO package (branch `image-seo-2026-10`)
+- Removed the old grilled-fish and porridge-yam photos everywhere (gallery, dish image, legacy category images); sources retired, not deleted.
+- 12 new owner dish images: Fried Fish & Plantain, Porridge Yam, Abacha, Beans & Plantain, Coconut Rice, Isiewu, Fried Yam & Egg Sauce, Okpa, Snail, Stockfish, Suya, Extra Pounded Yam. 0 placeholders remain.
+- Tilapia alt text no longer says "grilled" (the menu says fried or boiled).
+- Water notice in DE/EN/FR; "1 Gericht / 1 dish / 1 plat" singular fix.
+- SEO: localised titles/descriptions, hero tagline with "Essen", About copy, "New to West African food?" guide, WebSite JSON-LD, menu/hasMap, verified-only sameAs, og:type, branded OG image.
+- Docs: `docs/image-inventory.md`, `docs/seo.md` (GBP recommendations, Search Console/Bing steps).
+- Tests: 37 (new: batch-2 mapping, retired photos absent, extras €4, water notice).
+
 ## 2026-10-09 — Approved dark-and-gold design (branch `design-implementation-2026-10`)
 - Dark-and-gold design system; unified gold button system.
 - Hero with `egusi-soup.png` (full-bleed desktop, image-first mobile).

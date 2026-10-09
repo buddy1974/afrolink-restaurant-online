@@ -7,9 +7,9 @@ import type { Lang } from './config';
 
 const de = {
   meta: {
-    title: 'Afrolink Restaurant & Bar – Westafrikanische Küche in Essen | Speisekarte',
+    title: 'Afrolink Restaurant & Bar Essen – Afrikanisches Restaurant | Speisekarte',
     description:
-      'Speisekarte, Getränke, Öffnungszeiten und Kontakt von Afrolink Restaurant & Bar, Berzeliusstraße 7, 45144 Essen. Westafrikanische Suppen, Reis, Yam, Kochbananen, Fisch und Spezialitäten – vor Ort, zum Mitnehmen, Lieferung und Catering nach Absprache.',
+      'Afrikanisches Restaurant in Essen: westafrikanische und nigerianische Küche mit Egusi Soup, Jollof Rice, Pounded Yam und Tilapia. Vor Ort, zum Mitnehmen, Lieferung und Catering nach Absprache.',
     ogAlt: 'Egusi-Suppe mit Pounded Yam bei Afrolink Restaurant & Bar',
   },
   a11y: {
@@ -44,7 +44,7 @@ const de = {
     directions: 'Route in Google Maps',
   },
   hero: {
-    tagline: 'Authentische afrikanische Küche',
+    tagline: 'Authentische afrikanische Küche in Essen',
     intro:
       'Westafrikanische Küche mitten in Essen: traditionelle Suppen, Reisgerichte, gegrillter Fisch, Fleisch und afrikanische Spezialitäten – vor Ort, zum Mitnehmen und nach Absprache geliefert.',
     imageAlt: 'Egusi-Suppe mit Pounded Yam aus der Afrolink-Küche',
@@ -104,11 +104,13 @@ const de = {
     imageSoon: 'Bild folgt',
     imageNote: 'Abbildungen sind Serviervorschläge – das servierte Gericht kann abweichen.',
     dishCount: '{n} Gerichte',
+    dishCountOne: '1 Gericht',
   },
   drinks: {
     eyebrow: 'Bar',
     title: 'Getränke',
     byGlass: 'Im Glas',
+    waterNote: 'Bitte beachten Sie: Trinkwasser wird bei uns separat berechnet und ist nicht kostenfrei. Vielen Dank für Ihr Verständnis.',
   },
   dietary: {
     eyebrow: 'Ernährung & Wünsche',
@@ -243,9 +245,16 @@ const de = {
   about: {
     eyebrow: 'Über uns',
     title: 'Westafrikanische Küche in Essen',
-    p1: 'Afrolink Restaurant & Bar serviert authentische westafrikanische Küche in Essen – traditionelle Suppen, Reisgerichte, Bohnen, Yam und Kochbananen, Fisch, Fleisch und afrikanische Spezialitäten.',
+    p1: 'Afrolink Restaurant & Bar ist ein afrikanisches Restaurant in Essen. Wir kochen westafrikanisch – traditionelle Suppen, Reisgerichte, Bohnen, Yam und Kochbananen, Fisch, Fleisch und Spezialitäten, viele davon Klassiker der nigerianischen Küche wie Egusi, Ofe Nsala oder Nkwobi.',
     p2: 'Essen Sie bei uns im Restaurant und an der Bar, nehmen Sie Ihr Essen mit oder lassen Sie es sich nach Absprache liefern.',
     services: 'Unser Angebot',
+    guideTitle: 'Neu in der westafrikanischen Küche?',
+    guide: [
+      'Pounded Yam & Garri|Feste Beilagen zu unseren Suppen: Pounded Yam ist gestampfte Yamswurzel, Garri wird aus Maniok hergestellt – ähnlich wie Fufu. Traditionell formt man ein kleines Stück mit der Hand und tunkt es in die Suppe.',
+      'Egusi Soup|Suppe aus gemahlenen Melonenkernen mit Fleisch und Gewürzen – ein guter Einstieg.',
+      'Jollof Rice|Tomatenreis mit Fleisch, ein westafrikanischer Klassiker.',
+      'Suya|Gegrillte Fleischspieße.',
+    ],
     kitchenCaption: 'Suppe auf dem Herd in unserer Küche',
     kitchenAlt: 'Ein großer Topf Suppe mit Fleisch und Gemüse auf dem Herd der Afrolink-Küche',
     roomCaption: 'Unser Gastraum',
@@ -320,9 +329,9 @@ type Shape<T> = T extends string ? string : T extends readonly string[] ? string
 
 const en: Shape<Dict> = {
   meta: {
-    title: 'Afrolink Restaurant & Bar – West African Food in Essen | Menu',
+    title: 'Afrolink Restaurant & Bar Essen – African Restaurant | Menu',
     description:
-      'Menu, drinks, opening hours and contact for Afrolink Restaurant & Bar, Berzeliusstraße 7, 45144 Essen. West African soups, rice, yam, plantain, fish and specialities – dine in, takeaway, delivery and catering by arrangement.',
+      'African restaurant in Essen serving West African and Nigerian food – egusi soup, jollof rice, pounded yam and tilapia. Dine in, takeaway, delivery and catering by arrangement.',
     ogAlt: 'Egusi soup with pounded yam at Afrolink Restaurant & Bar',
   },
   a11y: {
@@ -357,7 +366,7 @@ const en: Shape<Dict> = {
     directions: 'Directions in Google Maps',
   },
   hero: {
-    tagline: 'Authentic African Cuisine',
+    tagline: 'Authentic African cuisine in Essen',
     intro:
       'West African cooking in the heart of Essen: traditional soups, rice dishes, grilled fish, meat and African specialities – to eat in, to take away, or delivered by arrangement.',
     imageAlt: 'Egusi soup with pounded yam from the Afrolink kitchen',
@@ -417,11 +426,13 @@ const en: Shape<Dict> = {
     imageSoon: 'Image coming soon',
     imageNote: 'Images are serving suggestions – the dish served may look different.',
     dishCount: '{n} dishes',
+    dishCountOne: '1 dish',
   },
   drinks: {
     eyebrow: 'Bar',
     title: 'Drinks',
     byGlass: 'By the glass',
+    waterNote: 'Please note: drinking water is charged separately and is not complimentary. Thank you for your understanding.',
   },
   dietary: {
     eyebrow: 'Dietary needs & requests',
@@ -556,9 +567,16 @@ const en: Shape<Dict> = {
   about: {
     eyebrow: 'About',
     title: 'West African cooking in Essen',
-    p1: 'Afrolink Restaurant & Bar serves authentic West African food in Essen – traditional soups, rice dishes, beans, yam and plantain, fish, meat and African specialities.',
+    p1: 'Afrolink Restaurant & Bar is an African restaurant in Essen. We cook West African food – traditional soups, rice dishes, beans, yam and plantain, fish, meat and specialities, many of them Nigerian classics such as egusi, ofe nsala or nkwobi.',
     p2: 'Eat in at the restaurant and bar, take your food away, or have it delivered by arrangement.',
     services: 'What we offer',
+    guideTitle: 'New to West African food?',
+    guide: [
+      'Pounded yam & garri|The firm sides served with our soups: pounded yam is mashed yam, garri is made from cassava – similar to fufu. Traditionally you shape a small piece by hand and dip it into the soup.',
+      'Egusi soup|Soup of ground melon seeds with meat and spices – a good place to start.',
+      'Jollof rice|Tomato rice with meat, a West African classic.',
+      'Suya|Grilled meat skewers.',
+    ],
     kitchenCaption: 'Soup on the stove in our kitchen',
     kitchenAlt: 'A large pot of soup with meat and vegetables on the stove in the Afrolink kitchen',
     roomCaption: 'Our dining room',
@@ -628,9 +646,9 @@ const en: Shape<Dict> = {
 
 const fr: Shape<Dict> = {
   meta: {
-    title: 'Afrolink Restaurant & Bar – Cuisine ouest-africaine à Essen | Carte',
+    title: 'Afrolink Restaurant & Bar Essen – Restaurant africain | Carte',
     description:
-      'Carte, boissons, horaires et contact d’Afrolink Restaurant & Bar, Berzeliusstraße 7, 45144 Essen. Soupes ouest-africaines, riz, igname, banane plantain, poisson et spécialités – sur place, à emporter, livraison et traiteur sur demande.',
+      'Restaurant africain à Essen : cuisine ouest-africaine et nigériane – soupe egusi, riz jollof, pounded yam et tilapia. Sur place, à emporter, livraison et traiteur sur demande.',
     ogAlt: 'Soupe egusi avec pounded yam chez Afrolink Restaurant & Bar',
   },
   a11y: {
@@ -665,7 +683,7 @@ const fr: Shape<Dict> = {
     directions: 'Itinéraire sur Google Maps',
   },
   hero: {
-    tagline: 'Cuisine africaine authentique',
+    tagline: 'Cuisine africaine authentique à Essen',
     intro:
       'La cuisine d’Afrique de l’Ouest au cœur d’Essen : soupes traditionnelles, plats de riz, poisson grillé, viandes et spécialités africaines – sur place, à emporter ou livrés sur demande.',
     imageAlt: 'Soupe egusi avec pounded yam de la cuisine d’Afrolink',
@@ -725,11 +743,13 @@ const fr: Shape<Dict> = {
     imageSoon: 'Image à venir',
     imageNote: 'Photos non contractuelles – suggestions de présentation.',
     dishCount: '{n} plats',
+    dishCountOne: '1 plat',
   },
   drinks: {
     eyebrow: 'Bar',
     title: 'Boissons',
     byGlass: 'Au verre',
+    waterNote: 'À noter : l’eau potable est facturée séparément et n’est pas offerte. Merci de votre compréhension.',
   },
   dietary: {
     eyebrow: 'Régimes & demandes',
@@ -864,9 +884,16 @@ const fr: Shape<Dict> = {
   about: {
     eyebrow: 'À propos',
     title: 'La cuisine ouest-africaine à Essen',
-    p1: 'Afrolink Restaurant & Bar sert une cuisine ouest-africaine authentique à Essen – soupes traditionnelles, plats de riz, haricots, igname et banane plantain, poisson, viandes et spécialités africaines.',
+    p1: 'Afrolink Restaurant & Bar est un restaurant africain à Essen. Nous cuisinons ouest-africain – soupes traditionnelles, plats de riz, haricots, igname et banane plantain, poisson, viandes et spécialités, dont de nombreux classiques de la cuisine nigériane comme l’egusi, l’ofe nsala ou le nkwobi.',
     p2: 'Mangez au restaurant ou au bar, emportez votre repas ou faites-le livrer sur demande.',
     services: 'Nos services',
+    guideTitle: 'Vous découvrez la cuisine ouest-africaine ?',
+    guide: [
+      'Pounded yam & garri|Les accompagnements fermes servis avec nos soupes : le pounded yam est de l’igname pilée, le garri est fabriqué à partir de manioc – proche du foufou. Traditionnellement, on en forme un petit morceau à la main que l’on trempe dans la soupe.',
+      'Soupe egusi|Soupe de graines de melon moulues, avec viande et épices – idéale pour commencer.',
+      'Riz jollof|Riz à la tomate avec viande, un classique d’Afrique de l’Ouest.',
+      'Suya|Brochettes de viande grillées.',
+    ],
     kitchenCaption: 'Une soupe sur le feu dans notre cuisine',
     kitchenAlt: 'Une grande marmite de soupe avec viande et légumes sur le feu, dans la cuisine d’Afrolink',
     roomCaption: 'Notre salle',

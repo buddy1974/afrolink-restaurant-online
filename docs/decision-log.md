@@ -25,6 +25,7 @@
 | ADR-013 | 2026-10-08 | Claims register gates marketing claims by verification status | Accepted |
 | ADR-014 | 2026-10-08 | Hero image: genuine watermarked Egusi + pounded yam (883x540); Nkwobi moved to Specialities/gallery | Superseded by ADR-015 |
 | ADR-015 | 2026-10-09 | Approved dark-and-gold design; owner-supplied dish images per menu item; "Image coming soon" placeholders | Accepted (owner brief 2026-10-09) |
+| ADR-016 | 2026-10-09 | Retire old grilled-fish / porridge-yam photos; second owner image batch (12 dishes); water notice; SEO package | Accepted (owner brief 2026-10-09) |
 
 ## ADR Records
 
@@ -78,6 +79,15 @@ Delivery, catering, reservations, dietary questions and group orders are enquiri
 - Diabetes-related dietary adaptation offered as a kitchen enquiry only, explicitly without medical or nutritional promises.
 - The approved mockup file was not available in the repository or on the machine; implementation follows the written brief. Speculative allergen icons from the mockup are not implemented (ADR-011 safeguards).
 - Owner image originals moved (not deleted) from `public/` to git-ignored `owner-assets/menu-originals/`; optimized copies in `src/assets/menu/`.
+
+### ADR-016 — Image cleanup, extras, water notice, SEO (2026-10-09)
+- `grilled-fish-plantain.jpg` and `porridge-yam.jpg` were removed from all data files. Their sources moved to `owner-assets/retired/` (not deleted). The unused legacy category `image` field was removed. A test guards against reuse.
+- 12 owner-named images were inspected and mapped one-to-one to their dishes. All 31 food items now have an image. Owner presentation images stay out of the gallery, which remains genuine photography only (no duplicates). See `docs/image-inventory.md`.
+- `extra-garri/rice/yams` images were not used: those extras are not on the verified menu. Extras: only Extra Pounded Yam at €4. A test enforces €4 for every extra.
+- Water notice (DE/EN/FR) in the drinks section: charged separately, not complimentary. There is no automatic charge and no obligation wording. Water stays €1.00 / 0,33 L.
+- Prices keep the printed-menu format ("€15", "€3.50") identically in all three languages, as before.
+- SEO: localised titles/descriptions with local intent, a short dish guide, `WebSite` JSON-LD, `menu`/`hasMap`/`mainEntityOfPage`, `sameAs` limited to verified profiles, `og:type` fixed, branded OG image. `priceRange` stays: it is computed from real prices, not invented. See `docs/seo.md`.
+- "Nigerian" is used to describe dish origin (Egusi, Ofe Nsala, Nkwobi), not as a certification. The owner is asked to confirm it.
 
 ### Tooling note
 `eslint-plugin-jsx-a11y` does not support ESLint 10; the maintained fork `eslint-plugin-jsx-a11y-x` (officially supported by `eslint-plugin-astro`) is used. `role="list"` on styled lists is allowed on purpose (Safari/VoiceOver drops list semantics otherwise).

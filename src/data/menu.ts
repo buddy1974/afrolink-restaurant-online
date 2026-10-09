@@ -41,11 +41,6 @@ export interface MenuCategory {
   title: L10n;
   /** Category-wide statement supplied by the owner, e.g. what soups are served with. */
   note?: L10n;
-  /**
-   * Genuine Afrolink photo (file in src/assets/gallery) of a dish in this category.
-   * `watermarked: true` keeps the bottom-right Afrolink watermark in frame when cropped.
-   */
-  image?: { file: string; alt: L10n; watermarked?: boolean };
   items: MenuItem[];
 }
 
@@ -60,11 +55,6 @@ export const foodMenu: MenuCategory[] = [
       de: 'Alle Suppen werden mit Pounded Yam oder Garri serviert.',
       en: 'All soups are served with pounded yam or garri.',
       fr: 'Toutes les soupes sont servies avec du pounded yam ou du garri.',
-    },
-    image: {
-      file: 'egusi-yam.jpg',
-      alt: { de: 'Egusi-Suppe mit gekochtem Yam', en: 'Egusi soup served with boiled yam', fr: 'Soupe egusi servie avec de l’igname bouillie' },
-      watermarked: true,
     },
     items: [
       {
@@ -165,10 +155,6 @@ export const foodMenu: MenuCategory[] = [
   {
     id: 'rice',
     title: { de: 'Reis', en: 'Rice', fr: 'Riz' },
-    image: {
-      file: 'jollof-rice.jpg',
-      alt: { de: 'Jollof-Reis mit gebratenem Fleisch', en: 'Jollof rice with fried meat', fr: 'Riz jollof avec viande frite' },
-    },
     items: [
       {
         id: 'fried-rice',
@@ -201,14 +187,6 @@ export const foodMenu: MenuCategory[] = [
   {
     id: 'beans-yam-plantain',
     title: { de: 'Bohnen, Yam & Kochbananen', en: 'Beans, Yam & Plantain', fr: 'Haricots, igname & banane plantain' },
-    image: {
-      file: 'porridge-yam.jpg',
-      alt: {
-        de: 'Porridge Yam in roter Palmölsauce',
-        en: 'Porridge yam in a red palm-oil sauce',
-        fr: 'Porridge d’igname dans une sauce rouge à l’huile de palme',
-      },
-    },
     items: [
       {
         id: 'beans-plantain',
@@ -246,15 +224,6 @@ export const foodMenu: MenuCategory[] = [
   {
     id: 'specialities',
     title: { de: 'Spezialitäten', en: 'Specialities', fr: 'Spécialités' },
-    image: {
-      file: 'nkwobi.jpg',
-      alt: {
-        de: 'Nkwobi mit Zwiebelringen und roter Paprika in einer Holzschale',
-        en: 'Nkwobi garnished with onion rings and red pepper in a wooden bowl',
-        fr: 'Nkwobi garni de rondelles d’oignon et de poivron rouge, dans un bol en bois',
-      },
-      watermarked: true,
-    },
     items: [
       {
         id: 'suya',
@@ -317,14 +286,6 @@ export const foodMenu: MenuCategory[] = [
   {
     id: 'fish',
     title: { de: 'Fisch', en: 'Fish', fr: 'Poisson' },
-    image: {
-      file: 'grilled-fish-plantain.jpg',
-      alt: {
-        de: 'Ganzer gegrillter Fisch mit Paprika, Zwiebeln und Kochbananen',
-        en: 'Whole grilled fish topped with peppers and onions, with plantain',
-        fr: 'Poisson entier grillé garni de poivrons et d’oignons, avec banane plantain',
-      },
-    },
     items: [
       {
         id: 'tilapia',

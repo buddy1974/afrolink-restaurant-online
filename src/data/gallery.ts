@@ -97,15 +97,6 @@ export const gallery: GalleryEntry[] = [
     watermarked: true,
   },
   {
-    file: 'porridge-yam.jpg',
-    alt: {
-      de: 'Porridge Yam in kräftig roter Palmölsauce mit Kochbananen',
-      en: 'Porridge yam in a rich red palm-oil sauce with plantain',
-      fr: 'Porridge d’igname dans une sauce rouge à l’huile de palme, avec banane plantain',
-    },
-    caption: same('Porridge Yam'),
-  },
-  {
     file: 'clay-pot-soup.jpg',
     alt: {
       de: 'Suppe im Tontopf mit Zwiebelringen und gebratenen Kochbananen',
@@ -122,14 +113,6 @@ export const gallery: GalleryEntry[] = [
       fr: 'Viande poivrée aux poivrons en dés, bananes plantain frites et igname',
     },
     watermarked: true,
-  },
-  {
-    file: 'grilled-fish-plantain.jpg',
-    alt: {
-      de: 'Ganzer gegrillter Fisch mit gewürfelter Paprika und Zwiebeln, Kochbananen und Tomate',
-      en: 'Whole grilled fish topped with diced peppers and onions, with plantain and tomato',
-      fr: 'Poisson entier grillé garni de poivrons et d’oignons en dés, avec banane plantain et tomate',
-    },
   },
   {
     file: 'rice-plantain-fish.jpg',

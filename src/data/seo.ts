@@ -3,7 +3,7 @@
  * No ratings/reviews markup: the Google rating is a manual snapshot, and self-serving review
  * markup is not eligible for restaurants' own sites.
  */
-import { business, phones, siteUrl, social } from './business';
+import { business, mapsHref, phones, siteUrl, social } from './business';
 import { foodMenu, type MenuItem } from './menu';
 import { drinksMenu } from './drinks';
 import { openingHours } from './hours';
@@ -73,6 +73,7 @@ export function restaurantJsonLd(lang: Lang, imageUrl: string, logoUrl: string) 
     '@id': `${siteUrl}/#restaurant`,
     name: business.name,
     url: absolute(routes.home[lang]),
+    mainEntityOfPage: absolute(routes.home[lang]),
     image: [imageUrl],
     logo: logoUrl,
     telephone: phones.landline.international,
@@ -86,18 +87,34 @@ export function restaurantJsonLd(lang: Lang, imageUrl: string, logoUrl: string) 
     servesCuisine: [...business.cuisine],
     priceRange: priceRange(),
     acceptsReservations: true,
-    sameAs: social.map((s) => s.href),
+    hasMap: mapsHref,
+    // Only profiles verified as Afrolink's own (Instagram could not be checked without login).
+    sameAs: social.filter((s) => s.verified).map((s) => s.href),
     openingHoursSpecification: openingHours.map((h) => ({
       '@type': 'OpeningHoursSpecification',
       dayOfWeek: `https://schema.org/${h.day}`,
       opens: h.opens,
       closes: h.closes,
     })),
+    menu: `${absolute(routes.home[lang])}#menu`,
     hasMenu: {
       '@type': 'Menu',
       url: `${absolute(routes.home[lang])}#menu`,
       inLanguage: htmlLang[lang],
       hasMenuSection: [...foodSections, ...drinkSections],
     },
+  };
+}
+
+/** WebSite node (home pages), so search engines see the three language versions as one site. */
+export function websiteJsonLd(lang: Lang) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    '@id': `${siteUrl}/#website`,
+    name: business.name,
+    url: absolute(routes.home[lang]),
+    inLanguage: htmlLang[lang],
+    publisher: { '@id': `${siteUrl}/#restaurant` },
   };
 }

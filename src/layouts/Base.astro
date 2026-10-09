@@ -7,7 +7,7 @@ import '../styles/global.css';
 import archivoWdth from '@fontsource-variable/archivo/files/archivo-latin-wdth-normal.woff2?url';
 import newsreaderItalic from '@fontsource-variable/newsreader/files/newsreader-latin-wght-italic.woff2?url';
 import { siteUrl } from '../data/business';
-import { absolute, alternates, restaurantJsonLd, themeColor } from '../data/seo';
+import { absolute, alternates, restaurantJsonLd, themeColor, websiteJsonLd } from '../data/seo';
 import { htmlLang, ogLocale, locales, routes, type Lang, type RouteKey } from '../i18n/config';
 import { useT } from '../i18n/ui';
 
@@ -26,7 +26,7 @@ const pageTitle = title ?? t.meta.title;
 const pageDescription = description ?? t.meta.description;
 const canonical = absolute(routes[route][lang]);
 const ogImage = `${siteUrl}/og-image.jpg`;
-const jsonLd = structuredData ? restaurantJsonLd(lang, ogImage, `${siteUrl}/icon-512.png`) : null;
+const jsonLd = structuredData ? [restaurantJsonLd(lang, ogImage, `${siteUrl}/icon-512.png`), websiteJsonLd(lang)] : null;
 // Language auto-detection runs only on the German home page (the QR-code destination).
 const detectLanguage = route === 'home' && lang === 'de';
 ---
@@ -76,7 +76,7 @@ const detectLanguage = route === 'home' && lang === 'de';
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
 
-    <meta property="og:type" content="restaurant" />
+    <meta property="og:type" content={route === 'home' ? 'restaurant.restaurant' : 'website'} />
     <meta property="og:site_name" content="Afrolink Restaurant & Bar" />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={pageDescription} />

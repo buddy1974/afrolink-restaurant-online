@@ -11,6 +11,7 @@ import { openingHours, groupHours } from '../src/data/hours.ts';
 import { business, phones, whatsapp, services, social, google } from '../src/data/business.ts';
 import { featuredVideo, videos } from '../src/data/videos.ts';
 import { formatPrice } from '../src/data/format.ts';
+import { ui } from '../src/i18n/ui.ts';
 
 test('food menu matches the brief exactly (names, categories, prices)', () => {
   const flat = foodMenu.flatMap((c) =>
@@ -188,5 +189,26 @@ test('videos: featured David On The Go, unique ids, official sources only', () =
   assert.equal(new Set(all.map((v) => v.id)).size, all.length);
   for (const v of videos.filter((v) => v.platform === 'facebook')) {
     assert.ok(v.url.startsWith('https://www.facebook.com/afrolink24/videos/'), v.url);
+  }
+});
+
+test('every extra costs exactly €4', () => {
+  const extras = foodMenu.find((c) => c.id === 'extras')!;
+  assert.ok(extras.items.length > 0);
+  for (const i of extras.items) {
+    assert.equal(i.price, 400, i.id);
+    assert.equal(i.variants, undefined, i.id);
+  }
+});
+
+test('water stays €1.00 / 0,33 L and the notice says it is charged separately (DE/EN/FR)', () => {
+  const water = drinksMenu.flatMap((c) => c.items).find((i) => i.id === 'water')!;
+  assert.equal(water.price, 100);
+  assert.equal(water.size?.value, '0,33 L');
+  assert.match(ui.de.drinks.waterNote, /separat berechnet/);
+  assert.match(ui.en.drinks.waterNote, /charged separately/);
+  assert.match(ui.fr.drinks.waterNote, /facturée séparément/);
+  for (const l of ['de', 'en', 'fr'] as const) {
+    assert.ok(!/(muss|must|obligatoire|pflicht|required)/i.test(ui[l].drinks.waterNote), `${l} implies an obligation`);
   }
 });

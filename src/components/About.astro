@@ -25,6 +25,21 @@ const t = useT(lang);
       <p class="about__p about__p--lead">{t.about.p1}</p>
       <p class="about__p">{t.about.p2}</p>
 
+      <h3 class="about__h3 about__guide-title">{t.about.guideTitle}</h3>
+      <dl class="guide">
+        {
+          t.about.guide.map((g) => {
+            const [term, text] = g.split('|');
+            return (
+              <div class="guide__row">
+                <dt>{term}</dt>
+                <dd>{text}</dd>
+              </div>
+            );
+          })
+        }
+      </dl>
+
       <Rule class="about__rule" />
 
       <h3 class="about__h3">{t.about.services}</h3>
@@ -106,6 +121,22 @@ const t = useT(lang);
     letter-spacing: 0.16em;
     text-transform: uppercase;
     color: var(--ochre);
+  }
+  .about__guide-title {
+    margin-top: 2.5rem;
+  }
+  .guide {
+    display: grid;
+    gap: 0.9rem;
+    max-width: var(--measure);
+  }
+  .guide dt {
+    font-family: var(--font-serif);
+    font-size: var(--step-1);
+    color: var(--on-ink);
+  }
+  .guide dd {
+    color: var(--on-ink-muted);
   }
   .services {
     display: grid;
