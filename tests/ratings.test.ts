@@ -45,7 +45,7 @@ const voterCookie = (res: Response) => res.headers.get('set-cookie')?.split(';')
 
 test('every current food item can be rated; ids are stable menu ids', () => {
   const ids = ratableDishIds();
-  assert.equal(ids.size, 31);
+  assert.equal(ids.size, 34);
   for (const id of ['egusi-soup', 'jollof-rice', 'isiewu', 'tilapia', 'extra-pounded-yam']) assert.ok(ids.has(id), id);
 });
 

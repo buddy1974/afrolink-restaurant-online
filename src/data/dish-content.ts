@@ -445,4 +445,43 @@ export const dishContent: Record<string, DishContent> = {
       fr: 'Le pounded yam fait partie des « swallows » : des accompagnements fermes dont on prend un morceau à la main pour le tremper dans la soupe. L’igname bouillie est pilée jusqu’à devenir lisse et élastique. Vous cherchez du « foufou » ? Le foufou est un swallow proche, souvent à base de manioc ; avec nos soupes, nous servons du pounded yam ou du garri.',
     },
   },
+  'extra-garri': {
+    kind: { de: 'Garri (Eba) – Beilage zu Suppen', en: 'Garri (eba) – the other classic soup side', fr: 'Garri (eba) – l’autre accompagnement des soupes' },
+    summary: {
+      de: 'Eine zusätzliche Portion Garri: aus Maniok hergestellt, fester und leicht körnig – neben Pounded Yam die zweite klassische Beilage zu unseren Suppen.',
+      en: 'An extra portion of garri: made from cassava, firm and slightly grainy – alongside pounded yam, the other classic side for our soups.',
+      fr: 'Une portion supplémentaire de garri : à base de manioc, ferme et légèrement granuleux – avec le pounded yam, l’autre accompagnement classique de nos soupes.',
+    },
+    typical: {
+      de: 'Garri ist ein grobes Mehl aus geriebenem, fermentiertem und geröstetem Maniok. Mit heißem Wasser angerührt wird daraus Eba – ein fester „Swallow“, von dem man ein Stück abnimmt und in die Suppe tunkt. Gelbes Garri wird traditionell mit etwas Palmöl hergestellt und schmeckt leicht säuerlich.',
+      en: 'Garri is a coarse flour made from grated, fermented and roasted cassava. Stirred with hot water it becomes eba – a firm “swallow” from which you take a piece and dip it into the soup. Yellow garri is traditionally made with a little palm oil and tastes slightly tangy.',
+      fr: 'Le garri est une semoule grossière de manioc râpé, fermenté et grillé. Mélangé à de l’eau chaude, il devient de l’eba – un « swallow » ferme dont on prend un morceau pour le tremper dans la soupe. Le garri jaune est traditionnellement préparé avec un peu d’huile de palme et a un goût légèrement acidulé.',
+    },
+  },
+  'extra-rice': {
+    kind: { de: 'Weißer Reis als Beilage', en: 'Plain white rice as a side', fr: 'Riz blanc en accompagnement' },
+    summary: {
+      de: 'Eine zusätzliche Portion locker gekochter weißer Reis – für alle, die zu einem Gericht mit Sauce mehr Beilage möchten.',
+      en: 'An extra portion of fluffy boiled white rice – for when you want more of a side with a dish that has plenty of sauce.',
+      fr: 'Une portion supplémentaire de riz blanc bien cuit – pour ceux qui veulent plus d’accompagnement avec un plat en sauce.',
+    },
+    typical: {
+      de: 'Weißer Reis ist in Westafrika die Grundlage vieler Alltagsgerichte, etwa „Rice and Stew“ – Reis mit einem kräftigen Tomaten-Paprika-Eintopf. Er nimmt Saucen gut auf und gleicht scharfe Gerichte angenehm aus.',
+      en: 'White rice is the basis of many everyday West African meals, such as “rice and stew” – rice with a rich tomato-and-pepper stew. It soaks up sauces well and balances spicy dishes nicely.',
+      fr: 'Le riz blanc est la base de nombreux plats du quotidien en Afrique de l’Ouest, comme le « rice and stew » – du riz avec un ragoût riche de tomates et poivrons. Il absorbe bien les sauces et adoucit les plats épicés.',
+    },
+  },
+  'extra-yam': {
+    kind: { de: 'Gekochte Yamswurzel als Beilage', en: 'Boiled yam as a side', fr: 'Igname bouillie en accompagnement' },
+    summary: {
+      de: 'Eine zusätzliche Portion gekochte Yamswurzel – mild, sättigend und fest im Biss, gut zu Saucen und Eintöpfen.',
+      en: 'An extra portion of boiled yam – mild, filling and firm, good with sauces and stews.',
+      fr: 'Une portion supplémentaire d’igname bouillie – douce, nourrissante et ferme, idéale avec les sauces et les ragoûts.',
+    },
+    typical: {
+      de: 'Yam ist eine große, stärkehaltige Knolle und in Westafrika ein Grundnahrungsmittel. Gekocht ist sie fester und weniger süß als Süßkartoffel und wird gern zu Saucen gegessen. Gestampft wird aus gekochtem Yam auch Pounded Yam.',
+      en: 'Yam is a large, starchy tuber and a staple food in West Africa. Boiled, it is firmer and less sweet than sweet potato and is often eaten with sauces. Pounded, boiled yam also becomes pounded yam.',
+      fr: 'L’igname est un gros tubercule riche en amidon et un aliment de base en Afrique de l’Ouest. Bouillie, elle est plus ferme et moins sucrée que la patate douce et se mange volontiers avec des sauces. Pilée, l’igname bouillie devient le pounded yam.',
+    },
+  },
 };

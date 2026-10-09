@@ -55,6 +55,9 @@ test('food menu matches the brief exactly (names, categories, prices)', () => {
     'Fish|Tilapia, Large|€30',
     'Fish|Fried Fish & Plantain|€18',
     'Extras|Extra Pounded Yam|€4',
+    'Extras|Extra Garri|€4',
+    'Extras|Extra Rice|€4',
+    'Extras|Extra Yam|€4',
   ]);
 });
 

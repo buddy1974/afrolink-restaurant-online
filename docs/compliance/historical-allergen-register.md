@@ -93,6 +93,9 @@ Coded dishes: 14. Discontinued: UKAZI SOUP, UGU SOUP, OFE AKWU, PORRIDGE COCOYAM
 | Tilapia | 4 · Not previously declared — ask staff | — | — | yes — absence of codes is NOT "allergen-free" |
 | Fried Fish & Plantain | 4 · Not previously declared — ask staff | — | — | not on old menu |
 | Extra Pounded Yam | 4 · Not previously declared — ask staff | — | — | not on old menu |
+| Extra Garri | 4 · Not previously declared — ask staff | — | — | not on old menu |
+| Extra Rice | 4 · Not previously declared — ask staff | — | — | not on old menu |
+| Extra Yam | 4 · Not previously declared — ask staff | — | — | not on old menu |
 
 Status numbers follow the owner's four classifications (2026-10-09): 1 previously declared · 2 currently confirmed · 3 requires reconciliation · 4 not previously declared. All previously declared entries are currently also "requires reconciliation" because the kitchen has not yet confirmed the current recipes.
 

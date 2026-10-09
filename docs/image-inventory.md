@@ -74,7 +74,19 @@ Venue photos (`src/assets/venue/`): interior.jpg, welcome-sign.jpg, kitchen-pot.
 
 A perceptual-hash check (dHash) of all 62 site images found no duplicates. The only near matches were different dishes photographed on the same tablecloth.
 
-## 5. Needs clarification (owner)
+## 4b. Extras correction (2026-10-09)
+Inventory of every file with "extra" in its name (case-insensitive, whole project): `extra-poundedyams.png`, `extra-garri.png`, `extra-rice.png`, `extra-yams.png` (originals in `owner-assets/menu-originals/`; `public/` contains none). All four now appear in the Extras section at €4.00:
+
+| File (`src/assets/menu/`) | Original | Size | Subject seen | Menu item |
+|---|---|---|---|---|
+| extra-pounded-yam.jpg | extra-poundedyams.png | 986×1594 | Pounded yam | Extra Pounded Yam |
+| extra-garri.jpg | extra-garri.png | 1517×1037 | Yellow garri (eba) | Extra Garri (owner-approved) |
+| extra-rice.jpg | extra-rice.png | 1312×1199 | Plain white rice | Extra Rice (owner-approved) |
+| extra-yam.jpg | extra-yams.png | 1454×1082 | Boiled yam slices | Extra Yam (added: image unambiguous — owner to confirm) |
+
+Total food items with images: 34. The section below is superseded.
+
+## 5. Needs clarification (owner) — superseded by 4b
 | Original | Subject | Why not used |
 |---|---|---|
 | extra-garri.png | Garri (eba) on a plate | "Extra Garri" is not on the verified menu. Only "Extra Pounded Yam" is |

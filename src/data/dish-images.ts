@@ -8,8 +8,8 @@
  * - 'afrolink-photo': genuine Afrolink photographs from the client folder, identified by the
  *   client's own file names (see src/data/gallery.ts).
  * - Second owner batch (same date, same styling) added the remaining dishes; originals kept in
- *   owner-assets/menu-originals/. extra-garri / extra-rice / extra-yams were supplied too but are
- *   not on the verified menu, so they are not used (see docs/image-inventory.md).
+ *   owner-assets/menu-originals/. extra-garri / extra-rice / extra-yams are used since the extras
+ *   correction of 2026-10-09 (see docs/image-inventory.md).
  * Only map an image to a dish when the file is named for that dish and the picture shows it.
  * `watermarked: true` keeps the bottom-right Afrolink watermark in frame when cropped.
  */
@@ -64,6 +64,9 @@ export const dishImages: Record<string, DishImage> = {
   'fried-fish-plantain': owner('fried-fish-plantain.jpg', { de: 'Gebratener Fisch mit Kochbananen, Zwiebelringen und Paprika', en: 'Fried fish with plantain, onion rings and peppers', fr: 'Poisson frit avec banane plantain, rondelles d’oignon et poivrons' }),
   // Extras
   'extra-pounded-yam': owner('extra-pounded-yam.jpg', { de: 'Eine Portion Pounded Yam', en: 'A portion of pounded yam', fr: 'Une portion de pounded yam' }),
+  'extra-garri': owner('extra-garri.jpg', { de: 'Eine Portion Garri (Eba) auf einem Teller', en: 'A portion of garri (eba) on a plate', fr: 'Une portion de garri (eba) dans une assiette' }),
+  'extra-rice': owner('extra-rice.jpg', { de: 'Ein Teller gekochter weißer Reis', en: 'A plate of boiled white rice', fr: 'Une assiette de riz blanc' }),
+  'extra-yam': owner('extra-yam.jpg', { de: 'Gekochte Yamscheiben in einer Schale', en: 'Boiled yam slices in a dish', fr: 'Tranches d’igname bouillie dans un plat' }),
 };
 
 /** Featured photograph for the soups showcase (owner instruction: give it prominence). */

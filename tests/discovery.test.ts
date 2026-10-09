@@ -11,6 +11,7 @@ import { dishContent } from '../src/data/dish-content.ts';
 import { HISTORICAL_CODES, historicalRegister, publicAllergenInfo } from '../src/data/allergens.ts';
 import { dishPaths, locales, routes, type Lang } from '../src/i18n/config.ts';
 import { pagesUi } from '../src/i18n/pages.ts';
+import { dishImages } from '../src/data/dish-images.ts';
 import { formatPrice } from '../src/data/format.ts';
 
 const SITE = 'https://www.afrolink-restaurant.online';
@@ -22,7 +23,7 @@ const read = (path: string) => readFileSync(join('dist', 'client', path, 'index.
 /* ───────────── Content ───────────── */
 
 test('every current food item has original content in DE, EN and FR', () => {
-  assert.equal(items.length, 31);
+  assert.equal(items.length, 34);
   for (const { item } of items) {
     const c = dishContent[item.id];
     assert.ok(c, `${item.id} has no content`);
@@ -113,7 +114,7 @@ const allPages = (): { path: string; lang: Lang; paths: Record<Lang, string> }[]
 
 test('every page exists with self-canonical, 4 hreflang alternates and indexable robots', opt, () => {
   const pages = allPages();
-  assert.equal(pages.length, 126);
+  assert.equal(pages.length, 135);
   for (const p of pages) {
     const html = read(p.path);
     assert.match(html, new RegExp(`<link rel="canonical" href="${SITE}${p.path}"`), `${p.path} canonical`);
@@ -125,7 +126,7 @@ test('every page exists with self-canonical, 4 hreflang alternates and indexable
   }
 });
 
-test('titles and meta descriptions are unique across all 126 pages', opt, () => {
+test('titles and meta descriptions are unique across all 135 pages', opt, () => {
   const titles = new Map<string, string>();
   const descs = new Map<string, string>();
   for (const p of allPages()) {
@@ -182,7 +183,7 @@ test('every photographed dish opens a large image in the lightbox', opt, () => {
   for (const lang of locales) {
     const menu = read(routes.menu[lang]);
     const zoom = menu.match(/data-lb data-lb-group="menu"/g) ?? [];
-    assert.equal(zoom.length, 31, `menu ${lang} zoomable images`);
+    assert.equal(zoom.length, 34, `menu ${lang} zoomable images`);
     assert.ok(read(routes.gallery[lang]).includes('data-lb-group="gallery"'));
   }
 });
@@ -199,11 +200,40 @@ test('service pages state only arranged terms (no fees, times, radius or online 
 test('sitemap contains every page once, robots excludes management and API', opt, () => {
   const xml = readFileSync('dist/client/sitemap.xml', 'utf8');
   const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
-  assert.equal(locs.length, 126);
-  assert.equal(new Set(locs).size, 126);
+  assert.equal(locs.length, 135);
+  assert.equal(new Set(locs).size, 135);
   for (const p of allPages()) assert.ok(locs.includes(`${SITE}${p.path}`), p.path);
   const robots = readFileSync('dist/client/robots.txt', 'utf8');
   assert.match(robots, /Disallow: \/admin\//);
   assert.match(robots, /Disallow: \/api\//);
   assert.ok(!fixed.some((k) => robots.includes(routes[k].de)), 'discovery pages are not disallowed');
+});
+
+test('extras: exactly the approved items, each €4.00 with its own image and content', () => {
+  const extras = foodMenu.find((c) => c.id === 'extras')!;
+  assert.deepEqual(extras.items.map((i) => i.id), ['extra-pounded-yam', 'extra-garri', 'extra-rice', 'extra-yam']);
+  const files = new Set<string>();
+  for (const i of extras.items) {
+    assert.equal(i.price, 400, i.id);
+    assert.ok(dishImages[i.id], `${i.id} image`);
+    assert.ok(!files.has(dishImages[i.id].file), `${i.id} duplicate image`);
+    files.add(dishImages[i.id].file);
+    assert.ok(dishContent[i.id], `${i.id} content`);
+  }
+});
+
+test('every category shows the real number of dishes (all languages)', opt, () => {
+  for (const lang of locales) {
+    const html = read(routes.menu[lang]);
+    for (const c of foodMenu) {
+      const start = html.indexOf(`id="${c.id}"`);
+      const next = foodMenu[foodMenu.indexOf(c) + 1];
+      const end = next ? html.indexOf(`id="${next.id}"`, start) : html.indexOf('id="drinks"', start);
+      const section = html.slice(start, end);
+      const cards = (section.match(/<li class="dish"/g) ?? []).length;
+      assert.equal(cards, c.items.length, `${lang} ${c.id} cards`);
+      const count = section.match(/class="mcat__count"[^>]*>([^<]+)</)![1];
+      assert.match(count, new RegExp(`^${c.items.length} `), `${lang} ${c.id} count label "${count}"`);
+    }
+  }
 });

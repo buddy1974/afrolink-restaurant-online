@@ -1,5 +1,10 @@
 # Change Log — `afrolink-restaurant-online`
 
+## 2026-10-09 — Extras correction (branch `discovery-ratings-2026-10`)
+- Extras now: Extra Pounded Yam, Extra Garri, Extra Rice, Extra Yam — each €4.00, own image, DE/EN/FR description, dish page, lightbox, allergen panel, rating slot.
+- Category counts are computed from the data (test checks every category in all languages).
+- No other prices or categories changed. 34 food items, 135 indexable pages, 64 tests.
+
 ## 2026-10-09 — Discovery pages, interactive menu, allergen baseline, ratings (branch `discovery-ratings-2026-10`)
 - 126 indexable pages (DE/EN/FR): menu, African soups hub, 31 dish pages, delivery, catering, reservations, gallery, contact; breadcrumbs + JSON-LD (WebPage, BreadcrumbList, Menu, MenuSection, MenuItem, Service); sitemap with alternates; robots excludes /admin/ and /api/.
 - Header/footer navigation to dedicated pages; dish names link to dish pages; related dishes.

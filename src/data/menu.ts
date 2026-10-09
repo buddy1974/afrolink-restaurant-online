@@ -313,7 +313,14 @@ export const foodMenu: MenuCategory[] = [
   {
     id: 'extras',
     title: { de: 'Extras', en: 'Extras', fr: 'Suppléments' },
-    items: [{ id: 'extra-pounded-yam', name: 'Extra Pounded Yam', price: 400 }],
+    // Owner rule (2026-10-09): every approved extra costs €4.00. Extra Garri and Extra Rice
+    // approved in the extras brief; Extra Yam added from the owner's named image (flagged in report).
+    items: [
+      { id: 'extra-pounded-yam', name: 'Extra Pounded Yam', price: 400 },
+      { id: 'extra-garri', name: 'Extra Garri', price: 400 },
+      { id: 'extra-rice', name: 'Extra Rice', price: 400 },
+      { id: 'extra-yam', name: 'Extra Yam', price: 400 },
+    ],
   },
 ];
 
