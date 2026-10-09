@@ -1,16 +1,19 @@
 ---
 /** DE / EN / FR switcher. Links to the same page in each language; remembers the choice. */
-import { langName, locales, routes, type Lang, type RouteKey } from '../i18n/config';
+import { langName, locales, routes, type Lang, type Paths, type RouteKey } from '../i18n/config';
 import { useT } from '../i18n/ui';
 
 interface Props {
   lang: Lang;
   route: RouteKey;
+  /** Localized paths when the page is not a fixed route (dish pages). */
+  paths?: Paths;
   variant?: 'compact' | 'full';
   /** Unique landmark label (several switchers can be on one page). */
   label?: string;
 }
 const { lang, route, variant = 'compact', label } = Astro.props;
+const paths = Astro.props.paths ?? routes[route];
 const t = useT(lang);
 ---
 
@@ -20,7 +23,7 @@ const t = useT(lang);
       locales.map((l) => (
         <li>
           <a
-            href={routes[route][l]}
+            href={paths[l]}
             hreflang={l}
             lang={l}
             data-set-lang={l}

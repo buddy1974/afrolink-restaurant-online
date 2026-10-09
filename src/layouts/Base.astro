@@ -8,8 +8,10 @@ import archivoWdth from '@fontsource-variable/archivo/files/archivo-latin-wdth-n
 import newsreaderItalic from '@fontsource-variable/newsreader/files/newsreader-latin-wght-italic.woff2?url';
 import { siteUrl } from '../data/business';
 import { absolute, alternates, restaurantJsonLd, themeColor, websiteJsonLd } from '../data/seo';
-import { htmlLang, ogLocale, locales, routes, type Lang, type RouteKey } from '../i18n/config';
+import { htmlLang, ogLocale, locales, routes, type Lang, type Paths, type RouteKey } from '../i18n/config';
 import { useT } from '../i18n/ui';
+import Lightbox from '../components/Lightbox.astro';
+import RatingsClient from '../components/RatingsClient.astro';
 
 interface Props {
   lang: Lang;
@@ -18,15 +20,23 @@ interface Props {
   description?: string;
   /** Emit Restaurant JSON-LD (home pages only). */
   structuredData?: boolean;
+  /** Localized paths when the page is not a fixed route (dish pages). */
+  paths?: Paths;
+  /** Additional JSON-LD nodes (breadcrumbs, web page, menu item …). */
+  jsonLd?: object[];
+  /** Absolute URL of a page-specific social image (defaults to the branded OG image). */
+  image?: { url: string; width: number; height: number; alt: string };
 }
 
-const { lang, route, title, description, structuredData = false } = Astro.props;
+const { lang, route, title, description, structuredData = false, jsonLd: extraLd = [], image } = Astro.props;
+const paths = Astro.props.paths ?? routes[route];
 const t = useT(lang);
 const pageTitle = title ?? t.meta.title;
 const pageDescription = description ?? t.meta.description;
-const canonical = absolute(routes[route][lang]);
-const ogImage = `${siteUrl}/og-image.jpg`;
-const jsonLd = structuredData ? [restaurantJsonLd(lang, ogImage, `${siteUrl}/icon-512.png`), websiteJsonLd(lang)] : null;
+const canonical = absolute(paths[lang]);
+const ogImage = image?.url ?? `${siteUrl}/og-image.jpg`;
+const ld = [...(structuredData ? [restaurantJsonLd(lang, `${siteUrl}/og-image.jpg`, `${siteUrl}/icon-512.png`), websiteJsonLd(lang)] : []), ...extraLd];
+const jsonLd = ld.length ? ld : null;
 // Language auto-detection runs only on the German home page (the QR-code destination).
 const detectLanguage = route === 'home' && lang === 'de';
 ---
@@ -66,7 +76,7 @@ const detectLanguage = route === 'home' && lang === 'de';
     <title>{pageTitle}</title>
     <meta name="description" content={pageDescription} />
     <link rel="canonical" href={canonical} />
-    {alternates(route).map((a) => <link rel="alternate" hreflang={a.hreflang} href={a.href} />)}
+    {alternates(paths).map((a) => <link rel="alternate" hreflang={a.hreflang} href={a.href} />)}
     <meta name="robots" content="index, follow, max-image-preview:large" />
     <meta name="theme-color" content={themeColor} />
     <meta name="format-detection" content="telephone=no" />
@@ -84,9 +94,9 @@ const detectLanguage = route === 'home' && lang === 'de';
     <meta property="og:locale" content={ogLocale[lang]} />
     {locales.filter((l) => l !== lang).map((l) => <meta property="og:locale:alternate" content={ogLocale[l]} />)}
     <meta property="og:image" content={ogImage} />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content={t.meta.ogAlt} />
+    <meta property="og:image:width" content={String(image?.width ?? 1200)} />
+    <meta property="og:image:height" content={String(image?.height ?? 630)} />
+    <meta property="og:image:alt" content={image?.alt ?? t.meta.ogAlt} />
     <meta property="restaurant:contact_info:street_address" content="Berzeliusstraße 7" />
     <meta property="restaurant:contact_info:locality" content="Essen" />
     <meta property="restaurant:contact_info:postal_code" content="45144" />
@@ -102,5 +112,7 @@ const detectLanguage = route === 'home' && lang === 'de';
   <body>
     <a class="skip-link" href={route === 'home' ? '#menu' : '#main'}>{route === 'home' ? t.a11y.skipToMenu : t.a11y.skipToContent}</a>
     <slot />
+    <Lightbox lang={lang} />
+    <RatingsClient lang={lang} />
   </body>
 </html>

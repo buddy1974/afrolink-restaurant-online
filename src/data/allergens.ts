@@ -97,6 +97,105 @@ export const STANDARD_KITCHEN_QUESTIONS = [
   'Kreuzkontakt: gemeinsame Töpfe, Fritteusen, Bretter, Utensilien',
 ];
 
+/* ─────────────────────────── HISTORICAL AFROLINK DECLARATIONS ───────────────────────────
+ * First-party baseline (owner instruction 2026-10-09): allergen/additive codes printed on
+ * Afrolink's own earlier menu. They are restaurant-sourced, NOT assumptions, and are preserved
+ * exactly (original code, original wording, original dish). They are shown publicly as
+ * "declared on Afrolink's previous menu" until the kitchen confirms them for the current recipe
+ * (→ VERIFIED below). Discontinued dishes stay in this register but are never published.
+ * Full register incl. original descriptions: docs/compliance/historical-allergen-register.md
+ */
+export const HISTORICAL_MENU_SOURCE = {
+  file: 'AfroLink Restaurant Menu.docx (also AfroLink Restaurant Menu.pdf)',
+  location: 'Client folder KUNDEN-OBERDORF/afrolink-restaurant',
+  extractedOn: '2026-10-09',
+  legend:
+    '¹ Krebstiere / Crustaceans, ² Fisch / Fish, ³ Senf / Mustard, ⁴ Geschmacksverstärker / Flavour Enhancer, ⁵ Ei / Egg, ⁷ Sellerie (möglich) / Celery (possible), ⁸ Farbstoffe / Artificial Colourants',
+} as const;
+
+/** The seven codes of the historical legend (code 6 was not used), with their modern mapping. */
+export const HISTORICAL_CODES = {
+  '1': { original: 'Krebstiere / Crustaceans', kind: 'allergen', allergen: 'B', possible: false, label: { de: 'Krebstiere', en: 'Crustaceans', fr: 'Crustacés' } },
+  '2': { original: 'Fisch / Fish', kind: 'allergen', allergen: 'D', possible: false, label: { de: 'Fisch', en: 'Fish', fr: 'Poisson' } },
+  '3': { original: 'Senf / Mustard', kind: 'allergen', allergen: 'J', possible: false, label: { de: 'Senf', en: 'Mustard', fr: 'Moutarde' } },
+  '4': { original: 'Geschmacksverstärker / Flavour Enhancer', kind: 'additive', additive: '5', possible: false, label: { de: 'mit Geschmacksverstärker', en: 'with flavour enhancer', fr: 'avec exhausteur de goût' } },
+  '5': { original: 'Ei / Egg', kind: 'allergen', allergen: 'C', possible: false, label: { de: 'Eier', en: 'Eggs', fr: 'Œufs' } },
+  '7': { original: 'Sellerie (möglich) / Celery (possible)', kind: 'allergen', allergen: 'I', possible: true, label: { de: 'Sellerie (möglich)', en: 'Celery (possible)', fr: 'Céleri (possible)' } },
+  '8': { original: 'Farbstoffe / Artificial Colourants', kind: 'additive', additive: '1', possible: false, label: { de: 'mit Farbstoff', en: 'with colouring', fr: 'avec colorant' } },
+} as const satisfies Record<string, { original: string; kind: 'allergen' | 'additive'; allergen?: AllergenCode; additive?: AdditiveCode; possible: boolean; label: L10n }>;
+
+export type HistoricalCode = keyof typeof HISTORICAL_CODES;
+
+export interface HistoricalEntry {
+  /** Number printed on the old menu (null where none was printed). */
+  menuNo: string | null;
+  /** Dish name exactly as printed (codes removed). */
+  originalName: string;
+  /** Codes exactly as printed, in printed order. */
+  codes: HistoricalCode[];
+  /** Current menu item id, or null when the dish is no longer on the menu. */
+  currentId: string | null;
+  /**
+   * same-name: same dish on the current menu · name-variant: spelling differs ·
+   * changed: same dish but the old menu text differs materially (sides/preparation) ·
+   * discontinued: not on the current menu (never published).
+   */
+  mapping: 'same-name' | 'name-variant' | 'changed' | 'discontinued';
+  /** Internal reconciliation note for the kitchen (German). */
+  note?: string;
+}
+
+export const historicalRegister: HistoricalEntry[] = [
+  { menuNo: '1', originalName: 'EGUSI SOUP', codes: [], currentId: 'egusi-soup', mapping: 'same-name' },
+  { menuNo: '2', originalName: 'UKAZI SOUP', codes: [], currentId: null, mapping: 'discontinued' },
+  { menuNo: '3', originalName: 'UGU SOUP', codes: [], currentId: null, mapping: 'discontinued' },
+  { menuNo: '4', originalName: 'EDIKAIKONG SOUP', codes: ['1', '2'], currentId: 'edikaikong', mapping: 'same-name', note: 'Alte Karte: „crayfish and fish“; aktuelle Karte nennt nur „Fleisch und Fisch“ – Krebstiere (Crayfish) noch enthalten?' },
+  { menuNo: '5', originalName: 'OGBONO SOUP', codes: [], currentId: 'ogbono-soup', mapping: 'same-name', note: 'Text nennt Fisch, aber kein Code ² gedruckt – Fisch-Kennzeichnung fehlt.' },
+  { menuNo: '6', originalName: 'OFE NSALA', codes: ['1', '2', '4'], currentId: 'ofe-nsala', mapping: 'same-name' },
+  { menuNo: '7', originalName: 'OKRA SOUP', codes: [], currentId: 'okra-soup', mapping: 'same-name', note: 'Text nennt Fisch, aber kein Code ² gedruckt – Fisch-Kennzeichnung fehlt.' },
+  { menuNo: '8', originalName: 'AFANG SOUP', codes: [], currentId: 'afang-soup', mapping: 'same-name', note: 'Text nennt „crayfish and fish“, aber keine Codes ¹² gedruckt – Kennzeichnung fehlt.' },
+  { menuNo: '11', originalName: 'EFO RIRO', codes: ['2', '3', '4'], currentId: 'efo-riro', mapping: 'same-name' },
+  { menuNo: '12', originalName: 'BITTERLEAF SOUP', codes: ['1', '2', '3'], currentId: 'bitterleaf-soup', mapping: 'same-name' },
+  { menuNo: '13', originalName: 'OFE AKWU', codes: ['1', '2', '3'], currentId: null, mapping: 'discontinued', note: 'Palmnusssuppe. Nicht automatisch der aktuellen Banga Soup zugeordnet – Küche soll bestätigen, ob Banga dieselbe Rezeptur ist.' },
+  { menuNo: null, originalName: 'UHA SOUP', codes: [], currentId: 'oha-soup', mapping: 'name-variant', note: 'Alte Schreibweise „Uha“ (Oha-Blätter); Text nennt Fisch, kein Code gedruckt.' },
+  { menuNo: '10', originalName: 'JOLLOF RICE', codes: ['4', '7', '8'], currentId: 'jollof-rice', mapping: 'same-name' },
+  { menuNo: '14', originalName: 'WHITE RICE', codes: ['1', '2', '4'], currentId: 'white-rice', mapping: 'same-name' },
+  { menuNo: '15', originalName: 'BEANS & PLANTAIN', codes: ['4', '7'], currentId: 'beans-plantain', mapping: 'same-name' },
+  { menuNo: '16', originalName: 'PORRIDGE YAM', codes: [], currentId: 'porridge-yam', mapping: 'same-name' },
+  { menuNo: '17', originalName: 'PORRIDGE COCOYAM', codes: ['1', '2'], currentId: null, mapping: 'discontinued', note: 'Andere Knolle (Cocoyam) als Porridge Yam – nicht übertragen.' },
+  { menuNo: '18', originalName: 'FRIED YAM & EGG SAUCE', codes: [], currentId: 'fried-yam-egg-sauce', mapping: 'same-name', note: 'Ei-Sauce, aber kein Code ⁵ gedruckt – Ei-Kennzeichnung fehlt.' },
+  { menuNo: '19', originalName: 'GRILLED FISH (Tilapia/Bass)', codes: [], currentId: 'tilapia', mapping: 'changed', note: 'Alt: gegrillt, Tilapia oder Barsch; aktuell: gebraten oder gekocht. Fisch-Code ² fehlte.' },
+  { menuNo: '20', originalName: 'ISIEWU', codes: ['2', '3', '4'], currentId: 'isiewu', mapping: 'same-name' },
+  { menuNo: '21', originalName: 'NKWOBI', codes: ['2', '3', '4'], currentId: 'nkwobi', mapping: 'same-name' },
+  { menuNo: '22', originalName: 'PEPPER SOUP', codes: ['1', '2', '4', '8'], currentId: 'pepper-soup', mapping: 'same-name' },
+  { menuNo: '26', originalName: 'STOCKFISH', codes: ['2'], currentId: 'stockfish', mapping: 'same-name' },
+  { menuNo: '27', originalName: 'SUYA', codes: [], currentId: 'suya', mapping: 'same-name', note: 'Kein Code gedruckt. Erdnüsse in der Suya-Gewürzmischung prüfen.' },
+  { menuNo: '25', originalName: 'SNAIL', codes: [], currentId: 'snail', mapping: 'same-name', note: 'Schnecken = Weichtiere (Annex II Nr. 14); kein Code vorhanden, da die alte Legende keine Weichtiere kannte.' },
+  { menuNo: '30', originalName: 'ASSORTED MEAT PLATE', codes: [], currentId: 'assorted-plate', mapping: 'changed', note: 'Alt: mit Pommes, Reis und Salat; aktuell: mit Yam oder Kochbanane.' },
+  { menuNo: '23', originalName: 'ABACHA', codes: [], currentId: 'abacha', mapping: 'same-name' },
+  { menuNo: '24', originalName: 'UGBA', codes: [], currentId: null, mapping: 'discontinued' },
+  { menuNo: '9', originalName: 'FRIED RICE', codes: ['4', '5'], currentId: 'fried-rice', mapping: 'same-name' },
+];
+
+export type PublicAllergenStatus = 'confirmed' | 'previous-menu' | 'not-declared';
+
+export interface PublicAllergenInfo {
+  status: PublicAllergenStatus;
+  /** Allergen labels (localized), incl. "(possible)" wording where the source said so. */
+  allergens: { code: AllergenCode; label: L10n; possible: boolean; historicalCode?: HistoricalCode }[];
+  additives: { code: AdditiveCode; label: L10n; historicalCode?: HistoricalCode }[];
+  /** Historical entry the declaration comes from (previous-menu status only). */
+  historical?: HistoricalEntry;
+  /** True when the dish was on the old menu without any code (absence ≠ allergen-free). */
+  listedWithoutCodes: boolean;
+  verifiedOn?: string;
+}
+
+const ADDITIVE_LABELS: Partial<Record<AdditiveCode, L10n>> = {
+  '1': { de: 'mit Farbstoff', en: 'with colouring', fr: 'avec colorant' },
+  '5': { de: 'mit Geschmacksverstärker', en: 'with flavour enhancer', fr: 'avec exhausteur de goût' },
+};
+
 /** Investigations derived from Afrolink's own printed-menu descriptions or the dish/product name. */
 const INVESTIGATE: Record<string, Investigation[]> = {
   // Food — basis: Afrolink printed menu 2026 description (PM) or dish name
@@ -213,4 +312,40 @@ export function recordFor(itemId: string): AllergenRecord | undefined {
 /** True when no item has a verified declaration yet. */
 export function nothingVerified(): boolean {
   return allergenRecords.every((r) => r.status !== 'verified');
+}
+
+const allergenName = (code: AllergenCode): L10n => ALLERGENS.find((a) => a.code === code)!.name;
+
+/**
+ * What may be shown publicly for a food item, in order of authority:
+ * 1. a kitchen-confirmed record for the current recipe (status 'verified');
+ * 2. otherwise the declaration printed on Afrolink's previous menu, labelled as such;
+ * 3. otherwise nothing is declared — the guest is asked to enquire (never "allergen-free").
+ */
+export function publicAllergenInfo(itemId: string): PublicAllergenInfo {
+  const rec = recordFor(itemId);
+  const hist = historicalRegister.find((h) => h.currentId === itemId);
+  if (rec?.status === 'verified') {
+    return {
+      status: 'confirmed',
+      allergens: (rec.allergens ?? []).map((code) => ({ code, label: allergenName(code), possible: false })),
+      additives: (rec.additives ?? []).map((code) => ({
+        code,
+        label: ADDITIVE_LABELS[code] ?? { de: ADDITIVES.find((a) => a.code === code)!.de, en: ADDITIVES.find((a) => a.code === code)!.de, fr: ADDITIVES.find((a) => a.code === code)!.de },
+      })),
+      listedWithoutCodes: false,
+      verifiedOn: rec.verifiedOn,
+    };
+  }
+  if (hist && hist.codes.length > 0) {
+    const allergens: PublicAllergenInfo['allergens'] = [];
+    const additives: PublicAllergenInfo['additives'] = [];
+    for (const c of hist.codes) {
+      const def = HISTORICAL_CODES[c];
+      if (def.kind === 'allergen') allergens.push({ code: def.allergen, label: def.label, possible: def.possible, historicalCode: c });
+      else additives.push({ code: def.additive, label: def.label, historicalCode: c });
+    }
+    return { status: 'previous-menu', allergens, additives, historical: hist, listedWithoutCodes: false };
+  }
+  return { status: 'not-declared', allergens: [], additives: [], listedWithoutCodes: !!hist };
 }

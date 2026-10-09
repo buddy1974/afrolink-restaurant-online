@@ -24,3 +24,6 @@ Thumbs.db
 
 # owner-supplied source images kept locally, never deployed
 owner-assets/
+
+# local embedded test database (ratings dev/QA)
+.data/

@@ -6,8 +6,12 @@ import { useT } from '../i18n/ui';
 
 interface Props {
   lang: Lang;
+  /** On the menu page headings move up one level (h2/h3 instead of h3/h4). */
+  standalone?: boolean;
 }
-const { lang } = Astro.props;
+const { lang, standalone = false } = Astro.props;
+const Title = standalone ? 'h2' : 'h3';
+const CatTitle = standalone ? 'h3' : 'h4';
 const t = useT(lang);
 
 // Empty categories (e.g. Hot Drinks, not yet supplied) are not rendered.
@@ -20,7 +24,7 @@ const categories = drinksMenu
   <div class="wrap">
     <header class="drinks__head">
       <p class="eyebrow">{t.drinks.eyebrow}</p>
-      <h3 id="drinks-title" class="drinks__title">{t.drinks.title}</h3>
+      <Title id="drinks-title" class="drinks__title">{t.drinks.title}</Title>
       <p class="drinks__note" id="water-note">{t.drinks.waterNote}</p>
     </header>
 
@@ -28,9 +32,9 @@ const categories = drinksMenu
       {
         categories.map((cat) => (
           <section class="dcat" aria-labelledby={`d-${cat.id}`} data-cat id={`drinks-${cat.id}`}>
-            <h4 class="dcat__title" id={`d-${cat.id}`}>
+            <CatTitle class="dcat__title" id={`d-${cat.id}`}>
               {cat.title[lang]}
-            </h4>
+            </CatTitle>
             {cat.subtitle && <p class="dcat__sub">{cat.subtitle[lang]}</p>}
             <ul role="list" class="drows">
               {cat.items.map((d) => {

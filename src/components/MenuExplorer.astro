@@ -4,54 +4,55 @@
  * owner-supplied photographs or an "Image coming soon" placeholder.
  * Content comes only from src/data (menu.ts, drinks.ts, dish-images.ts).
  */
-import { Image, Picture } from 'astro:assets';
 import Icon from './Icon.astro';
 import Drinks from './Drinks.astro';
-import logoMark from '../assets/brand/afrolink-logo.png';
+import DishCard from './DishCard.astro';
+import RatingsDiscover from './RatingsDiscover.astro';
 import { foodMenu, type MenuItem } from '../data/menu';
 import { drinksMenu } from '../data/drinks';
-import { dishImages } from '../data/dish-images';
-import { formatPrice } from '../data/format';
-import { galleryImage } from '../lib/images';
 import { phones, whatsappWithText } from '../data/business';
 import { routes, type Lang } from '../i18n/config';
 import { fmt, useT } from '../i18n/ui';
 
 interface Props {
   lang: Lang;
+  /** On /speisekarte/ the menu title is the page's h1 (the page header supplies it). */
+  standalone?: boolean;
 }
-const { lang } = Astro.props;
+const { lang, standalone = false } = Astro.props;
+// On the menu page the page title is the h1, so categories move up one level.
+const CatHeading = standalone ? 'h2' : 'h3';
 const t = useT(lang);
 
 const categories = foodMenu
-  .map((c) => ({
-    ...c,
-    items: c.items
-      .filter((i: MenuItem) => i.available !== false)
-      .map((i) => {
-        const di = dishImages[i.id];
-        return { ...i, photo: di ? { src: galleryImage(di.file, `dish-images.ts (${i.id})`), alt: di.alt[lang], wm: !!di.watermarked } : null };
-      }),
-  }))
+  .map((c) => ({ ...c, items: c.items.filter((i: MenuItem) => i.available !== false) }))
   .filter((c) => c.items.length > 0);
 
 const hasDrinks = drinksMenu.some((c) => c.items.length > 0);
 
-const searchText = (cat: string, item: MenuItem) =>
-  [item.name, item.description?.[lang], item.note?.[lang], item.label?.[lang], cat, ...(item.variants?.map((v) => v.label[lang]) ?? [])]
-    .filter(Boolean)
-    .join(' ');
 
 const askText = `${t.enquiry.msgGreeting}\n${t.menu.askTitle}\n`;
 ---
 
 <section class="menu on-paper" id="menu" aria-labelledby="menu-title">
   <div class="wrap menu__head">
-    <header class="section-head">
-      <p class="eyebrow">{t.menu.eyebrow}</p>
-      <h2 id="menu-title" class="section-title">{t.menu.title}</h2>
-      <p class="section-lede">{t.menu.lede}</p>
-    </header>
+    {
+      standalone ? (
+        <p class="visually-hidden" id="menu-title">
+          {t.menu.title}
+        </p>
+      ) : (
+        <header class="section-head">
+          <p class="eyebrow">{t.menu.eyebrow}</p>
+          <h2 id="menu-title" class="section-title">
+            <a class="section-title__link" href={routes.menu[lang]}>
+              {t.menu.title}
+            </a>
+          </h2>
+          <p class="section-lede">{t.menu.lede}</p>
+        </header>
+      )
+    }
 
     <aside class="notice" aria-label={t.menu.noticeTitle}>
       <p class="notice__title">{t.menu.noticeTitle}</p>
@@ -100,76 +101,23 @@ const askText = `${t.enquiry.msgGreeting}\n${t.menu.askTitle}\n`;
 
   <div class="wrap menu__body">
     <p class="menu__imgnote">{t.menu.imageNote}</p>
+    <RatingsDiscover lang={lang} />
     {
       categories.map((cat, ci) => (
         <section class="mcat" id={cat.id} aria-labelledby={`${cat.id}-title`} data-cat>
           <header class="mcat__head">
-            <h3 class="mcat__title" id={`${cat.id}-title`}>
+            <CatHeading class="mcat__title" id={`${cat.id}-title`}>
               <span class="mcat__num" aria-hidden="true">
                 {String(ci + 1).padStart(2, '0')}
               </span>
               {cat.title[lang]}
-            </h3>
+            </CatHeading>
             <p class="mcat__count">{cat.items.length === 1 ? t.menu.dishCountOne : fmt(t.menu.dishCount, { n: cat.items.length })}</p>
             {cat.note && <p class="mcat__note">{cat.note[lang]}</p>}
           </header>
           <ul role="list" class="dishes">
             {cat.items.map((item) => (
-              <li class="dish" id={`dish-${item.id}`} data-item data-search={searchText(cat.title[lang], item)}>
-                <div class="dish__media">
-                  {item.photo ? (
-                    <Picture
-                      src={item.photo.src}
-                      formats={['avif', 'webp']}
-                      widths={[240, 400, 600, 800]}
-                      sizes="(min-width: 80em) 18rem, (min-width: 64em) 30vw, (min-width: 40em) 45vw, 7.5rem"
-                      alt={item.photo.alt}
-                      loading="lazy"
-                      decoding="async"
-                      class:list={['dish__img', { 'is-watermarked': item.photo.wm }]}
-                    />
-                  ) : (
-                    <div class="dish__soon">
-                      <Image src={logoMark} width={40} densities={[1, 2]} alt="" class="dish__soonlogo" loading="lazy" />
-                      <span>{t.menu.imageSoon}</span>
-                    </div>
-                  )}
-                </div>
-                <div class="dish__body">
-                  {item.variants ? (
-                    <>
-                      <p class="dish__name">{item.name}</p>
-                      <ul role="list" class="variants">
-                        {item.variants.map((v) => (
-                          <li class="line">
-                            <span class="line__name">{v.label[lang]}</span>
-                            <span class="line__leader" aria-hidden="true" />
-                            <span class="line__price">{formatPrice(v.price)}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </>
-                  ) : (
-                    <p class="line line--main">
-                      <span class="line__name dish__name">{item.name}</span>
-                      <span class="line__leader" aria-hidden="true" />
-                      <span class="line__price">{formatPrice(item.price!)}</span>
-                    </p>
-                  )}
-                  {item.description && <p class="dish__desc">{item.description[lang]}</p>}
-                  {item.note && <p class="dish__note">{item.note[lang]}</p>}
-                  {(item.spice || item.label) && (
-                    <p class="dish__tags">
-                      {item.spice === 'hot' && (
-                        <span class="tag tag--hot" title={t.menu.hotTitle}>
-                          <span aria-hidden="true">♦</span> {t.menu.hot}
-                        </span>
-                      )}
-                      {item.label && <span class="tag tag--label">{item.label[lang]}</span>}
-                    </p>
-                  )}
-                </div>
-              </li>
+              <DishCard lang={lang} item={item} category={cat} />
             ))}
           </ul>
         </section>
@@ -177,7 +125,7 @@ const askText = `${t.enquiry.msgGreeting}\n${t.menu.askTitle}\n`;
     }
   </div>
 
-  <Drinks lang={lang} />
+  <Drinks lang={lang} standalone={standalone} />
 
   <div class="wrap">
     <p class="noresults" data-menu-empty hidden>{t.menu.noResults}</p>
@@ -192,7 +140,7 @@ const askText = `${t.enquiry.msgGreeting}\n${t.menu.askTitle}\n`;
           <Icon name="whatsapp" /> {t.actions.whatsapp}<span class="visually-hidden"> {t.a11y.opensWhatsApp}</span>
         </a>
         <a class="btn btn--line" href={phones.landline.href}><Icon name="phone" /> {phones.landline.display}</a>
-        <a class="btn btn--line" href="#enquiry" data-enquiry="dietary">{t.dietary.cta}</a>
+        <a class="btn btn--line" href={standalone ? `${routes.contact[lang]}?enquiry=dietary#enquiry` : '#enquiry'} data-enquiry="dietary">{t.dietary.cta}</a>
       </div>
     </div>
     <p class="desc-source">{t.menu.descSource}</p>
@@ -527,146 +475,6 @@ const askText = `${t.enquiry.msgGreeting}\n${t.menu.askTitle}\n`;
       grid-template-columns: repeat(4, minmax(0, 1fr));
     }
   }
-  .dish {
-    display: grid;
-    grid-template-columns: 7.5rem minmax(0, 1fr);
-    gap: 0.9rem;
-    padding: 0.6rem;
-    background: var(--ink-raised);
-    border: 1px solid var(--paper-line);
-  }
-  @media (min-width: 40em) {
-    .dish {
-      grid-template-columns: 1fr;
-      grid-template-rows: auto 1fr;
-      gap: 0;
-      padding: 0;
-    }
-  }
-  .dish__media {
-    aspect-ratio: 4 / 3;
-    overflow: hidden;
-    background: var(--paper-sunk);
-  }
-  @media (max-width: 39.99em) {
-    .dish__media {
-      aspect-ratio: 1 / 1;
-      align-self: start;
-    }
-  }
-  .dish__media :global(picture),
-  .dish__img {
-    width: 100%;
-    height: 100%;
-  }
-  .dish__img {
-    object-fit: cover;
-  }
-  .dish__img.is-watermarked {
-    object-position: 100% 100%;
-  }
-  .dish__soon {
-    display: grid;
-    place-content: center;
-    justify-items: center;
-    gap: 0.4rem;
-    height: 100%;
-    padding: 0.5rem;
-    text-align: center;
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--on-paper-muted);
-    border: 1px dashed rgb(214 168 78 / 0.35);
-  }
-  .dish__soonlogo {
-    width: 2.5rem;
-    height: auto;
-    opacity: 0.55;
-    filter: grayscale(0.4);
-  }
-  .dish__body {
-    display: grid;
-    align-content: start;
-    gap: 0.3rem;
-    min-width: 0;
-  }
-  @media (min-width: 40em) {
-    .dish__body {
-      padding: 1rem 1.1rem 1.15rem;
-    }
-  }
-  .line {
-    display: flex;
-    align-items: baseline;
-    gap: 0.5rem;
-  }
-  .dish__name {
-    font-size: var(--step-1);
-    font-weight: 600;
-    line-height: 1.25;
-  }
-  .line__name {
-    min-width: 0;
-  }
-  .line__leader {
-    flex: 1 1 1rem;
-    min-width: 1rem;
-    border-bottom: 1px dotted rgb(243 237 227 / 0.28);
-    transform: translateY(-0.3em);
-  }
-  .line__price {
-    flex: none;
-    font-size: var(--step-1);
-    font-weight: 700;
-    font-variant-numeric: tabular-nums lining-nums;
-    color: var(--gold);
-  }
-  .variants {
-    display: grid;
-    gap: 0.2rem;
-  }
-  .variants .line__name {
-    color: var(--on-paper-muted);
-  }
-  .variants .line__price {
-    font-size: var(--step-0);
-  }
-  .dish__desc {
-    font-size: 0.9375rem;
-    line-height: 1.45;
-    color: var(--on-paper-muted);
-  }
-  .dish__note {
-    font-family: var(--font-serif);
-    font-style: italic;
-    color: var(--on-paper-muted);
-  }
-  .dish__tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-    margin-top: 0.2rem;
-  }
-  .tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-    padding: 0.15rem 0.5rem;
-    font-size: 0.75rem;
-    font-weight: 650;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    border: 1px solid currentColor;
-  }
-  .tag--hot {
-    color: var(--gold);
-  }
-  .tag--label {
-    color: var(--burgundy);
-  }
-
   .noresults {
     margin-block: 0 2rem;
     padding: 1.25rem;

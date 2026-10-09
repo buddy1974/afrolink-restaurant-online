@@ -1,11 +1,14 @@
 ---
 /**
- * Allergen & additive information page. Shows ONLY verified declarations (status 'verified'
- * with kitchen sign-off). Everything else is shown as "being verified – ask staff".
+ * Allergen & additive information page.
+ * Food: kitchen-confirmed declarations, otherwise the declarations printed on Afrolink's previous
+ * menu (labelled as such, original codes kept), otherwise "ask staff" — never "allergen-free".
+ * Drinks: only kitchen/label-verified declarations.
  * German is the legally relevant language; EN/FR link to it prominently.
  */
 import LegalShell from './LegalShell.astro';
-import { ALLERGENS, ADDITIVES, allergenRecords, recordFor } from '../data/allergens';
+import { ALLERGENS, ADDITIVES, HISTORICAL_MENU_SOURCE, allergenRecords, publicAllergenInfo, recordFor } from '../data/allergens';
+import { usePages } from '../i18n/pages';
 import { foodMenu } from '../data/menu';
 import { drinksMenu } from '../data/drinks';
 import { allergenCopy } from '../i18n/legal-content';
@@ -16,6 +19,8 @@ interface Props {
 }
 const { lang } = Astro.props;
 const c = allergenCopy[lang];
+const a = usePages(lang).allergen;
+const sup: Record<string, string> = { '1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵', '7': '⁷', '8': '⁸' };
 const allPending = allergenRecords.every((r) => r.status !== 'verified');
 
 const rows = (kind: 'food' | 'drink') =>
@@ -28,6 +33,17 @@ const rows = (kind: 'food' | 'drink') =>
         return { id: i.id, name, category: cat.title[lang], rec };
       }),
   );
+
+function foodText(id: string): { text: string; status: string } {
+  const info = publicAllergenInfo(id);
+  if (info.status === 'not-declared') return { text: c.pending, status: info.status };
+  const list = [
+    ...info.allergens.map((x) => `${x.label[lang]}${x.historicalCode ? sup[x.historicalCode] : ''}`),
+    ...info.additives.map((x) => `${x.label[lang]}${x.historicalCode ? sup[x.historicalCode] : ''}`),
+  ].join(', ');
+  const label = info.status === 'confirmed' ? `${a.confirmed} (${c.verifiedOn} ${info.verifiedOn})` : a.previous;
+  return { text: `${label}: ${list}`, status: info.status };
+}
 
 function statusText(rec: ReturnType<typeof recordFor>): string {
   if (!rec || rec.status !== 'verified') return c.pending;
@@ -52,6 +68,10 @@ function statusText(rec: ReturnType<typeof recordFor>): string {
   <section class="status" aria-labelledby="status-title">
     <h2 id="status-title">{c.statusTitle}</h2>
     <p>{allPending ? c.statusText : c.askStaff}</p>
+    <p class="fine">{a.previousNote}</p>
+    <p class="fine">
+      {a.legend}: <span lang="de">{HISTORICAL_MENU_SOURCE.legend}</span>
+    </p>
   </section>
 
   {
@@ -67,15 +87,18 @@ function statusText(rec: ReturnType<typeof recordFor>): string {
               </tr>
             </thead>
             <tbody>
-              {rows(kind).map((r) => (
-                <tr data-status={r.rec?.status ?? 'pending'}>
-                  <th scope="row">
-                    {r.name}
-                    <span class="cat">{r.category}</span>
-                  </th>
-                  <td>{statusText(r.rec)}</td>
-                </tr>
-              ))}
+              {rows(kind).map((r) => {
+                const f = kind === 'food' ? foodText(r.id) : { text: statusText(r.rec), status: r.rec?.status ?? 'pending' };
+                return (
+                  <tr data-status={f.status}>
+                    <th scope="row">
+                      {r.name}
+                      <span class="cat">{r.category}</span>
+                    </th>
+                    <td>{f.text}</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

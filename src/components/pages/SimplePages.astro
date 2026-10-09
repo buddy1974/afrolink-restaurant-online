@@ -1,0 +1,77 @@
+---
+/** /galerie/ and /kontakt/ — dedicated destinations reusing the home-page sections. */
+import PageShell from '../PageShell.astro';
+import Gallery from '../Gallery.astro';
+import HoursContact from '../HoursContact.astro';
+import Enquiry from '../Enquiry.astro';
+import Icon from '../Icon.astro';
+import { mapsHref, phones, whatsapp } from '../../data/business';
+import { routes, type Lang } from '../../i18n/config';
+import { useT } from '../../i18n/ui';
+import { usePages } from '../../i18n/pages';
+
+interface Props {
+  lang: Lang;
+  kind: 'gallery' | 'contact';
+}
+const { lang, kind } = Astro.props;
+const t = useT(lang);
+const p = usePages(lang);
+---
+
+{
+  kind === 'gallery' ? (
+    <PageShell
+      lang={lang}
+      route="gallery"
+      title={p.galleryPage.title}
+      description={p.galleryPage.description}
+      crumbs={[{ name: p.nav.gallery, href: routes.gallery[lang] }]}
+      bare
+    >
+      <Gallery lang={lang} standalone />
+    </PageShell>
+  ) : (
+    <PageShell
+      lang={lang}
+      route="contact"
+      title={p.contactPage.title}
+      description={p.contactPage.description}
+      crumbs={[{ name: p.nav.contact, href: routes.contact[lang] }]}
+      h1={p.contactPage.h1}
+      lede={p.contactPage.lede}
+    >
+      <div class="wrap contact-actions">
+        <a class="btn btn--solid" href={phones.landline.href}>
+          <Icon name="phone" /> {p.cta.call} {phones.landline.display}
+        </a>
+        <a class="btn btn--line" href={whatsapp.href} target="_blank" rel="noopener">
+          <Icon name="whatsapp" /> {p.cta.whatsapp}
+          <span class="visually-hidden"> {t.a11y.opensWhatsApp}</span>
+        </a>
+        <a class="btn btn--line" href={mapsHref} target="_blank" rel="noopener">
+          {p.cta.directions}
+          <span class="visually-hidden"> {t.a11y.opensNewTab}</span>
+        </a>
+      </div>
+      <HoursContact lang={lang} />
+      <div class="on-ink contact-enquiry">
+        <div class="wrap">
+          <Enquiry lang={lang} preset="question" headingLevel={2} />
+        </div>
+      </div>
+    </PageShell>
+  )
+}
+
+<style>
+  .contact-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    padding-bottom: 1rem;
+  }
+  .contact-enquiry {
+    padding-bottom: var(--section);
+  }
+</style>

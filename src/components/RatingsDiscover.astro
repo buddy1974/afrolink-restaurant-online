@@ -1,0 +1,109 @@
+---
+/**
+ * "Discover dishes" controls and the Customer Favourites strip. Rendered hidden; the ratings
+ * client fills and reveals it only when ratings are enabled and there is genuine data.
+ */
+import { type Lang } from '../i18n/config';
+import { usePages } from '../i18n/pages';
+import { FAVOURITE_MIN_RATINGS } from '../lib/ratings/ranking';
+
+interface Props {
+  lang: Lang;
+}
+const r = usePages(Astro.props.lang).rating;
+const sorts = [
+  { key: 'all', label: r.sortAll },
+  { key: 'top', label: r.sortTop },
+  { key: 'most', label: r.sortMost },
+  { key: 'trending', label: r.sortTrending },
+  { key: 'recent', label: r.sortRecent },
+];
+---
+
+<section class="discover" data-ratings-discover hidden aria-labelledby="discover-title">
+  <div class="discover__favs" data-favourites hidden>
+    <p class="discover__title">{r.favourites}</p>
+    <ul role="list" class="discover__favlist"></ul>
+    <p class="discover__note">{r.favouritesNote.replace('{n}', String(FAVOURITE_MIN_RATINGS))}</p>
+  </div>
+  <p class="discover__title" id="discover-title">{r.sortLabel}</p>
+  <div class="discover__sorts" role="group" aria-labelledby="discover-title">
+    {
+      sorts.map((s) => (
+        <button type="button" data-sort={s.key} aria-pressed={s.key === 'all' ? 'true' : 'false'}>
+          {s.label}
+        </button>
+      ))
+    }
+  </div>
+  <p class="discover__help" data-discover-help aria-live="polite"></p>
+  <ol class="discover__list" data-discover-list hidden></ol>
+  <p class="discover__empty" data-discover-empty hidden>{r.empty}</p>
+</section>
+
+<style>
+  .discover {
+    display: grid;
+    gap: 0.75rem;
+    padding: 1.1rem 1.25rem;
+    border: 1px solid var(--paper-line);
+    background: var(--ink-raised);
+  }
+  .discover__title {
+    font-size: var(--step--1);
+    font-weight: 650;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+  .discover__sorts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .discover__sorts button {
+    min-height: 2.25rem;
+    padding: 0.2rem 0.8rem;
+    font: inherit;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--on-paper);
+    background: transparent;
+    border: 1px solid var(--paper-line);
+    border-radius: 999px;
+    cursor: pointer;
+  }
+  .discover__sorts button[aria-pressed='true'] {
+    color: var(--ink);
+    background: var(--gold);
+    border-color: var(--gold);
+  }
+  .discover__help,
+  .discover__note,
+  .discover__empty {
+    font-size: var(--step--1);
+    color: var(--on-paper-muted);
+  }
+  .discover__help:empty {
+    display: none;
+  }
+  .discover__list,
+  .discover__favlist {
+    display: grid;
+    gap: 0.35rem;
+  }
+  .discover__list {
+    padding-left: 1.4rem;
+  }
+  .discover :global(.discover__meta) {
+    margin-left: 0.6rem;
+    font-size: var(--step--1);
+    color: var(--on-paper-muted);
+  }
+  .discover__favs {
+    display: grid;
+    gap: 0.5rem;
+    padding-bottom: 0.9rem;
+    border-bottom: 1px solid var(--paper-line);
+  }
+</style>

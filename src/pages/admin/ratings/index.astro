@@ -1,0 +1,395 @@
+---
+/**
+ * Management dashboard for dish ratings (internal, German). On-demand, never indexed.
+ * Shows only aggregated and pseudonymous data; star values cannot be edited here.
+ */
+import AdminShell from '../../../components/AdminShell.astro';
+import { getDb } from '../../../lib/ratings/db';
+import { configFromEnv } from '../../../lib/ratings/http';
+import { adminConfigFromEnv, isAdmin, noStore } from '../../../lib/ratings/admin-http';
+import { ciText, dashboard, filterFromUrl, fmtAvg } from '../../../lib/ratings/admin-view';
+import { MODERATION_REASONS, ping } from '../../../lib/ratings/service';
+import { FAVOURITE_MIN_RATINGS, FAVOURITE_MIN_SCORE, MIN_RATINGS_TOP, PRIOR_WEIGHT } from '../../../lib/ratings/ranking';
+import { foodMenu } from '../../../data/menu';
+
+export const prerender = false;
+
+for (const [k, v] of Object.entries(noStore)) Astro.response.headers.set(k, v);
+const cfg = adminConfigFromEnv(configFromEnv());
+const authed = isAdmin(Astro.request, cfg);
+const url = Astro.url;
+const error = url.searchParams.get('e');
+const msg = url.searchParams.get('m');
+const db = authed ? await getDb() : null;
+const f = filterFromUrl(url);
+let data: Awaited<ReturnType<typeof dashboard>> | null = null;
+let latency: number | null = null;
+let dbError = false;
+if (db) {
+  try {
+    latency = await ping(db);
+    data = await dashboard(db, cfg.env, f);
+  } catch {
+    dbError = true;
+  }
+}
+const fmtDate = (iso: string | null | undefined) =>
+  iso ? new Date(iso).toLocaleString('de-DE', { timeZone: 'Europe/Berlin', dateStyle: 'medium', timeStyle: 'short' }) : '–';
+const maxDist = data ? Math.max(1, ...data.overall) : 1;
+const maxMonth = data ? Math.max(1, ...data.months.map((m) => m.ratings)) : 1;
+const q = url.search;
+const reasons: Record<string, string> = {
+  automated: 'Automatisiert / Bot',
+  'same-person-multiple': 'Mehrfachstimmen derselben Person',
+  'abusive-pattern': 'Missbräuchliches Muster',
+  'test-data': 'Testdaten',
+  other: 'Sonstiges (Begründung nötig)',
+};
+---
+
+<AdminShell title="Bewertungen">
+  <main>
+    <h1>Gerichtebewertungen</h1>
+    <p class="muted">Umgebung: <strong>{cfg.env}</strong> · Öffentliche Bewertungen: <strong>{cfg.enabled ? 'aktiv' : 'deaktiviert'}</strong></p>
+
+    {
+      !authed ? (
+        <section>
+          <h2>Anmeldung</h2>
+          {error === 'login' && <p class="warn">Passwort falsch.</p>}
+          {error === 'rate' && <p class="warn">Zu viele Versuche. Bitte 15 Minuten warten.</p>}
+          {!cfg.passwordHash && <p class="warn">Zugang ist noch nicht eingerichtet (RATINGS_ADMIN_PASSWORD_HASH fehlt).</p>}
+          <form method="post" action="/api/admin/login" class="inline">
+            <label for="pw">Passwort</label>
+            <input id="pw" name="password" type="password" autocomplete="current-password" required />
+            <button type="submit">Anmelden</button>
+          </form>
+        </section>
+      ) : !db || dbError ? (
+        <p class="warn">Datenbank nicht erreichbar. Bitte Systemstatus prüfen.</p>
+      ) : (
+        data && (
+          <>
+            <form method="post" action="/api/admin/logout">
+              <button type="submit">Abmelden</button>
+            </form>
+
+            <h2>Bewertungszeitraum</h2>
+            {data.launch ? (
+              <p>
+                Start (öffentlicher Launch): <strong>{fmtDate(data.launch)}</strong> · Ende der 6-Monats-Auswertung:{' '}
+                <strong>{fmtDate(data.evaluationEnd)}</strong> · <a href={`/admin/ratings/report/`}>6-Monats-Bericht</a>
+              </p>
+            ) : (
+              <p class="muted">Noch nicht gestartet. Der Start wird automatisch beim ersten öffentlichen Abruf in Produktion gespeichert (nicht rückdatierbar).</p>
+            )}
+
+            <h2>Filter</h2>
+            <form method="get" class="inline">
+              <label for="from">Von</label>
+              <input id="from" name="from" type="date" value={f.fromDate ?? ''} />
+              <label for="to">Bis</label>
+              <input id="to" name="to" type="date" value={f.toDate ?? ''} />
+              <label for="cat">Kategorie</label>
+              <select id="cat" name="cat">
+                <option value="">Alle</option>
+                {foodMenu.map((c) => (
+                  <option value={c.id} selected={f.cat === c.id}>
+                    {c.title.de}
+                  </option>
+                ))}
+              </select>
+              <button type="submit">Anwenden</button>
+              <a href="/admin/ratings/">Zurücksetzen</a>
+              <a href={`/api/admin/export.csv${q}`}>CSV-Export</a>
+            </form>
+
+            <h2>Überblick</h2>
+            <div class="cards">
+              <div class="card">
+                <b>{data.totals.active}</b>gültige Bewertungen
+              </div>
+              <div class="card">
+                <b>{data.totals.voters}</b>anonyme Bewertende
+              </div>
+              <div class="card">
+                <b>{fmtAvg(data.mean)}</b>Durchschnitt (alle)
+              </div>
+              <div class="card">
+                <b>{data.totals.revisions}</b>Änderungen
+              </div>
+              <div class="card">
+                <b>{data.totals.excluded}</b>ausgeschlossen (moderiert)
+              </div>
+            </div>
+
+            <h2>Verteilung 1–5 Sterne</h2>
+            <table>
+              <tbody>
+                {data.overall.map((c, i) => (
+                  <tr>
+                    <th scope="row">{i + 1} ★</th>
+                    <td>
+                      <span class="bar" style={`width:${(c / maxDist) * 18}rem`} /> {c}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            <h2>Monatlicher Verlauf</h2>
+            {data.months.length === 0 ? (
+              <p class="muted">Noch keine Daten.</p>
+            ) : (
+              <table>
+                <thead>
+                  <tr>
+                    <th>Monat</th>
+                    <th>Bewertungen</th>
+                    <th class="num">Ø</th>
+                    <th class="num">Bewertende</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.months.map((m) => (
+                    <tr>
+                      <td>{m.month}</td>
+                      <td>
+                        <span class="bar" style={`width:${(m.ratings / maxMonth) * 14}rem`} /> {m.ratings}
+                      </td>
+                      <td class="num">{fmtAvg(m.avg)}</td>
+                      <td class="num">{m.voters}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+
+            <h2>Bestbewertet & meistbewertet</h2>
+            <p class="muted">
+              Bestbewertet = gewichteter Durchschnitt (Bayes, {PRIOR_WEIGHT} virtuelle Stimmen zum Gesamtdurchschnitt), mindestens {MIN_RATINGS_TOP}{' '}
+              Bewertungen. Lieblingsgerichte: mindestens {FAVOURITE_MIN_RATINGS} Bewertungen und gewichtet ≥ {FAVOURITE_MIN_SCORE.toFixed(1)}.
+              Bewertungen sind keine Verkaufszahlen.
+            </p>
+            <div class="cards">
+              <div class="card">
+                <strong>Bestbewertet</strong>
+                <ol>
+                  {data.top.map((d) => (
+                    <li>
+                      {data!.names[d.dishId]?.name ?? d.dishId} – {fmtAvg(d.score)} (n={d.n})
+                    </li>
+                  ))}
+                </ol>
+              </div>
+              <div class="card">
+                <strong>Meistbewertet</strong>
+                <ol>
+                  {data.most.map((d) => (
+                    <li>
+                      {data!.names[d.dishId]?.name ?? d.dishId} – n={d.n}, Ø {fmtAvg(d.avg)}
+                    </li>
+                  ))}
+                </ol>
+              </div>
+              <div class="card">
+                <strong>Lieblingsgerichte</strong>
+                {data.favourites.length ? (
+                  <ol>
+                    {data.favourites.map((d) => (
+                      <li>{data!.names[d.dishId]?.name ?? d.dishId}</li>
+                    ))}
+                  </ol>
+                ) : (
+                  <p class="muted">Noch nicht genug Bewertungen.</p>
+                )}
+              </div>
+              <div class="card">
+                <strong>Neue Favoriten (30 Tage)</strong>
+                {data.emerging.length ? (
+                  <ul>
+                    {data.emerging.map((e) => (
+                      <li>
+                        {data!.names[e.dishId]?.name ?? e.dishId}: Ø {fmtAvg(e.recentAvg)} (n={e.recentN}) vs. vorher {fmtAvg(e.earlierAvg)} (n={e.earlierN})
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p class="muted">Keine.</p>
+                )}
+              </div>
+              <div class="card">
+                <strong>Durchgängig schwächer</strong>
+                {data.weaker.length ? (
+                  <ul>
+                    {data.weaker.map((d) => (
+                      <li>
+                        {data!.names[d.dishId]?.name ?? d.dishId}: gewichtet {fmtAvg(d.score)} (n={d.n})
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p class="muted">Keine (Kriterium: n ≥ 5 und gewichtet &lt; 3,5).</p>
+                )}
+              </div>
+            </div>
+
+            <h2>Alle Gerichte</h2>
+            <div class="scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Gericht</th>
+                    <th>Kategorie</th>
+                    <th class="num">n</th>
+                    <th class="num">Ø</th>
+                    <th class="num">gewichtet</th>
+                    <th class="num">95 %-KI</th>
+                    <th>1★ 2★ 3★ 4★ 5★</th>
+                    <th class="num">30 Tage</th>
+                    <th>zuletzt</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.ranked.map((d) => (
+                    <tr>
+                      <td>{data!.names[d.dishId]?.name ?? `${d.dishId} (nicht mehr auf der Karte)`}</td>
+                      <td>{data!.names[d.dishId]?.category ?? '–'}</td>
+                      <td class="num">{d.n}</td>
+                      <td class="num">{fmtAvg(d.avg)}</td>
+                      <td class="num">{fmtAvg(d.score)}</td>
+                      <td class="num">{ciText(d)}</td>
+                      <td>{d.dist.join(' · ')}</td>
+                      <td class="num">{d.n30}</td>
+                      <td>{fmtDate(d.last)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <h2>Auffällige Muster</h2>
+            <p class="muted">
+              Hinweise, keine automatischen Ausschlüsse. Mehrere Gäste im selben WLAN (z. B. im Restaurant) sind normal. Schlüssel sind gekürzte,
+              täglich wechselnde Hashes – keine IP-Adressen.
+            </p>
+            {data.suspicious.length === 0 ? (
+              <p class="muted">Keine.</p>
+            ) : (
+              <table>
+                <thead>
+                  <tr>
+                    <th>Art</th>
+                    <th>Schlüssel</th>
+                    <th>Tag</th>
+                    <th class="num">Bewertungen</th>
+                    <th class="num">Gerichte</th>
+                    <th>gleiche Sterne</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.suspicious.map((s) => (
+                    <tr>
+                      <td>{s.kind === 'ip-day-burst' ? 'Viele von einem Netz/Tag' : 'Viele in 10 Min. (eine Person)'}</td>
+                      <td>{s.key}…</td>
+                      <td>{s.day}</td>
+                      <td class="num">{s.ratings}</td>
+                      <td class="num">{s.dishes}</td>
+                      <td>{s.sameStars ? 'ja' : 'nein'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+
+            <h2 id="moderation">Moderation (neueste Bewertungen)</h2>
+            <div class="note">
+              <p>
+                Regeln: Ausgeschlossen werden nur nachweislich automatisierte, mehrfach abgegebene oder missbräuchliche Bewertungen sowie Testdaten. Schlechte
+                Bewertungen allein sind kein Grund. Jeder Ausschluss braucht einen Grund und wird protokolliert; er kann rückgängig gemacht werden. Sternwerte
+                können nicht verändert werden.
+              </p>
+            </div>
+            {msg === 'ok' && <p>Gespeichert.</p>}
+            {error === 'note' && <p class="warn">Bei „Sonstiges“ ist eine Begründung (mind. 5 Zeichen) nötig.</p>}
+            <div class="scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Gericht</th>
+                    <th class="num">★</th>
+                    <th>Status</th>
+                    <th>aktualisiert</th>
+                    <th>Bewertende/r</th>
+                    <th>Aktion</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.latest.map((r) => (
+                    <tr>
+                      <td>{r.id}</td>
+                      <td>{data!.names[r.dishId]?.name ?? r.dishId}</td>
+                      <td class="num">{r.stars}</td>
+                      <td>{r.status === 'active' ? 'gültig' : 'ausgeschlossen'}</td>
+                      <td>{fmtDate(r.updatedAt)}</td>
+                      <td>{r.voter}…</td>
+                      <td>
+                        <form method="post" action="/api/admin/moderate" class="inline">
+                          <input type="hidden" name="id" value={r.id} />
+                          <input type="hidden" name="action" value={r.status === 'active' ? 'exclude' : 'restore'} />
+                          <select name="reason" aria-label="Grund">
+                            {MODERATION_REASONS.map((x) => (
+                              <option value={x}>{reasons[x]}</option>
+                            ))}
+                          </select>
+                          <input name="note" placeholder="Notiz" aria-label="Notiz" maxlength="500" />
+                          <button type="submit">{r.status === 'active' ? 'Ausschließen' : 'Wiederherstellen'}</button>
+                        </form>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <h2>Moderationsprotokoll</h2>
+            {data.modLog.length === 0 ? (
+              <p class="muted">Keine Einträge.</p>
+            ) : (
+              <table>
+                <thead>
+                  <tr>
+                    <th>Zeit</th>
+                    <th>Bewertung</th>
+                    <th>Gericht</th>
+                    <th>Aktion</th>
+                    <th>Grund</th>
+                    <th>Notiz</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.modLog.map((m) => (
+                    <tr>
+                      <td>{fmtDate(m.at)}</td>
+                      <td>{m.ratingId}</td>
+                      <td>{data!.names[m.dishId]?.name ?? m.dishId}</td>
+                      <td>{m.action === 'exclude' ? 'ausgeschlossen' : 'wiederhergestellt'}</td>
+                      <td>{reasons[m.reason] ?? m.reason}</td>
+                      <td>{m.note}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+
+            <h2>Systemstatus</h2>
+            <p>
+              Datenbank: <strong>erreichbar</strong> ({latency} ms) · Umgebung: {cfg.env} · Öffentliche Bewertungen: {cfg.enabled ? 'aktiv' : 'deaktiviert'}
+            </p>
+          </>
+        )
+      )
+    }
+  </main>
+</AdminShell>

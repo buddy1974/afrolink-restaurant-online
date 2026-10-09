@@ -1,0 +1,130 @@
+Item
+Price
+1-EGUSI SOUP (Daily)
+Melon seed soup with meats and spices served with Garri or pounded yam.
+DE: Suppe aus gemahlenen Melonenkernen mit Fleisch und Gewürzen.
+€14,00
+2-UKAZI SOUP (Rotating)
+Ukazi leaf soup with meats and fish served with Garri or pounded yam.
+DE: Ukazi-Blattsuppe mit Fleisch und Fisch.
+€15,00
+3-UGU SOUP (Rotating)
+Pumpkin leaf soup with meats and spices served with Garri or pounded yam.
+DE: Suppe aus Kürbisblättern mit Fleisch und Gewürzen.
+€15,00
+4-EDIKAIKONG¹² SOUP (Rotating)
+Pumpkin &amp; waterleaf soup with meats, crayfish and fish, served with Garri or pounded yam.
+DE: Gemüsesuppe aus Kürbisblättern und Wasserblättern mit Fleisch, Krebstieren und Fisch.
+€15,00
+5-OGBONO SOUP (Rotating)
+Wild mango seed soup with meats and fish served with Garri or pounded yam.
+DE: Suppe aus Ogbono-Samen mit Fleisch und Fisch.
+€14,00
+6-OFE NSALA¹²⁴ (Rotating)
+White catfish soup with crayfish and spices served with Garri or pounded yam.
+DE: Weiße Suppe mit Wels, Krebstieren und Gewürzen.
+€15,00
+7-OKRA SOUP (Daily)
+Okra soup with meats and fish served with Garri or pounded yam.
+DE: Okrasuppe mit Fleisch und Fisch.
+€14,00
+8-AFANG SOUP (Rotating)
+Afang &amp; waterleaf soup with meats, crayfish and fish, served with Garri or pounded yam.
+DE: Afang- und Wasserblättersuppe mit Fleisch, Krebstieren und Fisch.
+€15,00
+11-EFO RIRO²³⁴ (Rotating)
+Spinach stew with meats, peppers, and spices served with Garri or pounded yam.
+DE: Spinatgemüse mit Fleisch, Paprika und Gewürzen.
+€14,00
+12-BITTERLEAF SOUP¹²³ (Rotating)
+Bitterleaf soup with meats, crayfish and fish served with Garri or pounded yam.
+DE: Bitterblattsuppe mit Fleisch, Krebstieren und Fisch.
+€14,00
+13-OFE AKWU¹²³ (Rotating)
+Palm nut soup with meats, crayfish and fish served with Garri or pounded yam.
+DE: Palmnusssuppe mit Fleisch, Krebstieren und Fisch.
+€15,00
+UHA SOUP (Rotating)
+Aromatic Nigerian soup made with oha leaves, meats and fish. Served with Garri or pounded yam.
+DE: Aromatische Suppe aus Oha-Blättern, Fleisch und Fisch. Serviert mit Garri oder Pounded Yam.
+€14,00
+🍛 DAILY MEALS | TÄGLICHE GERICHTE
+Item
+Price
+10-JOLLOF RICE⁴⁷⁸ (Daily)
+Tomato rice with meat and fried plantains. Optional: beans or turkey.
+DE: Tomatenreis mit Fleisch. Optional mit Bohnen oder Truthahn.
+€13,00
+14-WHITE RICE¹²⁴ (Daily)
+White rice with stew or pepper soup (meat or fish).
+DE: Weißer Reis mit Eintopf oder Pfeffersuppe (Fleisch oder Fisch).
+€12,00
+15-BEANS &amp; PLANTAIN⁴⁷ (Daily)
+Spiced beans in palm oil, served with plantains or yam.
+DE: Bohnen in Palmöl, serviert mit Kochbananen oder Yamswurzel.
+€15,00
+16-PORRIDGE YAM (Daily)
+Yam cooked in red oil and spices.
+DE: Yamswurzel mit Palmöl und Gewürzen gekocht.
+€15,00
+17-PORRIDGE COCOYAM¹² (On Command)
+Cameroonian-style cocoyam with bitterleaf and dried fish.
+DE: Kokoyam nach kamerunischer Art mit Bitterblättern und getrocknetem Fisch.
+€15,00
+18-FRIED YAM &amp; EGG SAUCE (Daily)
+Fried yam served with tomato-based egg sauce.
+DE: Gebratene Yamswurzel mit Tomaten-Ei-Sauce.
+€13,00
+🐟 FISH &amp; GRILLS | FISCH &amp; GRILL
+Item
+Price
+19-GRILLED FISH (Tilapia/Bass)
+Served with plantain or yam and vegetables.
+DE: Gegrillter Tilapia- oder Barschfisch mit Kochbananen oder Yams und Gemüse.
+M (Medium)   – €20,00L (Large) – €25,00
+see above
+20-ISIEWU²³⁴ (Rotating)
+Goat head in spicy mustard-based sauce.
+DE: Ziegenkopf in würziger Senfsauce.
+€15,00
+21-NKWOBI²³⁴ (Daily)
+Cow feet in spicy mustard-based sauce.
+DE: Rinderfuß in scharfer Senfsauce.
+€15,00
+22-PEPPER SOUP¹²⁴⁸ (Daily)
+Spicy goat meat soup with herbs bouillon-style. Served with rice or boiled yam.
+DE: Scharfe Ziegensuppe mit Kräutern. Serviert mit Reis oder gekochtem Yams.
+€15,00
+26-STOCKFISH² (Daily)
+Traditional dried cod.
+DE: Getrockneter Kabeljau.
+€15,00
+27-SUYA (Daily)
+Nigerian spiced grilled meat skewers.
+DE: Gegrillte Fleischspieße mit Gewürzen.
+€15,00
+25-SNAIL (Rotating)
+Spiced and grilled African land snail.
+DE: Gewürzte, gegrillte Riesenschnecke.
+€15,00
+30-ASSORTED MEAT PLATE (Daily)
+Served with a choice of fries, rice and salad.
+DE: Gemischte Fleischplatte, serviert mit Pommes, Reis und Salat.
+€15,00
+🥗 SALADS &amp; SPECIALS | SALATE &amp; SPEZIALITÄTEN
+Item
+Price
+23-ABACHA (Rotating)
+Traditional African salad made with cassava.
+DE: Afrikanischer Cassavasalat.
+€15,00
+24-UGBA (Daily)
+Oil bean salad dish.
+DE: Gericht mit Ölbohnen-Salat.
+€15,00
+9-FRIED RICE⁴⁵ (Rotating)
+Fried rice with meat and vegetables.
+DE: Gebratener Reis mit Fleisch und Gemüse.
+€15,00
+📌 Zusatzstoffe &amp; Allergene Legende (DE / EN)
+¹ Krebstiere / Crustaceans,² Fisch / Fish,³ Senf / Mustard,⁴ Geschmacksverstärker / Flavour Enhancer,⁵ Ei / Egg,⁷ Sellerie (möglich) / Celery (possible),⁸ Farbstoffe / Artificial Colourants

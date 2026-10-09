@@ -71,3 +71,81 @@ Tell the agent once verification is done so the status can be recorded here. **S
 ## Owner confirmations requested
 - "Nigerian" wording: the site says many dishes are Nigerian classics (Egusi, Ofe Nsala, Nkwobi). Please confirm you are happy to be found as a Nigerian restaurant as well.
 - Payment methods accepted (cash/card/EC) — would allow `paymentAccepted` in the structured data.
+
+---
+
+# Search-discovery architecture (2026-10-09, branch `discovery-ratings-2026-10`)
+
+_Research, sources and the competitor scan: `docs/research/seo-menu-allergen-research-2026-10-09.md`. Rankings and sitelinks are decided by Google; nothing here guarantees them._
+
+## Page architecture (126 indexable pages = 42 per language)
+
+| Purpose | DE | EN | FR |
+|---|---|---|---|
+| Restaurant (home) | `/` | `/en/` | `/fr/` |
+| Full menu | `/speisekarte/` | `/en/menu/` | `/fr/carte/` |
+| African soups hub | `/speisekarte/suppen/` | `/en/menu/soups/` | `/fr/carte/soupes/` |
+| 31 dish pages | `/speisekarte/<id>/` | `/en/menu/<id>/` | `/fr/carte/<id>/` |
+| Delivery in Essen | `/lieferung/` | `/en/delivery/` | `/fr/livraison/` |
+| Catering & events | `/catering/` | `/en/catering/` | `/fr/traiteur/` |
+| Reservations | `/reservierung/` | `/en/reservations/` | `/fr/reservation/` |
+| Gallery | `/galerie/` | `/en/gallery/` | `/fr/galerie/` |
+| Contact & directions | `/kontakt/` | `/en/contact/` | `/fr/contact/` |
+| Legal (existing) | Impressum, Datenschutz, Allergene | … | … |
+
+Dish ids are the stable menu ids (authentic names, never translated), e.g. `/speisekarte/egusi-soup/`.
+
+**Deliberately not built:**
+- `/menu/fufu/`: Afrolink serves pounded yam and garri, not fufu. The Pounded Yam page (`extra-pounded-yam`) and the soups hub explain the relationship honestly ("similar to fufu").
+- City pages for Düsseldorf, Bochum, Duisburg, Dortmund, Oberhausen or Mülheim: Afrolink has one location in Essen, and templated city pages match Google's doorway-spam pattern. The catering page invites enquiries from outside Essen with terms agreed personally. Regional content should only follow a confirmed service relationship (for example, the owner confirms catering in Düsseldorf).
+
+## Sitelink readiness (Google's documented factors)
+
+| Factor | Implementation |
+|---|---|
+| Descriptive titles | Unique per page and language (tested: 126 unique titles and descriptions, at most 80 characters) |
+| Logical hierarchy | Home → Menu → (Soups) → Dish; services at first level |
+| Site-wide navigation | Header links to Menu, Delivery, Catering, Reservations, Reviews, Gallery and Contact on every page; footer lists all pages plus six dish entry points |
+| Internal anchors | Every dish card name links to its page; the menu page links all 31 dishes; dish pages link related dishes, the soups hub, the menu, reservations and delivery |
+| Breadcrumbs | Visible trail + `BreadcrumbList` JSON-LD on every new page |
+| Crawlable links | Plain `<a href>`; descriptions and allergen panels are in the HTML, not JS-only |
+| Canonical / hreflang | Self-canonical; DE/EN/FR + x-default (German) on every page and in the sitemap |
+| Sitemap / robots | 126 URLs with alternates; robots allows everything except `/admin/` and `/api/` |
+
+The target sitelinks ("Egusi Soup", "Jollof Rice", "African Soups", "Tilapia", "Food Menu", "Delivery in Essen", "Catering & Events", "Reservations") now all exist as dedicated pages. Whether Google shows them is Google's decision; monitor in Search Console.
+
+## Structured data per page type
+
+| Page | JSON-LD |
+|---|---|
+| Home | `Restaurant` (+ `menu` → menu page, `hasMenu`), `WebSite` |
+| Menu | `WebPage`, `BreadcrumbList`, `Menu` with all sections and prices |
+| Soups | `WebPage`, `BreadcrumbList`, `MenuSection` linking the 12 soup pages |
+| Dish | `WebPage`, `BreadcrumbList`, `MenuItem` (name, description, image, exact offers) |
+| Delivery | `WebPage`, `BreadcrumbList`, `Service` (areaServed: Essen, owner-confirmed) |
+| Catering | `WebPage`, `BreadcrumbList`, `Service` (no areaServed, not confirmed) |
+| Others | `WebPage`, `BreadcrumbList` |
+
+No `aggregateRating`, `Review`, `FAQPage`, awards or fabricated offers. Dish ratings are not eligible for review snippets (MenuItem is not a supported type; self-serving reviews are ineligible).
+
+## Keyword research: honest findings
+
+- No keyword-volume or rank-tracking tool was available, so measurable demand is **unknown**. Use the Search Console "Queries" report after indexing.
+- Directories (11880, golocal, coolibri, Tripadvisor) dominate "afrikanisches Restaurant Essen". Afrolink's own website did not appear, and coolibri links only to Facebook. Pointing those listings to the website is an easy win (owner).
+- For dish + city queries ("Egusi Essen", "Jollof Rice Essen"), little local content was found. The new dish pages target these with genuine content.
+- Competitors found: Treasure (Düsseldorf) has one menu page, no dish pages and no online ordering; Atinka (Bochum) delivers via Wolt. No NRW-based West African caterer came up for "afrikanisches Catering NRW".
+- "Nigerian" queries are served by the copy "West African and Nigerian food" plus the dish pages. **Owner confirmation of the "Nigerian" positioning is still open (R-022).**
+
+## Google Business Profile: updated recommendations (not applied)
+
+- Menu link → `https://www.afrolink-restaurant.online/speisekarte/`; reservations link → `/reservierung/`; website → home.
+- Categories: keep primary "West African restaurant"; consider secondary "African restaurant", "Nigerian restaurant" (if confirmed), "Caterer", "Bar".
+- Services: dine-in, takeaway, delivery (by arrangement), catering (by arrangement). No online-ordering link until real ordering exists.
+- Description (up to 750 characters, in the owner's words) mentioning soups with pounded yam/garri, jollof, suya, and delivery and catering by arrangement.
+- Photos: real dish and interior photos, added regularly.
+- Reviews: request via the GBP short link; reply to reviews.
+- Keep hours identical to the site.
+
+## Search Console / Bing: status
+
+Unchanged: not verified, sitemap not submitted, indexing unconfirmed (owner logins needed). After deployment, submit `https://www.afrolink-restaurant.online/sitemap.xml` and inspect `/speisekarte/`, `/speisekarte/egusi-soup/`, `/lieferung/` and `/catering/`.

@@ -1,0 +1,474 @@
+---
+/**
+ * One dish on the menu. Shared by the home page menu, /speisekarte/ and the soups page.
+ * - Photo opens the global lightbox (large image, name, short description).
+ * - "About this dish" and "Allergens & additives" are real buttons (aria-expanded) that reveal
+ *   panels rendered in the HTML (crawlable, no JS-only content). On hover-capable devices the
+ *   short description also appears over the photo — never over name, price or rating.
+ * - The dish name links to the dish page.
+ * - `data-rating-slot` is filled by the ratings script only when ratings are enabled.
+ */
+import { Image, Picture, getImage } from 'astro:assets';
+import AllergenInfo from './AllergenInfo.astro';
+import logoMark from '../assets/brand/afrolink-logo.png';
+import type { MenuCategory, MenuItem } from '../data/menu';
+import { dishImages } from '../data/dish-images';
+import { dishContent } from '../data/dish-content';
+import { formatPrice } from '../data/format';
+import { galleryImage } from '../lib/images';
+import { dishPaths, type Lang } from '../i18n/config';
+import { useT } from '../i18n/ui';
+import { usePages } from '../i18n/pages';
+
+interface Props {
+  lang: Lang;
+  item: MenuItem;
+  category: MenuCategory;
+  /** Lightbox group (previous/next moves within it). */
+  group?: string;
+  /** Prefix for element ids when the same dish could appear twice on a page. */
+  idPrefix?: string;
+}
+const { lang, item, category, group = 'menu', idPrefix = '' } = Astro.props;
+const t = useT(lang);
+const p = usePages(lang);
+const di = dishImages[item.id];
+const content = dishContent[item.id];
+const href = dishPaths(item.id)[lang];
+const photo = di ? galleryImage(di.file, `dish-images.ts (${item.id})`) : null;
+const full = photo ? await getImage({ src: photo, width: Math.min(1600, photo.width), format: 'webp' }) : null;
+const aboutId = `${idPrefix}about-${item.id}`;
+const allergenId = `${idPrefix}allergen-${item.id}`;
+const searchText = [
+  item.name,
+  item.description?.[lang],
+  item.note?.[lang],
+  item.label?.[lang],
+  category.title[lang],
+  content?.kind[lang],
+  ...(item.variants?.map((v) => v.label[lang]) ?? []),
+]
+  .filter(Boolean)
+  .join(' ');
+---
+
+<li class="dish" id={`${idPrefix}dish-${item.id}`} data-item data-dish={item.id} data-search={searchText}>
+  <div class="dish__media">
+    {
+      photo && full && di ? (
+        <a
+          class="dish__zoom"
+          href={full.src}
+          data-lb
+          data-lb-group={group}
+          data-lb-title={item.name}
+          data-lb-desc={content?.summary[lang] ?? ''}
+          data-lb-alt={di.alt[lang]}
+        >
+          <Picture
+            src={photo}
+            formats={['avif', 'webp']}
+            widths={[240, 400, 600, 800]}
+            sizes="(min-width: 80em) 18rem, (min-width: 64em) 30vw, (min-width: 40em) 45vw, 7.5rem"
+            alt={di.alt[lang]}
+            loading="lazy"
+            decoding="async"
+            class:list={['dish__img', { 'is-watermarked': di.watermarked }]}
+          />
+          {content && (
+            <span class="dish__hover" aria-hidden="true">
+              <span>{content.summary[lang]}</span>
+            </span>
+          )}
+          <span class="dish__zoomicon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+              <path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7" />
+            </svg>
+          </span>
+          <span class="visually-hidden">
+            {p.dish.enlarge}: {item.name}
+          </span>
+        </a>
+      ) : (
+        <div class="dish__soon">
+          <Image src={logoMark} width={40} densities={[1, 2]} alt="" class="dish__soonlogo" loading="lazy" />
+          <span>{t.menu.imageSoon}</span>
+        </div>
+      )
+    }
+  </div>
+  <div class="dish__body">
+    {
+      item.variants ? (
+        <>
+          <p class="dish__name">
+            <a class="dish__link" href={href}>
+              {item.name}
+            </a>
+          </p>
+          <ul role="list" class="variants">
+            {item.variants.map((v) => (
+              <li class="line">
+                <span class="line__name">{v.label[lang]}</span>
+                <span class="line__leader" aria-hidden="true" />
+                <span class="line__price">{formatPrice(v.price)}</span>
+              </li>
+            ))}
+          </ul>
+        </>
+      ) : (
+        <p class="line line--main">
+          <span class="line__name dish__name">
+            <a class="dish__link" href={href}>
+              {item.name}
+            </a>
+          </span>
+          <span class="line__leader" aria-hidden="true" />
+          <span class="line__price">{formatPrice(item.price!)}</span>
+        </p>
+      )
+    }
+    <div class="dish__rating" data-rating-slot data-dish={item.id} data-name={item.name} hidden></div>
+    {item.description && <p class="dish__desc">{item.description[lang]}</p>}
+    {item.note && <p class="dish__note">{item.note[lang]}</p>}
+    {
+      (item.spice || item.label) && (
+        <p class="dish__tags">
+          {item.spice === 'hot' && (
+            <span class="tag tag--hot" title={t.menu.hotTitle}>
+              <span aria-hidden="true">♦</span> {t.menu.hot}
+            </span>
+          )}
+          {item.label && <span class="tag tag--label">{item.label[lang]}</span>}
+        </p>
+      )
+    }
+    <div class="dish__actions">
+      {
+        content && (
+          <button type="button" class="dish__toggle" aria-expanded="false" aria-controls={aboutId} data-disclosure>
+            {p.dish.about}
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M6 9l6 6 6-6" />
+            </svg>
+          </button>
+        )
+      }
+      <button type="button" class="dish__toggle" aria-expanded="false" aria-controls={allergenId} data-disclosure>
+        {p.allergen.button}
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M6 9l6 6 6-6" />
+        </svg>
+      </button>
+    </div>
+    {
+      content && (
+        <div class="dish__panel" id={aboutId} hidden>
+          <p>{content.summary[lang]}</p>
+          {content.allergyHint && <p class="dish__hint">{content.allergyHint[lang]}</p>}
+          <a class="dish__more" href={href}>
+            {p.dish.morePage} <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      )
+    }
+    <div class="dish__panel" id={allergenId} hidden>
+      <AllergenInfo lang={lang} id={item.id} />
+    </div>
+  </div>
+</li>
+
+<script>
+  // Disclosure buttons (dish info, allergens). One delegated listener for the whole page.
+  document.addEventListener('click', (ev) => {
+    const btn = (ev.target as Element | null)?.closest<HTMLButtonElement>('button[data-disclosure]');
+    if (!btn) return;
+    const panel = document.getElementById(btn.getAttribute('aria-controls') ?? '');
+    if (!panel) return;
+    const open = btn.getAttribute('aria-expanded') !== 'true';
+    btn.setAttribute('aria-expanded', String(open));
+    panel.hidden = !open;
+  });
+</script>
+
+<style>
+  .dish {
+    display: grid;
+    grid-template-columns: 7.5rem minmax(0, 1fr);
+    gap: 0.9rem;
+    padding: 0.6rem;
+    background: var(--ink-raised);
+    border: 1px solid var(--paper-line);
+  }
+  @media (min-width: 40em) {
+    .dish {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto 1fr;
+      gap: 0;
+      padding: 0;
+    }
+  }
+  .dish__media {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: var(--paper-sunk);
+  }
+  @media (max-width: 39.99em) {
+    .dish__media {
+      aspect-ratio: 1 / 1;
+      align-self: start;
+    }
+  }
+  .dish__zoom {
+    display: block;
+    width: 100%;
+    height: 100%;
+    cursor: zoom-in;
+  }
+  .dish__zoom:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: -2px;
+  }
+  .dish__media :global(picture),
+  .dish__img {
+    width: 100%;
+    height: 100%;
+  }
+  .dish__img {
+    object-fit: cover;
+    transition: transform 0.4s ease;
+  }
+  .dish__img.is-watermarked {
+    object-position: 100% 100%;
+  }
+  .dish__zoomicon {
+    position: absolute;
+    right: 0.4rem;
+    top: 0.4rem;
+    display: grid;
+    place-items: center;
+    width: 1.9rem;
+    height: 1.9rem;
+    color: var(--on-ink);
+    background: rgb(20 17 16 / 0.6);
+    border-radius: 2px;
+  }
+  .dish__zoomicon svg {
+    width: 1rem;
+    height: 1rem;
+  }
+  /* Hover/focus description over the photo (hover-capable devices only). */
+  .dish__hover {
+    display: none;
+  }
+  @media (hover: hover) and (min-width: 40em) {
+    .dish__hover {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: flex-end;
+      padding: 1rem;
+      font-size: 0.9375rem;
+      line-height: 1.45;
+      color: var(--on-ink);
+      background: linear-gradient(to top, rgb(20 17 16 / 0.94) 0%, rgb(20 17 16 / 0.82) 55%, rgb(20 17 16 / 0.35) 100%);
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+    .dish__zoom:hover .dish__hover,
+    .dish__zoom:focus-visible .dish__hover {
+      opacity: 1;
+    }
+    .dish__zoom:hover .dish__img {
+      transform: scale(1.03);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .dish__img,
+    .dish__hover {
+      transition: none;
+    }
+  }
+  .dish__soon {
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: 0.4rem;
+    height: 100%;
+    padding: 0.5rem;
+    text-align: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--on-paper-muted);
+    border: 1px dashed rgb(214 168 78 / 0.35);
+  }
+  .dish__soonlogo {
+    width: 2.5rem;
+    height: auto;
+    opacity: 0.55;
+    filter: grayscale(0.4);
+  }
+  .dish__body {
+    display: grid;
+    align-content: start;
+    gap: 0.35rem;
+    min-width: 0;
+  }
+  @media (min-width: 40em) {
+    .dish__body {
+      padding: 1rem 1.1rem 1.15rem;
+    }
+  }
+  .line {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+  }
+  .dish__name {
+    font-size: var(--step-1);
+    font-weight: 600;
+    line-height: 1.25;
+  }
+  .dish__link {
+    color: inherit;
+    text-decoration: none;
+    background-image: linear-gradient(currentColor, currentColor);
+    background-size: 0 1px;
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    transition: background-size 0.2s ease;
+  }
+  .dish__link:hover,
+  .dish__link:focus-visible {
+    color: var(--gold);
+    background-size: 100% 1px;
+  }
+  .line__name {
+    min-width: 0;
+  }
+  .line__leader {
+    flex: 1 1 1rem;
+    min-width: 1rem;
+    border-bottom: 1px dotted rgb(243 237 227 / 0.28);
+    transform: translateY(-0.3em);
+  }
+  .line__price {
+    flex: none;
+    font-size: var(--step-1);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums lining-nums;
+    color: var(--gold);
+  }
+  .variants {
+    display: grid;
+    gap: 0.2rem;
+  }
+  .variants .line__name {
+    color: var(--on-paper-muted);
+  }
+  .variants .line__price {
+    font-size: var(--step-0);
+  }
+  .dish__rating {
+    min-height: 1.4rem;
+  }
+  .dish__desc {
+    font-size: 0.9375rem;
+    line-height: 1.45;
+    color: var(--on-paper-muted);
+  }
+  .dish__note {
+    font-family: var(--font-serif);
+    font-style: italic;
+    color: var(--on-paper-muted);
+  }
+  .dish__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.2rem;
+  }
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.15rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 650;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border: 1px solid currentColor;
+  }
+  .tag--hot {
+    color: var(--gold);
+  }
+  .tag--label {
+    color: var(--burgundy);
+  }
+  .dish__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.45rem;
+  }
+  .dish__toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    min-height: 2.25rem;
+    padding: 0.25rem 0.7rem;
+    font: inherit;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--on-paper);
+    background: transparent;
+    border: 1px solid var(--paper-line);
+    border-radius: 999px;
+    cursor: pointer;
+  }
+  .dish__toggle:hover {
+    border-color: var(--gold);
+  }
+  .dish__toggle:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 2px;
+  }
+  .dish__toggle svg {
+    width: 0.9rem;
+    height: 0.9rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    transition: transform 0.2s ease;
+  }
+  .dish__toggle[aria-expanded='true'] {
+    color: var(--ink);
+    background: var(--gold);
+    border-color: var(--gold);
+  }
+  .dish__toggle[aria-expanded='true'] svg {
+    transform: rotate(180deg);
+  }
+  .dish__panel {
+    display: grid;
+    gap: 0.5rem;
+    margin-top: 0.35rem;
+    padding: 0.8rem 0.9rem;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    background: var(--paper-sunk);
+    border-left: 2px solid var(--gold);
+  }
+  .dish__hint {
+    color: var(--on-paper-muted);
+    font-size: 0.875rem;
+  }
+  .dish__more {
+    justify-self: start;
+    font-weight: 600;
+    color: var(--gold);
+  }
+</style>

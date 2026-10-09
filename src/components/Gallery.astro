@@ -7,8 +7,11 @@ import { useT } from '../i18n/ui';
 
 interface Props {
   lang: Lang;
+  /** On the dedicated gallery page the section title is the page's h1. */
+  standalone?: boolean;
 }
-const { lang } = Astro.props;
+const { lang, standalone = false } = Astro.props;
+const Heading = standalone ? 'h1' : 'h2';
 const t = useT(lang);
 
 const entries = await Promise.all(
@@ -24,15 +27,15 @@ const entries = await Promise.all(
   <div class="wrap">
     <header class="section-head">
       <p class="eyebrow">{t.gallery.eyebrow}</p>
-      <h2 id="gallery-title" class="section-title">{t.gallery.title}</h2>
+      <Heading id="gallery-title" class="section-title">{t.gallery.title}</Heading>
       <p class="section-lede">{t.gallery.lede}</p>
     </header>
 
     <ul role="list" class="grid" data-gallery>
       {
-        entries.map((e, i) => (
+        entries.map((e) => (
           <li class:list={['tile', { 'tile--feature': e.feature }]}>
-            <a href={e.fullSrc} class="tile__link" data-index={i} data-caption={e.caption} data-alt={e.alt}>
+            <a href={e.fullSrc} class="tile__link" data-lb data-lb-group="gallery" data-lb-title={e.caption} data-lb-alt={e.alt}>
               <Picture
                 src={e.image}
                 formats={['avif', 'webp']}
@@ -56,94 +59,8 @@ const entries = await Promise.all(
     </ul>
   </div>
 
-  <dialog class="lightbox" aria-label={t.gallery.viewer} data-lightbox>
-    <div class="lightbox__frame">
-      <img class="lightbox__img" alt="" data-lb-img />
-      <div class="lightbox__bar">
-        <p class="lightbox__cap" data-lb-cap aria-live="polite"></p>
-        <p class="lightbox__count" data-lb-count></p>
-      </div>
-    </div>
-    <button class="lb-btn lb-btn--close" type="button" data-lb-close>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5.5 5.5l13 13M18.5 5.5l-13 13"></path></svg>
-      <span class="visually-hidden">{t.gallery.close}</span>
-    </button>
-    <button class="lb-btn lb-btn--prev" type="button" data-lb-prev>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg>
-      <span class="visually-hidden">{t.gallery.prev}</span>
-    </button>
-    <button class="lb-btn lb-btn--next" type="button" data-lb-next>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg>
-      <span class="visually-hidden">{t.gallery.next}</span>
-    </button>
-  </dialog>
 </section>
 
-<script>
-  const grid = document.querySelector<HTMLElement>('[data-gallery]');
-  const dialog = document.querySelector<HTMLDialogElement>('[data-lightbox]');
-
-  if (grid && dialog && typeof dialog.showModal === 'function') {
-    const links = [...grid.querySelectorAll<HTMLAnchorElement>('a[data-index]')];
-    const img = dialog.querySelector<HTMLImageElement>('[data-lb-img]')!;
-    const cap = dialog.querySelector<HTMLElement>('[data-lb-cap]')!;
-    const count = dialog.querySelector<HTMLElement>('[data-lb-count]')!;
-    let index = 0;
-    let opener: HTMLElement | null = null;
-
-    const show = (i: number) => {
-      index = (i + links.length) % links.length;
-      const a = links[index];
-      img.src = a.href;
-      img.alt = a.dataset.alt ?? '';
-      cap.textContent = a.dataset.caption || '';
-      count.textContent = `${index + 1} / ${links.length}`;
-      [index + 1, index - 1].forEach((n) => {
-        const pre = new Image();
-        pre.src = links[(n + links.length) % links.length].href;
-      });
-    };
-
-    links.forEach((a, i) =>
-      a.addEventListener('click', (ev) => {
-        ev.preventDefault();
-        opener = a;
-        show(i);
-        dialog.showModal();
-      }),
-    );
-    dialog.querySelector('[data-lb-close]')!.addEventListener('click', () => dialog.close());
-    dialog.querySelector('[data-lb-prev]')!.addEventListener('click', () => show(index - 1));
-    dialog.querySelector('[data-lb-next]')!.addEventListener('click', () => show(index + 1));
-    dialog.addEventListener('close', () => opener?.focus());
-    dialog.addEventListener('click', (ev) => {
-      if (ev.target === dialog) dialog.close();
-    });
-    dialog.addEventListener('keydown', (ev) => {
-      if (ev.key === 'ArrowRight') show(index + 1);
-      if (ev.key === 'ArrowLeft') show(index - 1);
-    });
-    let startX = 0;
-    let startY = 0;
-    dialog.addEventListener(
-      'touchstart',
-      (ev) => {
-        startX = ev.touches[0].clientX;
-        startY = ev.touches[0].clientY;
-      },
-      { passive: true },
-    );
-    dialog.addEventListener(
-      'touchend',
-      (ev) => {
-        const dx = ev.changedTouches[0].clientX - startX;
-        const dy = ev.changedTouches[0].clientY - startY;
-        if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) show(index + (dx < 0 ? 1 : -1));
-      },
-      { passive: true },
-    );
-  }
-</script>
 
 <style>
   .grid {
@@ -227,84 +144,5 @@ const entries = await Promise.all(
       opacity: 1;
       transform: none;
     }
-  }
-  .lightbox {
-    width: 100vw;
-    max-width: 100vw;
-    height: 100dvh;
-    max-height: 100dvh;
-    margin: 0;
-    padding: 0;
-    border: 0;
-    background: rgb(20 17 15 / 0.97);
-    color: var(--on-ink);
-  }
-  .lightbox::backdrop {
-    background: rgb(20 17 15 / 0.9);
-  }
-  .lightbox__frame {
-    display: grid;
-    grid-template-rows: minmax(0, 1fr) auto;
-    height: 100%;
-    padding: 4rem var(--gutter) 1rem;
-    pointer-events: none;
-  }
-  .lightbox__img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    pointer-events: auto;
-  }
-  .lightbox__bar {
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-    padding-top: 0.9rem;
-    font-size: var(--step--1);
-    color: var(--on-ink-muted);
-  }
-  .lightbox__cap {
-    color: var(--on-ink);
-  }
-  .lightbox__count {
-    font-variant-numeric: tabular-nums;
-  }
-  .lb-btn {
-    position: absolute;
-    display: grid;
-    place-items: center;
-    width: 3rem;
-    height: 3rem;
-    background: rgb(26 22 19 / 0.6);
-    border: 1px solid var(--ink-line);
-    border-radius: 2px;
-    cursor: pointer;
-    color: var(--on-ink);
-  }
-  .lb-btn svg {
-    width: 1.4rem;
-    height: 1.4rem;
-  }
-  .lb-btn:hover {
-    border-color: var(--ochre);
-    color: var(--ochre);
-  }
-  .lb-btn:focus-visible {
-    outline-color: var(--ochre);
-  }
-  .lb-btn--close {
-    top: 0.75rem;
-    right: var(--gutter);
-  }
-  .lb-btn--prev,
-  .lb-btn--next {
-    top: 50%;
-    translate: 0 -50%;
-  }
-  .lb-btn--prev {
-    left: max(0.5rem, calc(var(--gutter) / 2));
-  }
-  .lb-btn--next {
-    right: max(0.5rem, calc(var(--gutter) / 2));
   }
 </style>

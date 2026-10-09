@@ -8,7 +8,7 @@ import { foodMenu, type MenuItem } from './menu';
 import { drinksMenu } from './drinks';
 import { openingHours } from './hours';
 import { schemaPrice } from './format';
-import { htmlLang, locales, routes, type Lang, type RouteKey } from '../i18n/config';
+import { htmlLang, locales, routes, type Lang, type Paths } from '../i18n/config';
 
 export const themeColor = '#1a1613';
 
@@ -16,11 +16,11 @@ export function absolute(pathname: string): string {
   return `${siteUrl}${pathname}`;
 }
 
-/** hreflang alternates for a route (German is x-default). */
-export function alternates(route: RouteKey) {
+/** hreflang alternates for a page's localized paths (German is x-default). */
+export function alternates(paths: Paths) {
   return [
-    ...locales.map((lang) => ({ hreflang: htmlLang[lang], href: absolute(routes[route][lang]) })),
-    { hreflang: 'x-default', href: absolute(routes[route].de) },
+    ...locales.map((lang) => ({ hreflang: htmlLang[lang], href: absolute(paths[lang]) })),
+    { hreflang: 'x-default', href: absolute(paths.de) },
   ];
 }
 
@@ -96,10 +96,11 @@ export function restaurantJsonLd(lang: Lang, imageUrl: string, logoUrl: string) 
       opens: h.opens,
       closes: h.closes,
     })),
-    menu: `${absolute(routes.home[lang])}#menu`,
+    menu: absolute(routes.menu[lang]),
     hasMenu: {
       '@type': 'Menu',
-      url: `${absolute(routes.home[lang])}#menu`,
+      '@id': `${absolute(routes.menu[lang])}#menu`,
+      url: absolute(routes.menu[lang]),
       inLanguage: htmlLang[lang],
       hasMenuSection: [...foodSections, ...drinkSections],
     },
@@ -117,4 +118,72 @@ export function websiteJsonLd(lang: Lang) {
     inLanguage: htmlLang[lang],
     publisher: { '@id': `${siteUrl}/#restaurant` },
   };
+}
+
+export interface Crumb {
+  name: string;
+  href: string;
+}
+
+/** BreadcrumbList for the visible breadcrumb trail (absolute URLs). */
+export function breadcrumbJsonLd(crumbs: Crumb[]) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: crumbs.map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c.name, item: absolute(c.href) })),
+  };
+}
+
+/** WebPage node linked to the site and the restaurant. */
+export function webPageJsonLd(lang: Lang, href: string, name: string, description: string, extra: Record<string, unknown> = {}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    '@id': `${absolute(href)}#webpage`,
+    url: absolute(href),
+    name,
+    description,
+    inLanguage: htmlLang[lang],
+    isPartOf: { '@id': `${siteUrl}/#website` },
+    about: { '@id': `${siteUrl}/#restaurant` },
+    ...extra,
+  };
+}
+
+/** A dish as schema.org MenuItem (no ratings — dish ratings are not eligible for review snippets). */
+export function menuItemJsonLd(item: MenuItem, lang: Lang, href: string, description: string, image: string | null) {
+  const offers = item.variants
+    ? item.variants.map((v) => ({ ...offer(v.price), name: v.label[lang] }))
+    : [offer(item.price!)];
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'MenuItem',
+    '@id': `${absolute(href)}#dish`,
+    name: item.name,
+    description,
+    url: absolute(href),
+    ...(image ? { image } : {}),
+    offers: offers.length === 1 ? offers[0] : offers,
+  };
+}
+
+/** A service offered by the restaurant (only facts stated by the owner). */
+export function serviceJsonLd(lang: Lang, href: string, name: string, description: string, serviceType: string, areaServed?: string) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    '@id': `${absolute(href)}#service`,
+    name,
+    description,
+    serviceType,
+    url: absolute(href),
+    inLanguage: htmlLang[lang],
+    provider: { '@id': `${siteUrl}/#restaurant` },
+    ...(areaServed ? { areaServed: { '@type': 'City', name: areaServed } } : {}),
+  };
+}
+
+/** The full menu as a standalone Menu node (menu page). */
+export function menuJsonLd(lang: Lang) {
+  return { '@context': 'https://schema.org', ...restaurantJsonLd(lang, '', '').hasMenu };
 }

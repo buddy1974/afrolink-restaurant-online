@@ -1,0 +1,159 @@
+---
+/**
+ * Six-month evaluation report. Window = [public launch, launch + 6 months] (launch recorded
+ * automatically and never backdated). Ratings describe stated guest preferences of people who
+ * chose to rate — not sales, not representative of all guests.
+ */
+import AdminShell from '../../../components/AdminShell.astro';
+import { getDb } from '../../../lib/ratings/db';
+import { configFromEnv } from '../../../lib/ratings/http';
+import { adminConfigFromEnv, isAdmin, noStore } from '../../../lib/ratings/admin-http';
+import { byCategory, ciText, dishNames, fmtAvg } from '../../../lib/ratings/admin-view';
+import { dishStats, getLaunch, monthly, sixMonthsAfter, totals } from '../../../lib/ratings/service';
+import { favourites, highestRated, mostRated, rank } from '../../../lib/ratings/ranking';
+import { allFoodItems } from '../../../data/menu';
+
+export const prerender = false;
+
+for (const [k, v] of Object.entries(noStore)) Astro.response.headers.set(k, v);
+const cfg = adminConfigFromEnv(configFromEnv());
+if (!isAdmin(Astro.request, cfg)) return Astro.redirect('/admin/ratings/', 303);
+const db = await getDb();
+const launch = db ? await getLaunch(db, cfg.env) : null;
+const end = launch ? sixMonthsAfter(launch) : null;
+const now = new Date();
+const complete = !!end && now.toISOString() >= end;
+const filter = launch ? { from: launch, to: end! } : {};
+const ranked = db && launch ? rank(await dishStats(db, cfg.env, filter)) : [];
+const months = db && launch ? await monthly(db, cfg.env, filter) : [];
+const tot = db && launch ? await totals(db, cfg.env, filter) : null;
+const names = dishNames();
+const unrated = allFoodItems()
+  .filter(({ item }) => item.available !== false && !ranked.some((r) => r.dishId === item.id && r.n > 0))
+  .map(({ item }) => item.name);
+const lowConfidence = ranked.filter((d) => d.n > 0 && d.n < 10);
+const top = highestRated(ranked).slice(0, 5);
+const bottom = highestRated(ranked).slice(-5).reverse();
+const fmtDate = (iso: string | null | undefined) => (iso ? new Date(iso).toLocaleDateString('de-DE', { timeZone: 'Europe/Berlin', dateStyle: 'long' }) : '–');
+---
+
+<AdminShell title="6-Monats-Bericht">
+  <main>
+    <p><a href="/admin/ratings/">← Dashboard</a></p>
+    <h1>6-Monats-Bericht: Gästebewertungen</h1>
+    {
+      !launch ? (
+        <p class="muted">Die Bewertungsfunktion ist in dieser Umgebung noch nicht gestartet.</p>
+      ) : (
+        <>
+          <p>
+            Zeitraum: <strong>{fmtDate(launch)}</strong> bis <strong>{fmtDate(end)}</strong> ({complete ? 'abgeschlossen' : 'Zwischenstand – Zeitraum läuft noch'}).
+          </p>
+          <div class="note">
+            <p>
+              <strong>Grenzen der Aussagekraft:</strong> Bewertungen sind anonym und freiwillig. Sie zeigen die Meinung derjenigen Gäste, die bewertet haben – nicht
+              aller Gäste – und sind keine bestätigten Käufe. Aus Bewertungen lassen sich keine Verkaufszahlen ableiten. Gerichte mit weniger als 10
+              Bewertungen haben eine große Unsicherheit (siehe 95 %-Konfidenzintervall).
+            </p>
+          </div>
+
+          <h2>Zusammenfassung</h2>
+          <p>
+            {tot?.active ?? 0} gültige Bewertungen von {tot?.voters ?? 0} anonymen Bewertenden, {tot?.excluded ?? 0} durch Moderation ausgeschlossen. Bewertet:{' '}
+            {ranked.filter((r) => r.n > 0).length} Gerichte; ohne Bewertung: {unrated.length}.
+          </p>
+
+          <h2>Kategorien</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Kategorie</th>
+                <th class="num">Gerichte bewertet</th>
+                <th class="num">Bewertungen</th>
+                <th class="num">Ø</th>
+              </tr>
+            </thead>
+            <tbody>
+              {byCategory(ranked).map((c) => (
+                <tr>
+                  <td>{c.category}</td>
+                  <td class="num">{c.dishes}</td>
+                  <td class="num">{c.n}</td>
+                  <td class="num">{fmtAvg(c.avg)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          <h2>Stärkste Gerichte (gewichtet, n ≥ 3)</h2>
+          <ol>
+            {top.map((d) => (
+              <li>
+                {names[d.dishId]?.name ?? d.dishId}: gewichtet {fmtAvg(d.score)}, Ø {fmtAvg(d.avg)} {ciText(d)}, n={d.n}
+              </li>
+            ))}
+          </ol>
+          <h2>Schwächste Gerichte (gewichtet, n ≥ 3)</h2>
+          <ol>
+            {bottom.map((d) => (
+              <li>
+                {names[d.dishId]?.name ?? d.dishId}: gewichtet {fmtAvg(d.score)}, Ø {fmtAvg(d.avg)} {ciText(d)}, n={d.n}
+              </li>
+            ))}
+          </ol>
+          <h2>Meistbewertet</h2>
+          <ol>
+            {mostRated(ranked)
+              .slice(0, 5)
+              .map((d) => (
+                <li>
+                  {names[d.dishId]?.name ?? d.dishId}: n={d.n}
+                </li>
+              ))}
+          </ol>
+          <h2>Lieblingsgerichte der Gäste</h2>
+          <p>{favourites(ranked).map((d) => names[d.dishId]?.name ?? d.dishId).join(', ') || 'Noch keines erfüllt die Kriterien.'}</p>
+
+          <h2>Verlauf</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Monat</th>
+                <th class="num">Bewertungen</th>
+                <th class="num">Ø</th>
+                <th class="num">Bewertende</th>
+              </tr>
+            </thead>
+            <tbody>
+              {months.map((m) => (
+                <tr>
+                  <td>{m.month}</td>
+                  <td class="num">{m.ratings}</td>
+                  <td class="num">{fmtAvg(m.avg)}</td>
+                  <td class="num">{m.voters}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          <h2>Mögliche Ansatzpunkte für die Karte</h2>
+          <ul>
+            {bottom
+              .filter((d) => (d.score ?? 5) < 3.5)
+              .map((d) => (
+                <li>
+                  {names[d.dishId]?.name ?? d.dishId}: gewichtet {fmtAvg(d.score)} bei n={d.n} – Rezeptur, Portion oder Beschreibung mit der Küche besprechen.
+                </li>
+              ))}
+            {unrated.length > 0 && <li>Ohne Bewertung: {unrated.join(', ')} – Sichtbarkeit prüfen; keine Aussage über Beliebtheit möglich.</li>}
+            {lowConfidence.length > 0 && (
+              <li>
+                Geringe Datenbasis (n &lt; 10): {lowConfidence.map((d) => names[d.dishId]?.name ?? d.dishId).join(', ')} – Ergebnisse nur als Tendenz lesen.
+              </li>
+            )}
+          </ul>
+        </>
+      )
+    }
+  </main>
+</AdminShell>

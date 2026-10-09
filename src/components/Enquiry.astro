@@ -11,11 +11,17 @@ import { useT } from '../i18n/ui';
 
 interface Props {
   lang: Lang;
+  /** Enquiry type selected initially (service pages). */
+  preset?: string;
+  /** Heading level of the form title (h2 on pages where it is a main section). */
+  headingLevel?: 2 | 3;
 }
-const { lang } = Astro.props;
+const { lang, preset, headingLevel = 3 } = Astro.props;
 const t = useT(lang);
 const e = t.enquiry;
 const types = Object.entries(e.types) as [keyof typeof e.types, string][];
+const initial = types.some(([k]) => k === preset) ? preset : types[0][0];
+const Title = headingLevel === 2 ? 'h2' : 'h3';
 const id = (k: string) => `enq-${k}-${lang}`;
 
 // Which fields each enquiry type shows.
@@ -57,7 +63,7 @@ const labels = {
 <div class="enquiry" id="enquiry" aria-labelledby="enquiry-title" role="region">
   <header class="enquiry__head">
     <p class="eyebrow">{e.eyebrow}</p>
-    <h3 id="enquiry-title" class="enquiry__title">{e.title}</h3>
+    <Title id="enquiry-title" class="enquiry__title">{e.title}</Title>
     <p class="enquiry__lede">{e.lede}</p>
   </header>
 
@@ -66,9 +72,9 @@ const labels = {
       <legend>{e.typeLabel}</legend>
       <div class="chips">
         {
-          types.map(([key, label], i) => (
+          types.map(([key, label]) => (
             <label class="chip">
-              <input type="radio" name="type" value={key} checked={i === 0} data-label={label} />
+              <input type="radio" name="type" value={key} checked={key === initial} data-label={label} />
               <span>{label}</span>
             </label>
           ))
@@ -233,6 +239,13 @@ const labels = {
         }
       }),
     );
+
+    // ?enquiry=<type> (links from other pages) preselects that type.
+    const fromUrl = new URLSearchParams(location.search).get('enquiry');
+    if (fromUrl) {
+      const radio = form.querySelector<HTMLInputElement>(`input[name="type"][value="${CSS.escape(fromUrl)}"]`);
+      if (radio) radio.checked = true;
+    }
 
     update();
   }

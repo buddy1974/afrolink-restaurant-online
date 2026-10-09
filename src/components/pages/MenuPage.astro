@@ -1,0 +1,45 @@
+---
+/** /speisekarte/ — the complete menu with links to every dish page. */
+import PageShell from '../PageShell.astro';
+import MenuExplorer from '../MenuExplorer.astro';
+import { menuJsonLd } from '../../data/seo';
+import { routes, type Lang } from '../../i18n/config';
+import { usePages } from '../../i18n/pages';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const p = usePages(lang);
+---
+
+<PageShell
+  lang={lang}
+  route="menu"
+  title={p.menuPage.title}
+  description={p.menuPage.description}
+  crumbs={[{ name: p.nav.menu, href: routes.menu[lang] }]}
+  h1={p.menuPage.h1}
+  lede={p.menuPage.lede}
+  jsonLd={[menuJsonLd(lang)]}
+>
+  <div class="wrap menu-links">
+    <a href={routes.soups[lang]}>{p.nav.soups} <span aria-hidden="true">→</span></a>
+    <a href={routes.delivery[lang]}>{p.nav.delivery} <span aria-hidden="true">→</span></a>
+    <a href={routes.catering[lang]}>{p.nav.catering} <span aria-hidden="true">→</span></a>
+  </div>
+  <MenuExplorer lang={lang} standalone />
+</PageShell>
+
+<style>
+  .menu-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    padding-bottom: 1rem;
+  }
+  .menu-links a {
+    font-weight: 600;
+    color: var(--gold);
+  }
+</style>

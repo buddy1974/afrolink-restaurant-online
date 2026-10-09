@@ -1,6 +1,7 @@
 ---
 import LegalShell from './LegalShell.astro';
 import { privacyCopy } from '../i18n/legal-content';
+import { ratingsPrivacy } from '../i18n/privacy-ratings';
 import { legalComplete } from '../data/legal';
 import { routes, type Lang } from '../i18n/config';
 import { useT } from '../i18n/ui';
@@ -10,12 +11,15 @@ interface Props {
 }
 const { lang } = Astro.props;
 const c = privacyCopy[lang];
+// The ratings section appears only in builds where the rating function is switched on.
+const ratingsOn = process.env.RATINGS_ENABLED === 'true';
+const sections = ratingsOn ? [...c.sections, ratingsPrivacy[lang]] : c.sections;
 const t = useT(lang);
 ---
 
 <LegalShell lang={lang} route="privacy" title={c.title} lede={c.lede} incomplete={!legalComplete()}>
   {
-    c.sections.map((s, i) => (
+    sections.map((s, i) => (
       <section>
         <h2>{s.h}</h2>
         {s.p.map((p) => (

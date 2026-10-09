@@ -1,0 +1,500 @@
+---
+/**
+ * Individual dish page (/speisekarte/<id>/, /en/menu/<id>/, /fr/carte/<id>/).
+ * "About the dish" = cultural background (src/data/dish-content.ts, never recipe claims).
+ * "At Afrolink"   = only Afrolink's own menu data (description, sides, sizes, price, spice).
+ */
+import { Picture, getImage } from 'astro:assets';
+import PageShell from '../PageShell.astro';
+import AllergenInfo from '../AllergenInfo.astro';
+import Icon from '../Icon.astro';
+import type { MenuItem, MenuCategory } from '../../data/menu';
+import { dishImages } from '../../data/dish-images';
+import { dishContent } from '../../data/dish-content';
+import { formatPrice } from '../../data/format';
+import { menuItemJsonLd } from '../../data/seo';
+import { business, mapsHref, phones, siteUrl, whatsappWithText } from '../../data/business';
+import { galleryImage } from '../../lib/images';
+import { dishPaths, routes, type Lang } from '../../i18n/config';
+import { useT } from '../../i18n/ui';
+import { usePages } from '../../i18n/pages';
+
+interface Props {
+  lang: Lang;
+  item: MenuItem;
+  category: MenuCategory;
+}
+const { lang, item, category } = Astro.props;
+const t = useT(lang);
+const p = usePages(lang);
+const d = p.dish;
+const content = dishContent[item.id];
+const di = dishImages[item.id];
+const paths = dishPaths(item.id);
+const photo = di ? galleryImage(di.file, `dish page (${item.id})`) : null;
+const full = photo ? await getImage({ src: photo, width: Math.min(1600, photo.width), format: 'webp' }) : null;
+const og = photo ? await getImage({ src: photo, width: 1200, height: 630, fit: 'cover', format: 'jpg' }) : null;
+
+const priceLine = item.variants
+  ? item.variants.map((v) => `${v.label[lang]} ${formatPrice(v.price)}`).join(' · ')
+  : formatPrice(item.price!);
+const clip = (s: string, max: number) => (s.length <= max ? s : `${s.slice(0, s.lastIndexOf(' ', max - 1))} …`);
+const fullTitle = `${item.name} ${d.titleSuffix} – ${content.kind[lang]} | Afrolink`;
+const title = fullTitle.length <= 72 ? fullTitle : `${item.name} – ${p.nav.menu} | Afrolink Essen`;
+const description = clip(`${content.summary[lang]} ${priceLine} · Afrolink, Essen.`, 175);
+
+// Sides / serving info — only from Afrolink's own menu data.
+const served = [category.note?.[lang], item.note?.[lang]].filter(Boolean) as string[];
+const isSoup = category.id === 'soups';
+const crumbs = [
+  { name: p.nav.menu, href: routes.menu[lang] },
+  ...(isSoup ? [{ name: p.nav.soups, href: routes.soups[lang] }] : []),
+  { name: item.name, href: paths[lang] },
+];
+
+const related = category.items
+  .filter((i) => i.id !== item.id && i.available !== false)
+  .slice(0, 4)
+  .map((i) => {
+    const img = dishImages[i.id];
+    return {
+      item: i,
+      href: dishPaths(i.id)[lang],
+      img: img ? galleryImage(img.file, `related (${i.id})`) : null,
+      alt: img?.alt[lang] ?? '',
+      kind: dishContent[i.id]?.kind[lang] ?? '',
+      price: i.variants ? `${formatPrice(Math.min(...i.variants.map((v) => v.price)))}+` : formatPrice(i.price!),
+    };
+  });
+
+const orderText = `${t.enquiry.msgGreeting}\n${d.order}: ${item.name}\n`;
+const jsonLd = [menuItemJsonLd(item, lang, paths[lang], content.summary[lang], og ? `${siteUrl}${og.src}` : null)];
+const image = og && di ? { url: `${siteUrl}${og.src}`, width: 1200, height: 630, alt: di.alt[lang] } : undefined;
+---
+
+<PageShell lang={lang} route="menu" paths={paths} title={title} description={description} crumbs={crumbs} jsonLd={jsonLd} image={image} bare>
+  <article class="dp wrap" data-dish-page={item.id}>
+    <div class="dp__hero">
+      <div class="dp__media">
+        {
+          photo && full && di ? (
+            <a class="dp__zoom" href={full.src} data-lb data-lb-group="dish" data-lb-title={item.name} data-lb-desc={content.summary[lang]} data-lb-alt={di.alt[lang]}>
+              <Picture
+                src={photo}
+                formats={['avif', 'webp']}
+                widths={[480, 800, 1200]}
+                sizes="(min-width: 64em) 38rem, 100vw"
+                alt={di.alt[lang]}
+                loading="eager"
+                fetchpriority="high"
+                class:list={['dp__img', { 'is-watermarked': di.watermarked }]}
+              />
+              <span class="dp__zoomicon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                  <path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7" />
+                </svg>
+              </span>
+              <span class="visually-hidden">{d.enlarge}: {item.name}</span>
+            </a>
+          ) : null
+        }
+        <p class="dp__imgnote">{d.imageNote}</p>
+      </div>
+
+      <div class="dp__intro">
+        <p class="eyebrow">{category.title[lang]}</p>
+        <h1 class="dp__title">{item.name}</h1>
+        <p class="dp__kind">{content.kind[lang]}</p>
+        <div class="dp__rating" data-rating-slot data-dish={item.id} data-name={item.name} hidden></div>
+        <p class="dp__summary">{content.summary[lang]}</p>
+
+        <div class="dp__price">
+          {
+            item.variants ? (
+              <dl>
+                {item.variants.map((v) => (
+                  <div>
+                    <dt>{v.label[lang]}</dt>
+                    <dd>{formatPrice(v.price)}</dd>
+                  </div>
+                ))}
+              </dl>
+            ) : (
+              <p>
+                <span class="visually-hidden">{d.price}: </span>
+                {formatPrice(item.price!)}
+              </p>
+            )
+          }
+          {
+            item.spice === 'hot' && (
+              <span class="tag tag--hot" title={t.menu.hotTitle}>
+                <span aria-hidden="true">♦</span> {t.menu.hot}
+              </span>
+            )
+          }
+          {item.label && <span class="tag tag--label">{item.label[lang]}</span>}
+        </div>
+
+        <div class="dp__actions">
+          <a class="btn btn--solid" href={phones.landline.href}><Icon name="phone" /> {p.cta.call}</a>
+          <a class="btn btn--line" href={whatsappWithText(orderText)} target="_blank" rel="noopener">
+            <Icon name="whatsapp" /> {p.cta.whatsapp}<span class="visually-hidden"> {t.a11y.opensWhatsApp}</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="dp__body">
+      <section class="dp__section" aria-labelledby="dp-about">
+        <h2 id="dp-about" class="dp__h2">{d.background}</h2>
+        <p>{content.typical[lang]}</p>
+        {
+          content.allergyHint && (
+            <p class="dp__hint">
+              <strong>{d.allergyHintTitle}:</strong> {content.allergyHint[lang]}
+            </p>
+          )
+        }
+      </section>
+
+      <section class="dp__section" aria-labelledby="dp-afrolink">
+        <h2 id="dp-afrolink" class="dp__h2">{d.atAfrolink}</h2>
+        <dl class="dp__facts">
+          {
+            item.description && (
+              <div>
+                <dt>{d.menuText}</dt>
+                <dd>{item.description[lang]}</dd>
+              </div>
+            )
+          }
+          {
+            served.length > 0 && (
+              <div>
+                <dt>{d.served}</dt>
+                <dd>{served.join(' ')}</dd>
+              </div>
+            )
+          }
+          <div>
+            <dt>{item.variants ? d.sizes : d.price}</dt>
+            <dd>{priceLine}</dd>
+          </div>
+          {
+            item.label && (
+              <div>
+                <dt>{t.menu.noticeTitle}</dt>
+                <dd>{d.onRequest}</dd>
+              </div>
+            )
+          }
+        </dl>
+      </section>
+
+      <section class="dp__section" aria-labelledby="dp-allergens">
+        <h2 id="dp-allergens" class="dp__h2">{p.allergen.title}</h2>
+        <AllergenInfo lang={lang} id={item.id} variant="full" />
+      </section>
+
+      <section class="dp__section" aria-labelledby="dp-diet">
+        <h2 id="dp-diet" class="dp__h2">{d.dietTitle}</h2>
+        <p>{item.spice === 'hot' ? d.spiceHot : d.spiceAsk}</p>
+        <p>{d.dietText}</p>
+      </section>
+    </div>
+
+    {
+      related.length > 0 && (
+        <section class="dp__related" aria-labelledby="dp-related">
+          <h2 id="dp-related" class="dp__h2">{d.related}</h2>
+          <ul role="list" class="rel">
+            {related.map((r) => (
+              <li>
+                <a class="rel__card" href={r.href}>
+                  {r.img && (
+                    <Picture
+                      src={r.img}
+                      formats={['avif', 'webp']}
+                      widths={[240, 400]}
+                      sizes="(min-width: 64em) 14rem, 45vw"
+                      alt={r.alt}
+                      loading="lazy"
+                      class="rel__img"
+                    />
+                  )}
+                  <span class="rel__name">{r.item.name}</span>
+                  <span class="rel__kind">{r.kind}</span>
+                  <span class="rel__price">{r.price}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+          <p class="dp__more">
+            {isSoup && (
+              <a href={routes.soups[lang]}>
+                {p.soupsPage.all} <span aria-hidden="true">→</span>
+              </a>
+            )}
+            <a href={routes.menu[lang]}>
+              {p.cta.seeAll} <span aria-hidden="true">→</span>
+            </a>
+          </p>
+        </section>
+      )
+    }
+
+    <aside class="dp__order" aria-labelledby="dp-order">
+      <h2 id="dp-order" class="dp__h2">{d.order}</h2>
+      <p>{d.orderText}</p>
+      <p class="dp__visit">
+        <a href={mapsHref} target="_blank" rel="noopener">{business.name}, {business.address.street}, {business.address.postalCode} {business.address.city}</a>
+      </p>
+      <div class="dp__actions">
+        <a class="btn btn--solid" href={phones.landline.href}><Icon name="phone" /> {phones.landline.display}</a>
+        <a class="btn btn--line" href={routes.reservations[lang]}>{p.nav.reservations}</a>
+        <a class="btn btn--line" href={routes.delivery[lang]}>{p.nav.delivery}</a>
+      </div>
+    </aside>
+  </article>
+</PageShell>
+
+<style>
+  .dp {
+    display: grid;
+    gap: clamp(2.5rem, 2rem + 2vw, 4rem);
+    padding-top: clamp(1.25rem, 1rem + 1vw, 2rem);
+  }
+  .dp__hero {
+    display: grid;
+    gap: 1.75rem;
+  }
+  @media (min-width: 64em) {
+    .dp__hero {
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+      gap: clamp(2rem, 1rem + 3vw, 4rem);
+      align-items: start;
+    }
+  }
+  .dp__zoom {
+    position: relative;
+    display: block;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: var(--paper-sunk);
+    cursor: zoom-in;
+  }
+  .dp__zoom :global(picture),
+  .dp__img {
+    width: 100%;
+    height: 100%;
+  }
+  .dp__img {
+    object-fit: cover;
+  }
+  .dp__img.is-watermarked {
+    object-position: 100% 100%;
+  }
+  .dp__zoomicon {
+    position: absolute;
+    right: 0.6rem;
+    top: 0.6rem;
+    display: grid;
+    place-items: center;
+    width: 2.4rem;
+    height: 2.4rem;
+    color: var(--on-ink);
+    background: rgb(20 17 16 / 0.6);
+  }
+  .dp__zoomicon svg {
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+  .dp__imgnote {
+    margin-top: 0.5rem;
+    font-size: var(--step--1);
+    color: var(--on-paper-muted);
+  }
+  .dp__intro {
+    display: grid;
+    gap: 0.75rem;
+    align-content: start;
+  }
+  .dp__title {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: var(--step-5, var(--step-4));
+    line-height: 1.02;
+  }
+  .dp__kind {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: var(--step-1);
+    color: var(--gold);
+  }
+  .dp__summary {
+    font-size: var(--step-1);
+    color: var(--on-paper);
+    max-width: 36rem;
+  }
+  .dp__price {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1rem;
+    font-size: var(--step-2);
+    font-weight: 700;
+    color: var(--gold);
+    font-variant-numeric: tabular-nums;
+  }
+  .dp__price dl {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+  }
+  .dp__price dl div {
+    display: flex;
+    gap: 0.5rem;
+    align-items: baseline;
+  }
+  .dp__price dt {
+    font-size: var(--step-0);
+    font-weight: 500;
+    color: var(--on-paper-muted);
+  }
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.15rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 650;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border: 1px solid currentColor;
+  }
+  .tag--hot {
+    color: var(--gold);
+  }
+  .tag--label {
+    color: var(--burgundy);
+  }
+  .dp__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+  .dp__body {
+    display: grid;
+    gap: 2rem;
+  }
+  @media (min-width: 64em) {
+    .dp__body {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 2.5rem 4rem;
+    }
+  }
+  .dp__section {
+    display: grid;
+    gap: 0.75rem;
+    align-content: start;
+    max-width: var(--measure);
+  }
+  .dp__section p {
+    color: var(--on-paper-muted);
+    font-size: var(--step-0);
+  }
+  .dp__h2 {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: var(--step-2);
+    line-height: 1.15;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgb(214 168 78 / 0.45);
+  }
+  .dp__hint {
+    padding: 0.75rem 0.9rem;
+    background: var(--paper-sunk);
+    border-left: 2px solid var(--gold);
+  }
+  .dp__facts {
+    display: grid;
+    gap: 0.75rem;
+  }
+  .dp__facts dt {
+    font-size: var(--step--1);
+    font-weight: 650;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+  .dp__facts dd {
+    color: var(--on-paper);
+  }
+  .rel {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
+  @media (min-width: 64em) {
+    .rel {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1.25rem;
+    }
+  }
+  .rel__card {
+    display: grid;
+    gap: 0.25rem;
+    height: 100%;
+    padding-bottom: 0.75rem;
+    text-decoration: none;
+    background: var(--ink-raised);
+    border: 1px solid var(--paper-line);
+  }
+  .rel__card:hover {
+    border-color: var(--gold);
+  }
+  .rel__card :global(picture),
+  .rel__img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+  }
+  .rel__name {
+    padding-inline: 0.75rem;
+    margin-top: 0.4rem;
+    font-weight: 650;
+    color: var(--on-paper);
+  }
+  .rel__kind {
+    padding-inline: 0.75rem;
+    font-size: var(--step--1);
+    color: var(--on-paper-muted);
+  }
+  .rel__price {
+    padding-inline: 0.75rem;
+    font-weight: 700;
+    color: var(--gold);
+  }
+  .dp__more {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    margin-top: 1rem;
+  }
+  .dp__more a,
+  .dp__visit a {
+    color: var(--gold);
+    font-weight: 600;
+  }
+  .dp__order {
+    display: grid;
+    gap: 0.75rem;
+    padding: clamp(1.25rem, 1rem + 1.5vw, 2rem);
+    border: 1px solid rgb(214 168 78 / 0.55);
+  }
+  .dp__order p {
+    color: var(--on-paper-muted);
+  }
+</style>

@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-const built = existsSync('dist/index.html');
+const built = existsSync('dist/client/index.html');
 const opt = { skip: !built && 'run `npm run build` first' };
 
 const pages: Record<string, { file: string; lang: string }> = {
@@ -25,7 +25,7 @@ const pages: Record<string, { file: string; lang: string }> = {
   allergens_fr: { file: 'fr/allergenes/index.html', lang: 'fr' },
 };
 
-const read = (f: string) => readFileSync(join('dist', f), 'utf8');
+const read = (f: string) => readFileSync(join('dist', 'client', f), 'utf8');
 const visibleText = (html: string) =>
   html
     .replace(/<script[\s\S]*?<\/script>/g, '')
@@ -35,7 +35,7 @@ const visibleText = (html: string) =>
 
 test('all 12 localized pages exist with correct <html lang> and hreflang alternates', opt, () => {
   for (const [name, p] of Object.entries(pages)) {
-    assert.ok(existsSync(join('dist', p.file)), `${name} missing`);
+    assert.ok(existsSync(join('dist', 'client', p.file)), `${name} missing`);
     const html = read(p.file);
     assert.match(html, new RegExp(`<html lang="${p.lang}"`), `${name} lang`);
     for (const hl of ['de-DE', 'en', 'fr', 'x-default']) assert.ok(html.includes(`hreflang="${hl}"`), `${name} hreflang ${hl}`);
@@ -82,5 +82,6 @@ test('legal pages show the incompleteness notice while operator data is missing'
 
 test('sitemap lists all localized URLs', opt, () => {
   const xml = read('sitemap.xml');
-  assert.equal((xml.match(/<loc>/g) ?? []).length, 12);
+  // 11 fixed routes + 31 dish pages, each in three languages (details: tests/discovery.test.ts).
+  assert.equal((xml.match(/<loc>/g) ?? []).length, 126);
 });

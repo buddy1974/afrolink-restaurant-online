@@ -4,16 +4,38 @@ import logo from '../assets/brand/afrolink-logo.png';
 import Rule from './Rule.astro';
 import LanguageSwitcher from './LanguageSwitcher.astro';
 import { business, phones } from '../data/business';
-import { routes, type Lang, type RouteKey } from '../i18n/config';
+import { routes, type Lang, type Paths, type RouteKey } from '../i18n/config';
 import { useT } from '../i18n/ui';
+import { usePages } from '../i18n/pages';
+import { dishPaths } from '../i18n/config';
 
 interface Props {
   lang: Lang;
   route: RouteKey;
+  paths?: Paths;
 }
 const { lang, route } = Astro.props;
 const t = useT(lang);
 const year = new Date().getFullYear();
+const p = usePages(lang);
+const pages = [
+  { href: routes.menu[lang], label: p.nav.menu },
+  { href: routes.soups[lang], label: p.nav.soups },
+  { href: routes.delivery[lang], label: p.nav.delivery },
+  { href: routes.catering[lang], label: p.nav.catering },
+  { href: routes.reservations[lang], label: p.nav.reservations },
+  { href: routes.gallery[lang], label: p.nav.gallery },
+  { href: routes.contact[lang], label: p.nav.contact },
+];
+// A few well-known dishes as entry points (all dishes are linked from the menu page).
+const dishes = [
+  ['egusi-soup', 'Egusi Soup'],
+  ['jollof-rice', 'Jollof Rice'],
+  ['pepper-soup', 'Pepper Soup'],
+  ['suya', 'Suya'],
+  ['tilapia', 'Tilapia'],
+  ['extra-pounded-yam', 'Pounded Yam'],
+] as const;
 ---
 
 <footer class="footer on-ink">
@@ -32,6 +54,18 @@ const year = new Date().getFullYear();
         <a href={phones.landline.href}>{phones.landline.display}</a><br />
         <a href={phones.mobile.href}>{phones.mobile.display}</a>
       </p>
+      <nav class="footer__pages" aria-label={p.nav.pages}>
+        <p class="footer__label">{p.nav.pages}</p>
+        <ul role="list">
+          {pages.map((x) => <li><a href={x.href}>{x.label}</a></li>)}
+        </ul>
+      </nav>
+      <nav class="footer__dishes" aria-label={p.nav.dishes}>
+        <p class="footer__label">{p.nav.dishes}</p>
+        <ul role="list">
+          {dishes.map(([id, name]) => <li><a href={dishPaths(id)[lang]}>{name}</a></li>)}
+        </ul>
+      </nav>
       <nav class="footer__legal" aria-label={t.footer.legal}>
         <ul role="list">
           <li><a href={routes.imprint[lang]}>{t.footer.imprint}</a></li>
@@ -41,7 +75,7 @@ const year = new Date().getFullYear();
       </nav>
       <div class="footer__langs">
         <p class="footer__label">{t.footer.language}</p>
-        <LanguageSwitcher lang={lang} route={route} variant="full" label={t.footer.langNav} />
+        <LanguageSwitcher lang={lang} route={route} paths={Astro.props.paths} variant="full" label={t.footer.langNav} />
       </div>
     </div>
     <p class="footer__copy">© {year} {business.name}</p>
@@ -61,7 +95,12 @@ const year = new Date().getFullYear();
   }
   @media (min-width: 48em) {
     .footer__grid {
-      grid-template-columns: 2fr 1fr 1.3fr 1fr;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 72em) {
+    .footer__grid {
+      grid-template-columns: 1.6fr 1fr 1fr 1fr 1fr 1fr;
       align-items: start;
     }
   }

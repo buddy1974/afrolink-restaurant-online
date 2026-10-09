@@ -1,16 +1,21 @@
 import type { APIRoute } from 'astro';
 import { siteUrl } from '../data/business';
-import { htmlLang, locales, routes, type RouteKey } from '../i18n/config';
+import { foodMenu } from '../data/menu';
+import { dishPaths, htmlLang, locales, routes, type Paths, type RouteKey } from '../i18n/config';
 
 // Every localized URL, each with its hreflang alternates (German = x-default).
 export const GET: APIRoute = () => {
-  const urls = (Object.keys(routes) as RouteKey[]).flatMap((route) =>
+  const pages: Paths[] = [
+    ...(Object.keys(routes) as RouteKey[]).map((route) => routes[route]),
+    ...foodMenu.flatMap((c) => c.items.filter((i) => i.available !== false).map((i) => dishPaths(i.id))),
+  ];
+  const urls = pages.flatMap((paths) =>
     locales.map((lang) => {
       const alts = locales
-        .map((l) => `    <xhtml:link rel="alternate" hreflang="${htmlLang[l]}" href="${siteUrl}${routes[route][l]}"/>`)
-        .concat(`    <xhtml:link rel="alternate" hreflang="x-default" href="${siteUrl}${routes[route].de}"/>`)
+        .map((l) => `    <xhtml:link rel="alternate" hreflang="${htmlLang[l]}" href="${siteUrl}${paths[l]}"/>`)
+        .concat(`    <xhtml:link rel="alternate" hreflang="x-default" href="${siteUrl}${paths.de}"/>`)
         .join('\n');
-      return `  <url>\n    <loc>${siteUrl}${routes[route][lang]}</loc>\n${alts}\n  </url>`;
+      return `  <url>\n    <loc>${siteUrl}${paths[lang]}</loc>\n${alts}\n  </url>`;
     }),
   );
   return new Response(

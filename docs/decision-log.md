@@ -26,6 +26,9 @@
 | ADR-014 | 2026-10-08 | Hero image: genuine watermarked Egusi + pounded yam (883x540); Nkwobi moved to Specialities/gallery | Superseded by ADR-015 |
 | ADR-015 | 2026-10-09 | Approved dark-and-gold design; owner-supplied dish images per menu item; "Image coming soon" placeholders | Accepted (owner brief 2026-10-09) |
 | ADR-016 | 2026-10-09 | Retire old grilled-fish / porridge-yam photos; second owner image batch (12 dishes); water notice; SEO package | Accepted (owner brief 2026-10-09) |
+| ADR-017 | 2026-10-09 | Search-discovery architecture: dedicated menu, soups, 31 dish, delivery, catering, reservations, gallery and contact pages (DE/EN/FR); no city/doorway pages; no fufu page | Implemented on preview — awaiting Marcel's production approval |
+| ADR-018 | 2026-10-09 | Allergen baseline = Afrolink's previous-menu declarations (first-party), shown with source status; absence of codes ≠ allergen-free | Implemented (owner correction 2026-10-09) |
+| ADR-019 | 2026-10-09 | Dish ratings: Vercel Functions + Neon Postgres, anonymous cookie + HMAC keys, Bayesian ranking, audited moderation, feature flag OFF until approval | Implemented and tested locally — production activation requires approval |
 
 ## ADR Records
 
@@ -88,6 +91,24 @@ Delivery, catering, reservations, dietary questions and group orders are enquiri
 - Prices keep the printed-menu format ("€15", "€3.50") identically in all three languages, as before.
 - SEO: localised titles/descriptions with local intent, a short dish guide, `WebSite` JSON-LD, `menu`/`hasMap`/`mainEntityOfPage`, `sameAs` limited to verified profiles, `og:type` fixed, branded OG image. `priceRange` stays: it is computed from real prices, not invented. See `docs/seo.md`.
 - "Nigerian" is used to describe dish origin (Egusi, Ofe Nsala, Nkwobi), not as a certification. The owner is asked to confirm it.
+
+### ADR-017 — Search-discovery architecture (2026-10-09)
+- New routes via one catch-all page (`src/pages/[...slug].astro`) generated from `src/i18n/config.ts` routes and `src/data/menu.ts`; 126 pages total, all in the sitemap with hreflang.
+- Header navigation now points to the dedicated pages on every page (clearer hierarchy for guests and Google's sitelink signals); the home page keeps its full content including the menu.
+- Dish copy separates cultural background (`src/data/dish-content.ts`, researched, cited in docs/research) from Afrolink facts (generated from menu data). No recipe claims.
+- Rejected: city landing pages (doorway risk, one location); a fufu page (not served).
+
+### ADR-018 — Allergen baseline from Afrolink's previous menu (2026-10-09)
+- Source: `AfroLink Restaurant Menu.docx` (client folder). 29 historical descriptions, 14 coded dishes, 7 codes, preserved verbatim in `src/data/allergens.ts` and `docs/compliance/historical-allergen-register.md`.
+- Website: "declared on Afrolink's previous menu" + reconciliation note (12 dishes); "no written information yet, ask staff" (19 dishes); "confirmed for the current recipe" only after kitchen sign-off.
+- Not transferred: Ofe Akwu → Banga, Porridge Cocoyam → Porridge Yam (different dish names; kitchen to confirm).
+- The "Forensic Menu & Allergen Audit" document referenced in the brief was not found on disk; the register was rebuilt from the original menu and matches the owner's correction list exactly.
+
+### ADR-019 — Dish ratings (2026-10-09)
+- Static site + `@astrojs/vercel` adapter; only `/api/*` and `/admin/*` are on-demand.
+- Neon Postgres (Vercel Marketplace, EU region), parameterised SQL, append-only audit table, write-once launch date, env column + preview branches.
+- No rating schema markup (not eligible). See docs/ratings.md.
+- `RATINGS_ENABLED` is unset in production: nothing is collected until Marcel approves.
 
 ### Tooling note
 `eslint-plugin-jsx-a11y` does not support ESLint 10; the maintained fork `eslint-plugin-jsx-a11y-x` (officially supported by `eslint-plugin-astro`) is used. `role="list"` on styled lists is allowed on purpose (Safari/VoiceOver drops list semantics otherwise).

@@ -1,0 +1,157 @@
+---
+/** /speisekarte/suppen/ — hub for the twelve soups (explains swallows, links every soup page). */
+import { Picture } from 'astro:assets';
+import PageShell from '../PageShell.astro';
+import DishCard from '../DishCard.astro';
+import { foodMenu } from '../../data/menu';
+import { vegetableSoupFeature } from '../../data/dish-images';
+import { galleryImage } from '../../lib/images';
+import { absolute } from '../../data/seo';
+import { dishPaths, routes, type Lang } from '../../i18n/config';
+import { usePages } from '../../i18n/pages';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const p = usePages(lang);
+const soups = foodMenu.find((c) => c.id === 'soups')!;
+const items = soups.items.filter((i) => i.available !== false);
+const feature = galleryImage(vegetableSoupFeature.file, 'soups page');
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'MenuSection',
+    name: soups.title[lang],
+    url: absolute(routes.soups[lang]),
+    hasMenuItem: items.map((i) => ({ '@type': 'MenuItem', name: i.name, url: absolute(dishPaths(i.id)[lang]) })),
+  },
+];
+---
+
+<PageShell
+  lang={lang}
+  route="soups"
+  title={p.soupsPage.title}
+  description={p.soupsPage.description}
+  crumbs={[
+    { name: p.nav.menu, href: routes.menu[lang] },
+    { name: p.nav.soups, href: routes.soups[lang] },
+  ]}
+  h1={p.soupsPage.h1}
+  lede={p.soupsPage.lede}
+  jsonLd={jsonLd}
+>
+  <div class="wrap soups">
+    <div class="soups__intro">
+      <div class="soups__text">
+        <p>{p.soupsPage.p1}</p>
+        <p>{p.soupsPage.p2}</p>
+        <aside class="soups__swallow">
+          <h2>{p.soupsPage.swallowTitle}</h2>
+          <p>{p.soupsPage.swallowText}</p>
+          <a href={dishPaths('extra-pounded-yam')[lang]}>Pounded Yam <span aria-hidden="true">→</span></a>
+        </aside>
+      </div>
+      <figure class="soups__fig">
+        <Picture
+          src={feature}
+          formats={['avif', 'webp']}
+          widths={[480, 800, 1200]}
+          sizes="(min-width: 64em) 36rem, 100vw"
+          alt={vegetableSoupFeature.alt[lang]}
+          loading="eager"
+          fetchpriority="high"
+        />
+      </figure>
+    </div>
+
+    <section aria-labelledby="soups-list">
+      <h2 id="soups-list" class="soups__h2">{p.soupsPage.all}</h2>
+      {soups.note && <p class="soups__note">{soups.note[lang]}</p>}
+      <ul role="list" class="dishes">
+        {items.map((item) => <DishCard lang={lang} item={item} category={soups} group="soups" />)}
+      </ul>
+    </section>
+  </div>
+</PageShell>
+
+<style>
+  .soups {
+    display: grid;
+    gap: clamp(2.5rem, 2rem + 2vw, 4rem);
+  }
+  .soups__intro {
+    display: grid;
+    gap: 2rem;
+  }
+  @media (min-width: 64em) {
+    .soups__intro {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: clamp(2rem, 1rem + 3vw, 4rem);
+      align-items: start;
+    }
+  }
+  .soups__text {
+    display: grid;
+    gap: 1rem;
+    max-width: var(--measure);
+    font-size: var(--step-1);
+    color: var(--on-paper-muted);
+  }
+  .soups__swallow {
+    display: grid;
+    gap: 0.5rem;
+    padding: 1.1rem 1.25rem;
+    font-size: var(--step-0);
+    background: var(--paper-sunk);
+    border-left: 3px solid var(--gold);
+  }
+  .soups__swallow h2 {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: var(--step-2);
+    color: var(--on-paper);
+  }
+  .soups__swallow a {
+    font-weight: 600;
+    color: var(--gold);
+  }
+  .soups__fig :global(img) {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+  }
+  .soups__h2 {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: var(--step-3);
+  }
+  .soups__note {
+    margin-block: 0.5rem 1.5rem;
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: var(--step-1);
+    color: var(--gold);
+  }
+  .dishes {
+    display: grid;
+    gap: 0.75rem;
+  }
+  @media (min-width: 40em) {
+    .dishes {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.25rem;
+    }
+  }
+  @media (min-width: 64em) {
+    .dishes {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 80em) {
+    .dishes {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+</style>

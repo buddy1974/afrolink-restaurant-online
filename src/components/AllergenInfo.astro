@@ -1,0 +1,120 @@
+---
+/**
+ * Allergen & additive information for one food item — three clearly separated states
+ * (src/data/allergens.ts → publicAllergenInfo):
+ *  - confirmed:     kitchen-confirmed for the current recipe
+ *  - previous-menu: printed on Afrolink's previous menu (original codes kept), not yet reconciled
+ *  - not-declared:  no written declaration yet → ask staff (never presented as "allergen-free")
+ * No icons: nothing here may look like a verified badge unless it is one.
+ */
+import { publicAllergenInfo } from '../data/allergens';
+import { phones } from '../data/business';
+import { routes, type Lang } from '../i18n/config';
+import { usePages } from '../i18n/pages';
+
+interface Props {
+  lang: Lang;
+  id: string;
+  /** compact: inside a menu card; full: on the dish page. */
+  variant?: 'compact' | 'full';
+}
+const { lang, id, variant = 'compact' } = Astro.props;
+const a = usePages(lang).allergen;
+const info = publicAllergenInfo(id);
+const sup: Record<string, string> = { '1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵', '7': '⁷', '8': '⁸' };
+---
+
+<div class:list={['allergen', `allergen--${variant}`, `allergen--${info.status}`]} data-allergen-status={info.status}>
+  {
+    info.status === 'not-declared' ? (
+      <>
+        <p class="allergen__status">{a.none}</p>
+        <p class="allergen__note">{a.noneNote}</p>
+      </>
+    ) : (
+      <>
+        <p class="allergen__status">{info.status === 'confirmed' ? a.confirmed : a.previous}</p>
+        <dl class="allergen__list">
+          {info.allergens.length > 0 && (
+            <div>
+              <dt>{a.allergens}</dt>
+              <dd>
+                {info.allergens
+                  .map((x) => `${x.label[lang]}${x.historicalCode ? sup[x.historicalCode] : ''}`)
+                  .join(', ')}
+              </dd>
+            </div>
+          )}
+          {info.additives.length > 0 && (
+            <div>
+              <dt>{a.additives}</dt>
+              <dd>
+                {info.additives.map((x) => `${x.label[lang]}${x.historicalCode ? sup[x.historicalCode] : ''}`).join(', ')}
+              </dd>
+            </div>
+          )}
+        </dl>
+        {info.status === 'previous-menu' && <p class="allergen__note">{a.previousNote}</p>}
+      </>
+    )
+  }
+  {variant === 'full' && <p class="allergen__note">{a.crossContact}</p>}
+  <p class="allergen__links">
+    <a href={phones.landline.href}>{a.ask}: {phones.landline.display}</a>
+    <a href={routes.allergens[lang]}>{a.full}</a>
+  </p>
+</div>
+
+<style>
+  .allergen {
+    display: grid;
+    gap: 0.45rem;
+    font-size: 0.875rem;
+    line-height: 1.45;
+  }
+  .allergen--full {
+    font-size: var(--step-0);
+  }
+  .allergen__status {
+    font-weight: 650;
+    color: var(--on-paper);
+  }
+  .allergen--previous-menu .allergen__status::before,
+  .allergen--confirmed .allergen__status::before {
+    content: '';
+    display: inline-block;
+    width: 0.5rem;
+    height: 0.5rem;
+    margin-right: 0.45rem;
+    vertical-align: 0.1em;
+    border: 1px solid var(--gold);
+    transform: rotate(45deg);
+  }
+  .allergen--confirmed .allergen__status::before {
+    background: var(--gold);
+  }
+  .allergen__list {
+    display: grid;
+    gap: 0.25rem;
+  }
+  .allergen__list div {
+    display: grid;
+    grid-template-columns: minmax(6.5rem, auto) minmax(0, 1fr);
+    gap: 0.75rem;
+  }
+  .allergen__list dt {
+    color: var(--on-paper-muted);
+  }
+  .allergen__note {
+    color: var(--on-paper-muted);
+  }
+  .allergen__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1rem;
+  }
+  .allergen__links a {
+    color: var(--gold);
+    font-weight: 600;
+  }
+</style>

@@ -4,26 +4,30 @@ import logo from '../assets/brand/afrolink-logo.png';
 import Icon from './Icon.astro';
 import LanguageSwitcher from './LanguageSwitcher.astro';
 import { phones, whatsapp } from '../data/business';
-import { routes, type Lang, type RouteKey } from '../i18n/config';
+import { routes, type Lang, type Paths, type RouteKey } from '../i18n/config';
 import { useT } from '../i18n/ui';
+import { usePages } from '../i18n/pages';
 
 interface Props {
   lang: Lang;
   route: RouteKey;
+  paths?: Paths;
 }
 const { lang, route } = Astro.props;
 const t = useT(lang);
-// On sub-pages, section anchors point back to the home page in the same language.
-const base = route === 'home' ? '' : routes.home[lang];
-
-const nav = [
-  { href: `${base}#menu`, label: t.nav.menu },
-  { href: `${base}#services`, label: t.nav.delivery },
-  { href: `${base}#reviews`, label: t.nav.reviews },
-  { href: `${base}#gallery`, label: t.nav.gallery },
-  { href: `${base}#about`, label: t.nav.about },
-  { href: `${base}#contact`, label: t.nav.contact },
+const p = usePages(lang);
+// Site-wide navigation points to the dedicated pages (clear hierarchy for guests and search
+// engines); reviews stay a section of the home page.
+const nav: { href: string; label: string; key?: RouteKey }[] = [
+  { href: routes.menu[lang], label: p.nav.menu, key: 'menu' },
+  { href: routes.delivery[lang], label: p.nav.delivery, key: 'delivery' },
+  { href: routes.catering[lang], label: p.nav.catering, key: 'catering' },
+  { href: routes.reservations[lang], label: p.nav.reservations, key: 'reservations' },
+  { href: route === 'home' ? '#reviews' : `${routes.home[lang]}#reviews`, label: p.nav.reviews },
+  { href: routes.gallery[lang], label: p.nav.gallery, key: 'gallery' },
+  { href: routes.contact[lang], label: p.nav.contact, key: 'contact' },
 ];
+const isCurrent = (key?: RouteKey) => !!key && (key === route || (key === 'menu' && route === 'soups'));
 ---
 
 <header class="site-header on-ink" data-header>
@@ -39,12 +43,12 @@ const nav = [
 
     <nav class="site-nav" aria-label={t.a11y.mainNav}>
       <ul role="list">
-        {nav.map((n) => <li><a href={n.href}>{n.label}</a></li>)}
+        {nav.map((n) => <li><a href={n.href} aria-current={isCurrent(n.key) ? 'page' : undefined}>{n.label}</a></li>)}
       </ul>
     </nav>
 
     <div class="header-actions">
-      <div class="header-langs"><LanguageSwitcher lang={lang} route={route} label={t.a11y.langSwitch} /></div>
+      <div class="header-langs"><LanguageSwitcher lang={lang} route={route} paths={Astro.props.paths} label={t.a11y.langSwitch} /></div>
       <a class="hact" href={phones.landline.href}>
         <Icon name="phone" /><span class="hact__label">{t.actions.call}</span><span class="visually-hidden">
           {phones.landline.display}</span
@@ -65,10 +69,10 @@ const nav = [
   <div class="mobile-nav" id="mobile-nav" data-mobile-nav hidden>
     <nav class="wrap" aria-label={t.a11y.mainNav}>
       <ul role="list" class="mobile-nav__list">
-        {nav.map((n) => <li><a href={n.href} data-close-nav>{n.label}</a></li>)}
+        {nav.map((n) => <li><a href={n.href} data-close-nav aria-current={isCurrent(n.key) ? 'page' : undefined}>{n.label}</a></li>)}
       </ul>
       <div class="mobile-nav__langs">
-        <LanguageSwitcher lang={lang} route={route} variant="full" label={`${t.a11y.langSwitch} (${t.a11y.mainNav})`} />
+        <LanguageSwitcher lang={lang} route={route} paths={Astro.props.paths} variant="full" label={`${t.a11y.langSwitch} (${t.a11y.mainNav})`} />
       </div>
       <div class="mobile-nav__actions">
         <a class="btn btn--solid" href={phones.landline.href}><Icon name="phone" /> {t.actions.call} {phones.landline.display}</a>
@@ -175,6 +179,13 @@ const nav = [
   .site-nav a:hover {
     color: var(--on-ink);
     border-color: var(--ochre);
+  }
+  .site-nav a[aria-current='page'] {
+    color: var(--gold);
+    border-color: var(--gold);
+  }
+  .mobile-nav__list a[aria-current='page'] {
+    color: var(--gold);
   }
 
   .header-actions {

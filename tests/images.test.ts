@@ -82,7 +82,7 @@ test('retired photos (old porridge yam, old grilled fish) are referenced nowhere
   assert.ok(!existsSync('src/assets/gallery/porridge-yam.jpg'));
   if (existsSync('dist')) {
     for (const f of ['index.html', 'en/index.html', 'fr/index.html']) {
-      const html = readFileSync(`dist/${f}`, 'utf8');
+      const html = readFileSync(`dist/client/${f}`, 'utf8');
       assert.ok(!/grilled-fish-plantain|porridge-yam\./.test(html), `${f} still references a retired photo`);
     }
   }
@@ -104,11 +104,11 @@ test('diabetes enquiry makes no medical or nutritional promise', () => {
   }
 });
 
-test('rendered menu: placeholders exactly for dishes without an image', { skip: !existsSync('dist/index.html') && 'build first' }, () => {
+test('rendered menu: placeholders exactly for dishes without an image', { skip: !existsSync('dist/client/index.html') && 'build first' }, () => {
   const total = foodMenu.reduce((n, c) => n + c.items.filter((i) => i.available !== false).length, 0);
   const withImage = Object.keys(dishImages).length;
   for (const f of ['index.html', 'en/index.html', 'fr/index.html']) {
-    const html = readFileSync(`dist/${f}`, 'utf8');
+    const html = readFileSync(`dist/client/${f}`, 'utf8');
     assert.equal((html.match(/class="dish__soon"/g) ?? []).length, total - withImage, `${f} placeholders`);
     assert.equal((html.match(/<li class="dish"/g) ?? []).length, total, `${f} dish cards`);
   }

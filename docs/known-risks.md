@@ -37,6 +37,11 @@
 | R-022 | "Nigerian" wording in SEO copy describes dish origin; owner has not explicitly confirmed positioning | Content | Low | Owner confirmation requested in docs/seo.md | Marcel | Open |
 | R-023 | Search Console / Bing not verified; indexing unconfirmed. GBP data (hours, website, menu link) may differ from the site | SEO | Medium | Owner steps in docs/seo.md | Marcel | Open |
 | R-024 | Owner images for Extra Garri / Extra Rice / Extra Yam supplied, but these extras are not on the verified menu | Content | Low | Owner to confirm; not published | Marcel | Open |
+| R-025 | Online allergen information alone is not sufficient for dine-in guests (LMIDV § 4); the restaurant needs the written record / notice on site | Legal / compliance | **High** | Kitchen reconciliation workflow (docs/compliance/allergen-reconciliation-workflow.md); printed menu/notice to match | Marcel / kitchen | Open |
+| R-026 | 19 current dishes have no written allergen declaration; 12 rely on previous-menu codes not yet reconciled with current recipes | Legal / food safety | **High** | Website labels status honestly and routes guests to staff; kitchen sign-off per dish | Kitchen | Open |
+| R-027 | Anonymous ratings can be gamed by cookie clearing / network switching | Data quality | Medium | Rate limits, duplicate controls, pattern detection, audited moderation; documented limitation | Marcel | Mitigated |
+| R-028 | Ratings privacy text and Neon processor (EU region) need owner/legal review before activation | Legal | Medium | Activation checklist docs/ratings.md | Marcel | Open |
+| R-029 | Dish background texts are culturally typical descriptions researched from public sources; owner should review for tone and accuracy | Content | Low | Clear "traditionally" framing; Afrolink facts only from menu data | Marcel | Open |
 
 ## Security Concerns
 None material: static site, no forms, no cookies, no third-party scripts, no secrets. Security headers are set in `vercel.json`.

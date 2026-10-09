@@ -1,5 +1,13 @@
 # Change Log — `afrolink-restaurant-online`
 
+## 2026-10-09 — Discovery pages, interactive menu, allergen baseline, ratings (branch `discovery-ratings-2026-10`)
+- 126 indexable pages (DE/EN/FR): menu, African soups hub, 31 dish pages, delivery, catering, reservations, gallery, contact; breadcrumbs + JSON-LD (WebPage, BreadcrumbList, Menu, MenuSection, MenuItem, Service); sitemap with alternates; robots excludes /admin/ and /api/.
+- Header/footer navigation to dedicated pages; dish names link to dish pages; related dishes.
+- Original descriptions for all 31 dishes (kind, card summary, cultural background) in DE/EN/FR; desktop hover + "About this dish" disclosure; enlargeable photos in a global accessible lightbox (menu, gallery, dish pages).
+- Allergen panel per dish with three source states; historical register restored from Afrolink's previous menu; allergen page shows previous-menu declarations; reconciliation workflow for the kitchen.
+- Dish ratings (feature-flagged OFF): API, Neon schema/migration, anti-abuse, Bayesian ranking, discovery sorting, favourites, management dashboard, CSV export, moderation audit, six-month report, privacy section (enabled builds only).
+- Vercel adapter (static pages + on-demand API); ESLint ignores build output; tests: 62 (ratings with embedded Postgres, discovery/SEO, allergen baseline).
+
 ## 2026-10-09 — Image cleanup, menu extras/water, SEO package (branch `image-seo-2026-10`)
 - Removed the old grilled-fish and porridge-yam photos everywhere (gallery, dish image, legacy category images); sources retired, not deleted.
 - 12 new owner dish images: Fried Fish & Plantain, Porridge Yam, Abacha, Beans & Plantain, Coconut Rice, Isiewu, Fried Yam & Egg Sauce, Okpa, Snail, Stockfish, Suya, Extra Pounded Yam. 0 placeholders remain.
