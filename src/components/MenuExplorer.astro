@@ -197,6 +197,25 @@ const askText = `${t.enquiry.msgGreeting}\n${t.menu.askTitle}\n`;
     input.focus();
   });
 
+  // Categories use `content-visibility: auto`, so sections above an anchor target may only get
+  // their real height once rendered. Same-page links into the menu therefore scroll, let the
+  // browser render, and re-align once more so the target lands exactly below the sticky bar.
+  document.addEventListener('click', (ev) => {
+    const a = (ev.target as Element | null)?.closest<HTMLAnchorElement>('a[href^="#"]');
+    if (!a || ev.defaultPrevented || ev.button !== 0 || ev.metaKey || ev.ctrlKey) return;
+    const id = decodeURIComponent(a.getAttribute('href')!.slice(1));
+    const target = id ? document.getElementById(id) : null;
+    if (!target || !target.closest('.menu')) return;
+    ev.preventDefault();
+    const align = () => target.scrollIntoView({ block: 'start', behavior: 'instant' });
+    align();
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      align();
+      setTimeout(align, 120);
+    }));
+    history.pushState(null, '', `#${id}`);
+  });
+
   // Category tabs: highlight the category in view; keep the active tab visible.
   const bar = document.querySelector<HTMLElement>('[data-menubar]');
   const links = bar ? [...bar.querySelectorAll<HTMLAnchorElement>('.menubar__list a')] : [];
@@ -412,6 +431,10 @@ const askText = `${t.enquiry.msgGreeting}\n${t.menu.askTitle}\n`;
   }
   .mcat {
     scroll-margin-top: calc(var(--header-h) + 8.5rem);
+    /* Off-screen categories are not laid out until needed (large menu, faster first paint).
+       Content stays in the DOM for search engines, anchors and find-in-page. */
+    content-visibility: auto;
+    contain-intrinsic-size: auto 1400px;
   }
   @media (min-width: 64em) {
     .mcat {
