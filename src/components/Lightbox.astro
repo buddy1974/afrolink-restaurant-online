@@ -3,6 +3,7 @@
  * One accessible image viewer per page. Any link with `data-lb` opens it:
  *   <a href="<large image>" data-lb data-lb-group="menu" data-lb-title="Egusi Soup"
  *      data-lb-desc="Short text" data-lb-alt="Alt text">…thumbnail…</a>
+ *   or data-lb-desc-from="<id>" to take the description from the first paragraph of that element.
  * Links stay real links (the large image) without JavaScript.
  * Previous/next moves within the same group; Escape closes (native <dialog>); swipe on touch;
  * focus returns to the opening link.
@@ -68,7 +69,9 @@ const t = useT(Astro.props.lang);
       img.src = a.href;
       img.alt = a.dataset.lbAlt ?? '';
       title.textContent = a.dataset.lbTitle ?? '';
-      desc.textContent = a.dataset.lbDesc ?? '';
+      desc.textContent = a.dataset.lbDescFrom
+        ? (document.getElementById(a.dataset.lbDescFrom)?.querySelector('p')?.textContent ?? '')
+        : (a.dataset.lbDesc ?? '');
       const multi = group.length > 1;
       prev.hidden = !multi;
       next.hidden = !multi;

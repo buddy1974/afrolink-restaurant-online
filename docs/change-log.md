@@ -1,5 +1,10 @@
 # Change Log — `afrolink-restaurant-online`
 
+## 2026-10-09 — Pre-production review (branch `discovery-ratings-2026-10`)
+- Performance: removed `content-visibility` again (it made Chrome count the off-screen soup photo as LCP); rating client now loads on idle via dynamic import; allergen panel markup on menu cards is inserted on first open (full info stays on dish and allergen pages); hover/lightbox text taken from the info panel instead of duplicated; CSS chevrons/zoom icon; fewer srcset variants (cards 360/640, gallery 400/800/1200). Home DOM 2,522 → ~2,200 elements; LCP back to the production build's 3.3 s (same local test setup).
+- Tests: 66 (feature-flag/no-DB/weak-secret behaviour, environment isolation).
+- Audit: no price or category changes vs production except the 3 new extras; 135 sitemap URLs = 135 built pages, canonical = loc; 0 axe violations on all 135 pages.
+
 ## 2026-10-09 — Extras correction (branch `discovery-ratings-2026-10`)
 - Extras now: Extra Pounded Yam, Extra Garri, Extra Rice, Extra Yam — each €4.00, own image, DE/EN/FR description, dish page, lightbox, allergen panel, rating slot.
 - Category counts are computed from the data (test checks every category in all languages).

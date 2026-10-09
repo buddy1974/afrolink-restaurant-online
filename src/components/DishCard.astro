@@ -62,29 +62,21 @@ const searchText = [
           data-lb
           data-lb-group={group}
           data-lb-title={item.name}
-          data-lb-desc={content?.summary[lang] ?? ''}
+          data-lb-desc-from={content ? aboutId : undefined}
           data-lb-alt={di.alt[lang]}
         >
           <Picture
             src={photo}
             formats={['avif', 'webp']}
-            widths={[240, 400, 600, 800]}
+            widths={[360, 640]}
             sizes="(min-width: 80em) 18rem, (min-width: 64em) 30vw, (min-width: 40em) 45vw, 7.5rem"
             alt={di.alt[lang]}
             loading="lazy"
             decoding="async"
             class:list={['dish__img', { 'is-watermarked': di.watermarked }]}
           />
-          {content && (
-            <span class="dish__hover" aria-hidden="true">
-              <span>{content.summary[lang]}</span>
-            </span>
-          )}
-          <span class="dish__zoomicon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
-              <path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7" />
-            </svg>
-          </span>
+          {content && <span class="dish__hover" aria-hidden="true" data-hover-from={aboutId} />}
+          <span class="dish__zoomicon" aria-hidden="true"></span>
           <span class="visually-hidden">
             {p.dish.enlarge}: {item.name}
           </span>
@@ -148,17 +140,11 @@ const searchText = [
         content && (
           <button type="button" class="dish__toggle" aria-expanded="false" aria-controls={aboutId} data-disclosure>
             {p.dish.about}
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M6 9l6 6 6-6" />
-            </svg>
           </button>
         )
       }
       <button type="button" class="dish__toggle" aria-expanded="false" aria-controls={allergenId} data-disclosure>
         {p.allergen.button}
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M6 9l6 6 6-6" />
-        </svg>
       </button>
     </div>
     {
@@ -173,12 +159,27 @@ const searchText = [
       )
     }
     <div class="dish__panel" id={allergenId} hidden>
-      <AllergenInfo lang={lang} id={item.id} />
+      {/* Inserted on first open (keeps the menu DOM small); the full information is also on
+          every dish page and the allergen page. */}
+      <template data-panel-template>
+        <AllergenInfo lang={lang} id={item.id} />
+      </template>
     </div>
   </div>
 </li>
 
 <script>
+  // Hover/focus overlay: copy the short description from the dish's info panel on first use, so
+  // the text exists only once in the HTML.
+  const fillHover = (ev: Event) => {
+    const zoom = (ev.target as Element | null)?.closest?.('.dish__zoom');
+    const span = zoom?.querySelector<HTMLElement>('[data-hover-from]');
+    if (!span || span.textContent) return;
+    span.textContent = document.getElementById(span.dataset.hoverFrom!)?.querySelector('p')?.textContent ?? '';
+  };
+  document.addEventListener('pointerover', fillHover, { passive: true });
+  document.addEventListener('focusin', fillHover);
+
   // Disclosure buttons (dish info, allergens). One delegated listener for the whole page.
   document.addEventListener('click', (ev) => {
     const btn = (ev.target as Element | null)?.closest<HTMLButtonElement>('button[data-disclosure]');
@@ -186,6 +187,11 @@ const searchText = [
     const panel = document.getElementById(btn.getAttribute('aria-controls') ?? '');
     if (!panel) return;
     const open = btn.getAttribute('aria-expanded') !== 'true';
+    const tpl = panel.querySelector<HTMLTemplateElement>(':scope > template[data-panel-template]');
+    if (open && tpl) {
+      panel.append(tpl.content.cloneNode(true));
+      tpl.remove();
+    }
     btn.setAttribute('aria-expanded', String(open));
     panel.hidden = !open;
   });
@@ -254,9 +260,12 @@ const searchText = [
     background: rgb(20 17 16 / 0.6);
     border-radius: 2px;
   }
-  .dish__zoomicon svg {
+  .dish__zoomicon::before {
+    content: '';
     width: 1rem;
     height: 1rem;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f3ede3' stroke-width='1.6'%3E%3Cpath d='M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7'/%3E%3C/svg%3E")
+      center / contain no-repeat;
   }
   /* Hover/focus description over the photo (hover-capable devices only). */
   .dish__hover {
@@ -276,8 +285,8 @@ const searchText = [
       opacity: 0;
       transition: opacity 0.25s ease;
     }
-    .dish__zoom:hover .dish__hover,
-    .dish__zoom:focus-visible .dish__hover {
+    .dish__zoom:hover .dish__hover:not(:empty),
+    .dish__zoom:focus-visible .dish__hover:not(:empty) {
       opacity: 1;
     }
     .dish__zoom:hover .dish__img {
@@ -436,12 +445,14 @@ const searchText = [
     outline: 2px solid var(--gold);
     outline-offset: 2px;
   }
-  .dish__toggle svg {
-    width: 0.9rem;
-    height: 0.9rem;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 1.8;
+  .dish__toggle::after {
+    content: '';
+    width: 0.4rem;
+    height: 0.4rem;
+    margin: -0.2rem 0 0 0.15rem;
+    border-right: 1.6px solid currentColor;
+    border-bottom: 1.6px solid currentColor;
+    transform: rotate(45deg);
     transition: transform 0.2s ease;
   }
   .dish__toggle[aria-expanded='true'] {
@@ -449,8 +460,9 @@ const searchText = [
     background: var(--gold);
     border-color: var(--gold);
   }
-  .dish__toggle[aria-expanded='true'] svg {
-    transform: rotate(180deg);
+  .dish__toggle[aria-expanded='true']::after {
+    margin-top: 0.2rem;
+    transform: rotate(225deg);
   }
   .dish__panel {
     display: grid;

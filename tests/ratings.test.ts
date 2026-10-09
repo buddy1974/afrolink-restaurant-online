@@ -229,3 +229,25 @@ test('CSV export neutralises spreadsheet formulas and quotes cells', () => {
   const csv = toCsv([{ a: '=HYPERLINK("x")', b: 'Fisherman\'s "Soup"', c: 5 }], ['a', 'b', 'c']);
   assert.equal(csv, 'a,b,c\r\n"\'=HYPERLINK(""x"")","Fisherman\'s ""Soup""","5"\r\n');
 });
+
+test('feature flag: ratings stay off unless flag AND a strong secret AND a database are present', async () => {
+  const { configFromEnv } = await import('../src/lib/ratings/http.ts');
+  assert.equal(configFromEnv({}).enabled, false, 'no variables');
+  assert.equal(configFromEnv({ RATINGS_ENABLED: 'true' }).enabled, false, 'flag without secret');
+  assert.equal(configFromEnv({ RATINGS_ENABLED: 'true', RATINGS_SECRET: 'short' }).enabled, false, 'weak secret');
+  assert.equal(configFromEnv({ RATINGS_ENABLED: 'false', RATINGS_SECRET: SECRET }).enabled, false, 'flag off');
+  const on = configFromEnv({ RATINGS_ENABLED: 'true', RATINGS_SECRET: SECRET, VERCEL_ENV: 'production' });
+  assert.equal(on.enabled, true);
+  assert.equal(on.env, 'production');
+  assert.equal(configFromEnv({ RATINGS_ENABLED: 'true', RATINGS_SECRET: SECRET }).env, 'development', 'local runs never write production rows');
+  // enabled but no database → public API reports disabled, submissions are refused
+  const sum = (await (await handleSummary(null, on)).json()) as { enabled: boolean };
+  assert.equal(sum.enabled, false);
+  assert.equal((await handleSubmit(post({ dish: 'okpa', stars: 4, elapsed: 5000 }), null, on)).status, 503);
+});
+
+test('environments never see each other\'s ratings', async () => {
+  await submitRating(db, { env: 'preview', dishId: 'okpa', stars: 1, voterHash: 'qa', ipDayHash: null });
+  assert.equal((await dishStats(db, 'production')).some((d) => d.dishId === 'okpa'), false);
+  assert.equal((await dishStats(db, 'preview')).find((d) => d.dishId === 'okpa')?.n, 1);
+});
