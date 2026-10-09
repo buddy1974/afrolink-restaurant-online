@@ -26,10 +26,10 @@ const show = {
   area: 'delivery',
   venue: 'catering',
   occasion: 'catering',
-  dishes: 'delivery catering group',
+  dishes: 'delivery catering group diabetes',
   heat: 'reservation delivery catering group dietary',
-  diet: 'reservation delivery catering group dietary',
-  allergies: 'reservation delivery catering group dietary',
+  diet: 'reservation delivery catering group dietary diabetes',
+  allergies: 'reservation delivery catering group dietary diabetes',
 };
 
 const labels = {
@@ -397,26 +397,13 @@ const labels = {
     white-space: pre-wrap;
     font-size: var(--step--1);
     line-height: 1.5;
-    background: #fffdf8;
+    background: var(--field);
     border: 1px solid var(--paper-line);
   }
   .eform__actions {
     display: grid;
     gap: 0.5rem;
     margin-top: 1rem;
-  }
-  .eform__actions .btn--line:hover {
-    background: var(--on-paper);
-    color: var(--paper);
-  }
-  .eform__actions .btn--solid {
-    background: var(--on-paper);
-    border-color: var(--on-paper);
-    color: var(--paper);
-  }
-  .eform__actions .btn--solid:hover {
-    background: var(--terracotta);
-    border-color: var(--terracotta);
   }
   .eform__fine {
     margin-top: 0.75rem;

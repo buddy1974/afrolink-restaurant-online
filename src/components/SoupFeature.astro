@@ -1,0 +1,120 @@
+---
+/**
+ * Soups showcase (approved design): the vegetable-soup photograph given prominence,
+ * with the owner's statement that soups are served with pounded yam or garri.
+ */
+import { Picture } from 'astro:assets';
+import Icon from './Icon.astro';
+import { galleryImage } from '../lib/images';
+import { dishImages, vegetableSoupFeature } from '../data/dish-images';
+import { type Lang } from '../i18n/config';
+import { useT } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useT(lang);
+const main = galleryImage(vegetableSoupFeature.file, 'soup feature');
+// Three further soups (owner-supplied, named images) as a quiet strip.
+const strip = (['afang-soup', 'ofe-nsala', 'oha-soup'] as const).map((id) => ({
+  id,
+  img: galleryImage(dishImages[id].file, 'soup feature'),
+  alt: dishImages[id].alt[lang],
+}));
+---
+
+<section class="feature on-ink" aria-labelledby="feature-title">
+  <div class="wrap feature__grid">
+    <figure class="feature__main">
+      <Picture
+        src={main}
+        formats={['avif', 'webp']}
+        widths={[480, 720, 960, 1280]}
+        sizes="(min-width: 64em) 44rem, 100vw"
+        alt={vegetableSoupFeature.alt[lang]}
+        loading="lazy"
+        class="feature__img"
+      />
+    </figure>
+    <div class="feature__text">
+      <p class="eyebrow">{t.feature.eyebrow}</p>
+      <h2 id="feature-title" class="feature__title">{t.feature.title}</h2>
+      <p class="feature__p">{t.feature.text}</p>
+      <a class="btn btn--solid" href="#soups">{t.feature.cta} <Icon name="arrow" /></a>
+      <ul role="list" class="feature__strip">
+        {
+          strip.map((s) => (
+            <li>
+              <a href={`#dish-${s.id}`}>
+                <Picture
+                  src={s.img}
+                  formats={['avif', 'webp']}
+                  widths={[240, 360]}
+                  sizes="9rem"
+                  alt={s.alt}
+                  loading="lazy"
+                  class="feature__thumb"
+                />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style>
+  .feature {
+    padding-block: clamp(3rem, 2rem + 4vw, 6rem);
+  }
+  .feature__grid {
+    display: grid;
+    gap: 2rem;
+    align-items: center;
+  }
+  @media (min-width: 64em) {
+    .feature__grid {
+      grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+      gap: clamp(2.5rem, 1rem + 4vw, 5rem);
+    }
+  }
+  .feature__img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+  }
+  .feature__title {
+    margin-top: 0.75rem;
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: var(--step-4);
+    line-height: 1.05;
+  }
+  .feature__p {
+    max-width: 32rem;
+    margin-block: 1rem 1.75rem;
+    color: var(--on-ink-muted);
+    font-size: var(--step-1);
+  }
+  .feature__strip {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.6rem;
+    margin-top: 2rem;
+    max-width: 30rem;
+  }
+  .feature__strip a {
+    display: block;
+  }
+  .feature__thumb {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    transition: opacity 0.2s ease;
+  }
+  .feature__strip a:hover .feature__thumb {
+    opacity: 0.85;
+  }
+</style>

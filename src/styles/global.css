@@ -1,26 +1,31 @@
 /* ==========================================================================
-   Afrolink — design system
-   Warm charcoal + warm paper, ochre/terracotta accent, burgundy sparingly.
+   Afrolink — design system (approved direction 2026-10-09: premium dark & gold)
+   Near-black canvas, two raised dark surfaces, warm cream type, solid gold accent.
+   No gradients, glows or gold effects — gold is used as a flat accent colour only.
    One graphic device: the lozenge rule (see Rule.astro).
    ========================================================================== */
 
 :root {
-  /* colour */
-  --ink: #1a1613;
-  --ink-raised: #231e1a;
-  --ink-line: rgb(243 237 227 / 0.14);
-  --on-ink: #f3ede3;
-  --on-ink-muted: #b8ad9f;
+  /* colour — "ink" = deepest canvas */
+  --ink: #141110;
+  --ink-raised: #1f1a17;
+  --ink-line: rgb(243 237 227 / 0.13);
+  --on-ink: #f4ede1;
+  --on-ink-muted: #bcb1a2;
 
-  --paper: #f3ede3;
-  --paper-sunk: #e9e0d2;
-  --paper-line: rgb(31 26 22 / 0.16);
-  --on-paper: #1f1a16;
-  --on-paper-muted: #5c5148;
+  /* "paper" = the alternate (raised) dark surface used by former light sections */
+  --paper: #1b1715;
+  --paper-sunk: #262019;
+  --paper-line: rgb(243 237 227 / 0.13);
+  --on-paper: #f4ede1;
+  --on-paper-muted: #bcb1a2;
+  --field: #120f0d;
 
-  --ochre: #d49b42; /* accent on ink */
-  --terracotta: #9f4528; /* accent on paper */
-  --burgundy: #6b2233;
+  --gold: #d6a84e; /* primary accent: buttons, prices, eyebrows */
+  --gold-strong: #e6bd66; /* hover */
+  --ochre: var(--gold); /* legacy alias */
+  --terracotta: var(--gold); /* legacy alias: accents on the alternate surface */
+  --burgundy: #c9787f; /* status tags — readable on dark */
 
   /* type */
   --font-sans: 'Archivo Variable', 'Archivo Fallback', system-ui, -apple-system, 'Segoe UI', sans-serif;
@@ -40,7 +45,7 @@
   --max: 76rem;
   --header-h: 4rem;
 
-  --focus: 0 0 0 2px var(--paper), 0 0 0 4px var(--terracotta);
+  --focus: 0 0 0 2px var(--ink), 0 0 0 4px var(--gold);
 }
 
 @font-face {
@@ -258,34 +263,24 @@ button {
 }
 
 .btn--solid {
-  background: var(--ochre);
-  border-color: var(--ochre);
+  background: var(--gold);
+  border-color: var(--gold);
   color: var(--ink);
 }
 .btn--solid:hover {
-  background: var(--on-ink);
-  border-color: var(--on-ink);
+  background: var(--gold-strong);
+  border-color: var(--gold-strong);
 }
 
+.btn--line {
+  color: var(--on-ink);
+  background: transparent;
+  border-color: rgb(244 237 225 / 0.45);
+  cursor: pointer;
+}
 .btn--line:hover {
-  background: var(--on-ink);
-  color: var(--ink);
-  border-color: var(--on-ink);
-}
-
-.on-paper .btn--solid {
-  background: var(--on-paper);
-  border-color: var(--on-paper);
-  color: var(--paper);
-}
-.on-paper .btn--solid:hover {
-  background: var(--terracotta);
-  border-color: var(--terracotta);
-}
-.on-paper .btn--line:hover {
-  background: var(--on-paper);
-  color: var(--paper);
-  border-color: var(--on-paper);
+  border-color: var(--gold);
+  color: var(--gold);
 }
 
 .btn svg {

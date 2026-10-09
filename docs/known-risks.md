@@ -32,5 +32,8 @@
 | R-018 | Delivery offered "by arrangement" — no area, fees or times defined | Business | Medium | Define a delivery policy when ready; until then all via enquiry | Marcel | Open |
 | R-019 | Hero photo is 883x540 — slightly soft on high-density desktop screens | Quality | Low | Supply a higher-resolution Egusi + pounded yam photo | Marcel | Open |
 
+| R-020 | Owner-supplied dish images (2026-10-09) appear to be AI-composited presentation images (Afrolink table settings combined with dish imagery similar to web photos). Rights/provenance unconfirmed; they may not show the dish exactly as served | Legal / content | **Medium** | Labelled on site as serving suggestions; owner to confirm rights and provenance or replace with own photos | Marcel | Open |
+| R-021 | Approved visual mockup not available to the implementer; no pixel comparison possible | Process | Low | Supply the mockup file for a comparison pass | Marcel | Open |
+
 ## Security Concerns
 None material: static site, no forms, no cookies, no third-party scripts, no secrets. Security headers are set in `vercel.json`.

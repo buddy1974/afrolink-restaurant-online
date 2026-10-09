@@ -39,6 +39,8 @@ export interface MenuItem {
 export interface MenuCategory {
   id: string;
   title: L10n;
+  /** Category-wide statement supplied by the owner, e.g. what soups are served with. */
+  note?: L10n;
   /**
    * Genuine Afrolink photo (file in src/assets/gallery) of a dish in this category.
    * `watermarked: true` keeps the bottom-right Afrolink watermark in frame when cropped.
@@ -53,6 +55,12 @@ export const foodMenu: MenuCategory[] = [
   {
     id: 'soups',
     title: { de: 'Suppen', en: 'Soups', fr: 'Soupes' },
+    // Owner statement, brief 2026-10-09.
+    note: {
+      de: 'Alle Suppen werden mit Pounded Yam oder Garri serviert.',
+      en: 'All soups are served with pounded yam or garri.',
+      fr: 'Toutes les soupes sont servies avec du pounded yam ou du garri.',
+    },
     image: {
       file: 'egusi-yam.jpg',
       alt: { de: 'Egusi-Suppe mit gekochtem Yam', en: 'Egusi soup served with boiled yam', fr: 'Soupe egusi servie avec de l’igname bouillie' },

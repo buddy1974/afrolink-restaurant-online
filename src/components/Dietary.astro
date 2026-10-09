@@ -14,6 +14,7 @@ const cards = [
   { title: d.spiceTitle, text: d.spiceText },
   { title: d.vegTitle, text: d.vegText },
   { title: d.allergyTitle, text: d.allergyText, link: { href: routes.allergens[lang], label: t.menu.allergenLink } },
+  { title: d.diabetesTitle, text: d.diabetesText, enquiry: { type: 'diabetes', label: d.diabetesCta } },
 ];
 ---
 
@@ -40,13 +41,20 @@ const cards = [
                 {c.link.label}
               </a>
             )}
+            {c.enquiry && (
+              <a class="link-arrow" href="#enquiry" data-enquiry={c.enquiry.type}>
+                {c.enquiry.label}
+              </a>
+            )}
           </li>
         ))
       }
+      <li class="dcard dcard--cta">
+        <h3 class="dcard__title">{t.menu.askTitle}</h3>
+        <p class="dcard__text">{t.menu.askText}</p>
+        <a class="btn btn--solid" href="#enquiry" data-enquiry="dietary">{d.cta}</a>
+      </li>
     </ul>
-    <p class="dietary__cta">
-      <a class="btn btn--solid" href="#enquiry" data-enquiry="dietary">{d.cta}</a>
-    </p>
   </div>
 </section>
 
@@ -71,9 +79,9 @@ const cards = [
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
-  @media (min-width: 75em) {
+  @media (min-width: 64em) {
     .dcards {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
   }
   .dcard {
@@ -102,7 +110,12 @@ const cards = [
     align-self: flex-start;
     margin-top: auto;
   }
-  .dietary__cta {
-    margin-top: 2rem;
+  .dcard--cta {
+    justify-content: center;
+    background: var(--paper-sunk);
+  }
+  .dcard--cta .btn {
+    align-self: flex-start;
+    margin-top: 0.5rem;
   }
 </style>

@@ -10,7 +10,7 @@ const de = {
     title: 'Afrolink Restaurant & Bar – Westafrikanische Küche in Essen | Speisekarte',
     description:
       'Speisekarte, Getränke, Öffnungszeiten und Kontakt von Afrolink Restaurant & Bar, Berzeliusstraße 7, 45144 Essen. Westafrikanische Suppen, Reis, Yam, Kochbananen, Fisch und Spezialitäten – vor Ort, zum Mitnehmen, Lieferung und Catering nach Absprache.',
-    ogAlt: 'Afrolink Restaurant Logo neben einem Teller Nkwobi',
+    ogAlt: 'Egusi-Suppe mit Pounded Yam bei Afrolink Restaurant & Bar',
   },
   a11y: {
     skipToMenu: 'Zur Speisekarte springen',
@@ -59,6 +59,25 @@ const de = {
     pause: 'Laufband anhalten',
     play: 'Laufband fortsetzen',
   },
+  highlights: {
+    label: 'Das zeichnet Afrolink aus',
+    cuisineTitle: 'Westafrikanische Küche',
+    cuisineText: 'Traditionell gekocht, mitten in Essen.',
+    reserveTitle: 'Tisch reservieren',
+    reserveText: 'Für zwei, die Familie oder Ihre Feier.',
+    deliveryTitle: 'Lieferung',
+    deliveryText: 'In Essen nach Absprache.',
+    cateringTitle: 'Catering',
+    cateringText: 'Für Feiern, Gemeinden und Firmen.',
+    porkTitle: 'Kein Schweinefleisch',
+    porkText: 'Wir bereiten und servieren kein Schweinefleisch.',
+  },
+  feature: {
+    eyebrow: 'Unsere Suppen',
+    title: 'Zwölf traditionelle Suppen – mit Pounded Yam oder Garri',
+    text: 'Von Egusi über Afang bis Ofe Nsala: Unsere Suppen werden mit Pounded Yam oder Garri serviert. Fragen Sie uns nach Ihrer Lieblingskombination.',
+    cta: 'Zu den Suppen',
+  },
   menu: {
     eyebrow: 'Essen',
     title: 'Speisekarte',
@@ -82,6 +101,9 @@ const de = {
     askText: 'Schreiben oder rufen Sie uns an, bevor Sie bestellen.',
     descSource: 'Beschreibungen laut Afrolink-Speisekarte',
     onRequest: 'Nur auf Vorbestellung',
+    imageSoon: 'Bild folgt',
+    imageNote: 'Abbildungen sind Serviervorschläge – das servierte Gericht kann abweichen.',
+    dishCount: '{n} Gerichte',
   },
   drinks: {
     eyebrow: 'Bar',
@@ -104,6 +126,10 @@ const de = {
     allergyTitle: 'Allergien & Unverträglichkeiten',
     allergyText:
       'Für unsere Speisen liegt auf dieser Website noch keine geprüfte Allergenkennzeichnung vor. Bitte sprechen Sie vor der Bestellung mit unserem Personal. Wir können nicht zusagen, dass ein Gericht frei von einem Allergen ist.',
+    diabetesTitle: 'Ernährung bei Diabetes',
+    diabetesText:
+      'Sie möchten ein Gericht wegen Diabetes angepasst haben – etwa bei Beilage oder Portion? Fragen Sie unsere Küche vorab, was möglich ist. Wir geben keine medizinischen oder ernährungsbezogenen Zusagen und keine Nährwertangaben; bitte folgen Sie dem Rat Ihrer Ärztin oder Ihres Arztes.',
+    diabetesCta: 'Küche fragen',
     cta: 'Wunsch anfragen',
   },
   services: {
@@ -144,6 +170,7 @@ const de = {
       catering: 'Catering / Veranstaltung',
       dietary: 'Ernährungswunsch / Allergie',
       group: 'Gruppenbestellung',
+      diabetes: 'Anpassung bei Diabetes',
       question: 'Allgemeine Frage',
     },
     date: 'Datum',
@@ -296,7 +323,7 @@ const en: Shape<Dict> = {
     title: 'Afrolink Restaurant & Bar – West African Food in Essen | Menu',
     description:
       'Menu, drinks, opening hours and contact for Afrolink Restaurant & Bar, Berzeliusstraße 7, 45144 Essen. West African soups, rice, yam, plantain, fish and specialities – dine in, takeaway, delivery and catering by arrangement.',
-    ogAlt: 'Afrolink Restaurant logo beside a plate of Nkwobi',
+    ogAlt: 'Egusi soup with pounded yam at Afrolink Restaurant & Bar',
   },
   a11y: {
     skipToMenu: 'Skip to the menu',
@@ -345,6 +372,25 @@ const en: Shape<Dict> = {
     pause: 'Pause the ticker',
     play: 'Resume the ticker',
   },
+  highlights: {
+    label: 'What Afrolink offers',
+    cuisineTitle: 'West African cuisine',
+    cuisineText: 'Traditionally cooked, in the heart of Essen.',
+    reserveTitle: 'Book a table',
+    reserveText: 'For two, the family or your celebration.',
+    deliveryTitle: 'Delivery',
+    deliveryText: 'Within Essen by arrangement.',
+    cateringTitle: 'Catering',
+    cateringText: 'For celebrations, communities and companies.',
+    porkTitle: 'No pork',
+    porkText: 'We do not prepare or serve pork.',
+  },
+  feature: {
+    eyebrow: 'Our soups',
+    title: 'Twelve traditional soups – with pounded yam or garri',
+    text: 'From egusi and afang to ofe nsala: our soups are served with pounded yam or garri. Ask us about your favourite combination.',
+    cta: 'See the soups',
+  },
   menu: {
     eyebrow: 'Food',
     title: 'Menu',
@@ -368,6 +414,9 @@ const en: Shape<Dict> = {
     askText: 'Message or call us before you order.',
     descSource: 'Descriptions from the Afrolink menu',
     onRequest: 'On request only',
+    imageSoon: 'Image coming soon',
+    imageNote: 'Images are serving suggestions – the dish served may look different.',
+    dishCount: '{n} dishes',
   },
   drinks: {
     eyebrow: 'Bar',
@@ -390,6 +439,10 @@ const en: Shape<Dict> = {
     allergyTitle: 'Allergies & intolerances',
     allergyText:
       'Verified allergen information for our dishes is not yet available on this website. Please speak to our staff before ordering. We cannot promise that any dish is free from a particular allergen.',
+    diabetesTitle: 'Eating with diabetes',
+    diabetesText:
+      'Would you like a dish adapted because of diabetes – for example the side or the portion? Ask our kitchen in advance what is possible. We make no medical or nutritional promises and give no nutrition values; please follow your doctor’s advice.',
+    diabetesCta: 'Ask the kitchen',
     cta: 'Ask about a request',
   },
   services: {
@@ -430,6 +483,7 @@ const en: Shape<Dict> = {
       catering: 'Catering / event',
       dietary: 'Dietary request / allergy',
       group: 'Group order',
+      diabetes: 'Diabetes-related adaptation',
       question: 'General question',
     },
     date: 'Date',
@@ -577,7 +631,7 @@ const fr: Shape<Dict> = {
     title: 'Afrolink Restaurant & Bar – Cuisine ouest-africaine à Essen | Carte',
     description:
       'Carte, boissons, horaires et contact d’Afrolink Restaurant & Bar, Berzeliusstraße 7, 45144 Essen. Soupes ouest-africaines, riz, igname, banane plantain, poisson et spécialités – sur place, à emporter, livraison et traiteur sur demande.',
-    ogAlt: 'Logo d’Afrolink Restaurant à côté d’une assiette de Nkwobi',
+    ogAlt: 'Soupe egusi avec pounded yam chez Afrolink Restaurant & Bar',
   },
   a11y: {
     skipToMenu: 'Aller à la carte',
@@ -626,6 +680,25 @@ const fr: Shape<Dict> = {
     pause: 'Mettre le bandeau en pause',
     play: 'Relancer le bandeau',
   },
+  highlights: {
+    label: 'Ce que propose Afrolink',
+    cuisineTitle: 'Cuisine ouest-africaine',
+    cuisineText: 'Préparée de façon traditionnelle, au cœur d’Essen.',
+    reserveTitle: 'Réserver une table',
+    reserveText: 'À deux, en famille ou pour votre fête.',
+    deliveryTitle: 'Livraison',
+    deliveryText: 'À Essen, sur demande.',
+    cateringTitle: 'Traiteur',
+    cateringText: 'Pour les fêtes, les communautés et les entreprises.',
+    porkTitle: 'Sans porc',
+    porkText: 'Nous ne préparons ni ne servons de porc.',
+  },
+  feature: {
+    eyebrow: 'Nos soupes',
+    title: 'Douze soupes traditionnelles – avec pounded yam ou garri',
+    text: 'De l’egusi à l’afang en passant par l’ofe nsala : nos soupes sont servies avec du pounded yam ou du garri. Demandez-nous votre association préférée.',
+    cta: 'Voir les soupes',
+  },
   menu: {
     eyebrow: 'Cuisine',
     title: 'Carte',
@@ -649,6 +722,9 @@ const fr: Shape<Dict> = {
     askText: 'Écrivez-nous ou appelez-nous avant de commander.',
     descSource: 'Descriptions selon la carte d’Afrolink',
     onRequest: 'Sur commande uniquement',
+    imageSoon: 'Image à venir',
+    imageNote: 'Photos non contractuelles – suggestions de présentation.',
+    dishCount: '{n} plats',
   },
   drinks: {
     eyebrow: 'Bar',
@@ -671,6 +747,10 @@ const fr: Shape<Dict> = {
     allergyTitle: 'Allergies & intolérances',
     allergyText:
       'Aucune information vérifiée sur les allergènes de nos plats n’est encore disponible sur ce site. Adressez-vous à notre personnel avant de commander. Nous ne pouvons pas garantir qu’un plat soit exempt d’un allergène donné.',
+    diabetesTitle: 'Alimentation et diabète',
+    diabetesText:
+      'Vous souhaitez un plat adapté en raison d’un diabète – par exemple l’accompagnement ou la portion ? Demandez à notre cuisine ce qui est possible. Nous ne donnons aucune garantie médicale ou nutritionnelle ni de valeurs nutritionnelles ; suivez les conseils de votre médecin.',
+    diabetesCta: 'Demander à la cuisine',
     cta: 'Faire une demande',
   },
   services: {
@@ -711,6 +791,7 @@ const fr: Shape<Dict> = {
       catering: 'Traiteur / événement',
       dietary: 'Demande alimentaire / allergie',
       group: 'Commande de groupe',
+      diabetes: 'Adaptation liée au diabète',
       question: 'Question générale',
     },
     date: 'Date',

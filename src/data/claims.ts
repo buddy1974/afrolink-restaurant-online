@@ -84,6 +84,13 @@ export const claims: Claim[] = [
     evidence: 'Owner instruction, brief 2026-10-08.',
   },
   {
+    id: 'reservations',
+    text: { de: 'Tischreservierung möglich', en: 'Table reservations accepted', fr: 'Réservations acceptées' },
+    status: 'owner-provided',
+    enabled: true,
+    evidence: 'Services list in brief 2026-10-07 ("Reservations accepted").',
+  },
+  {
     id: 'regulars-500',
     text: { de: 'Über 500 Stammgäste', en: 'More than 500 regular customers', fr: 'Plus de 500 habitués' },
     status: 'awaiting',

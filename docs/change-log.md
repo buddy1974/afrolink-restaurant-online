@@ -1,5 +1,16 @@
 # Change Log — `afrolink-restaurant-online`
 
+## 2026-10-09 — Approved dark-and-gold design (branch `design-implementation-2026-10`)
+- Dark-and-gold design system; unified gold button system.
+- Hero with `egusi-soup.png` (full-bleed desktop, image-first mobile).
+- Restaurant highlights band (replaces ticker), gated by the claims register; rating line computed from data.
+- Soups showcase featuring `vegetable-soup.png`; soups category note "served with pounded yam or garri" (DE/EN/FR).
+- Image-rich menu: 21 dishes with images (12 soups, 3 rice, tilapia, assorted plate + existing Afrolink photos for suya, pepper soup, nkwobi, porridge yam); 10 "Image coming soon" placeholders; serving-suggestion note.
+- Jollof -> `jollof.png`, Tilapia -> `tilapia.png`, Assorted -> `assorted.png`.
+- Diabetes-related adaptation enquiry (dietary card + enquiry type), no medical/nutritional promises.
+- New OG image from the Egusi photo.
+- Tests: 33 (new: dish image mapping, soups note, diabetes wording, rendered placeholders).
+
 ## 2026-10-08 — Product, UX & compliance upgrade (branch `product-upgrade-2026-10`, preview only)
 - Trilingual site (DE `/`, EN `/en/`, FR `/fr/`) with browser-language detection, persistent manual choice, hreflang, localized metadata/JSON-LD, sitemap with alternates.
 - New hero with the genuine watermarked Egusi + pounded yam photo, four direct actions, Google rating, today's hours and video link.

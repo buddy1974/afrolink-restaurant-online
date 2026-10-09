@@ -1,0 +1,129 @@
+---
+/**
+ * Restaurant highlights (approved design). Only highlights whose claim is publishable render;
+ * the rating line is computed from src/data/business.ts (manual, dated snapshot).
+ */
+import { highlights, type HighlightIcon } from '../data/highlights';
+import { publishableClaims } from '../data/claims';
+import { google } from '../data/business';
+import { type Lang } from '../i18n/config';
+import { fmt, useT } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useT(lang);
+const h = t.highlights;
+const locale = lang === 'en' ? 'en-GB' : lang;
+const live = new Set(publishableClaims().map((c) => c.id));
+const rating = google.rating.toLocaleString(locale, { minimumFractionDigits: 1 });
+const asOf = new Date(`${google.asOf}T12:00:00`).toLocaleDateString(locale, { day: 'numeric', month: 'short', year: 'numeric' });
+
+const copy: Record<string, { title: string; text: string }> = {
+  cuisine: { title: h.cuisineTitle, text: h.cuisineText },
+  reserve: { title: h.reserveTitle, text: h.reserveText },
+  delivery: { title: h.deliveryTitle, text: h.deliveryText },
+  catering: { title: h.cateringTitle, text: h.cateringText },
+  rating: { title: `${rating} ★ Google`, text: `${fmt(t.reviews.basedOn, { n: google.reviewCount })} · ${asOf}` },
+  pork: { title: h.porkTitle, text: h.porkText },
+};
+
+const items = highlights.filter((x) => live.has(x.claim));
+
+const paths: Record<HighlightIcon, string> = {
+  pot: 'M4 10h16v3a7 7 0 0 1-7 7h-2a7 7 0 0 1-7-7v-3ZM2 10h20M9 6c0-1.2 1-1.6 1-2.8M13 6c0-1.2 1-1.6 1-2.8',
+  table: 'M3 9h18M5 9v11M19 9v11M8 9V6a4 4 0 0 1 8 0v3M9 14h6',
+  delivery: 'M3 7h11v9H3zM14 10h4l3 3v3h-7M7 19a2 2 0 1 0 0-.01M17 19a2 2 0 1 0 0-.01',
+  catering: 'M3 18h18M5 18a7 7 0 0 1 14 0M12 9V7M10 7h4',
+  star: 'M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8L3.5 9.7l5.9-.9Z',
+  leaf: 'M5 19c0-8 5-13 14-14 0 9-5 14-13 14M5 19l7-7',
+};
+---
+
+<section class="highlights on-ink" aria-label={h.label}>
+  <ul role="list" class="wrap hl">
+    {
+      items.map((it) => (
+        <li>
+          <a class="hl__item" href={it.href} data-enquiry={it.enquiry}>
+            <svg class="hl__icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d={paths[it.icon]} />
+            </svg>
+            <span class="hl__text">
+              <span class="hl__title">{copy[it.id].title}</span>
+              <span class="hl__sub">{copy[it.id].text}</span>
+            </span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  .highlights {
+    background: var(--ink-raised);
+    border-top: 1px solid var(--ink-line);
+    border-bottom: 1px solid var(--ink-line);
+  }
+  .hl {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0;
+  }
+  @media (min-width: 48em) {
+    .hl {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 80em) {
+    .hl {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+  }
+  .hl li {
+    border-bottom: 1px solid var(--ink-line);
+  }
+  .hl__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    height: 100%;
+    padding: 1.1rem 0.75rem 1.1rem 0;
+    text-decoration: none;
+  }
+  .hl__icon {
+    flex: none;
+    width: 1.75rem;
+    height: 1.75rem;
+    fill: none;
+    stroke: var(--gold);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .hl__text {
+    display: grid;
+    gap: 0.15rem;
+    min-width: 0;
+  }
+  .hl__title {
+    font-weight: 650;
+    line-height: 1.25;
+    color: var(--on-ink);
+  }
+  .hl__sub {
+    font-size: var(--step--1);
+    line-height: 1.4;
+    color: var(--on-ink-muted);
+  }
+  .hl__item:hover .hl__title {
+    color: var(--gold);
+  }
+  @media (min-width: 80em) {
+    .hl li {
+      border-bottom: 0;
+    }
+  }
+</style>

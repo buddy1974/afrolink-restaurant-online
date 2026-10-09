@@ -23,7 +23,8 @@
 | ADR-011 | 2026-10-08 | Allergen/additive data model: nothing declared without kitchen sign-off; website becomes the electronic record once verified | Proposed — pending Marcel |
 | ADR-012 | 2026-10-08 | Enquiry builder composes WhatsApp text client-side; no form backend, no stored data, no ordering/payment | Proposed — pending Marcel |
 | ADR-013 | 2026-10-08 | Claims register gates marketing claims by verification status | Accepted |
-| ADR-014 | 2026-10-08 | Hero image: genuine watermarked Egusi + pounded yam (883x540); Nkwobi moved to Specialities/gallery | Accepted (per brief) |
+| ADR-014 | 2026-10-08 | Hero image: genuine watermarked Egusi + pounded yam (883x540); Nkwobi moved to Specialities/gallery | Superseded by ADR-015 |
+| ADR-015 | 2026-10-09 | Approved dark-and-gold design; owner-supplied dish images per menu item; "Image coming soon" placeholders | Accepted (owner brief 2026-10-09) |
 
 ## ADR Records
 
@@ -67,6 +68,16 @@ Delivery, catering, reservations, dietary questions and group orders are enquiri
 
 ### ADR-013 — Claims register
 `src/data/claims.ts` holds every marketing claim with status (verified / owner-provided / customer-opinion / awaiting) and evidence. Only enabled verified or owner-provided claims (or attributed opinions) render; tests enforce it. "500+ regulars", "20+ years" and "No. 1 in Essen" are disabled pending evidence.
+
+### ADR-015 — Approved design implementation (2026-10-09)
+- Design tokens switched to a dark-and-gold system (`src/styles/global.css`): the former light "paper" surface is now a raised dark surface, gold is a flat accent (no gradients/glows). Buttons unified (gold solid, outlined secondary).
+- Hero uses `egusi-soup.png` (owner instruction), full-bleed on desktop with a dark readability scrim, image-first on mobile; watermark kept in frame.
+- Restaurant highlights band replaces the scrolling ticker (static, no motion, same claims register gating; avoids duplicating the same messages twice).
+- Soups showcase gives `vegetable-soup.png` prominence with the owner statement "soups are served with pounded yam or garri".
+- Image-rich menu: dish cards with images mapped in `src/data/dish-images.ts`; only images named for a dish are used; all other dishes show a branded "Image coming soon" placeholder. A visible note states images are serving suggestions.
+- Diabetes-related dietary adaptation offered as a kitchen enquiry only, explicitly without medical or nutritional promises.
+- The approved mockup file was not available in the repository or on the machine; implementation follows the written brief. Speculative allergen icons from the mockup are not implemented (ADR-011 safeguards).
+- Owner image originals moved (not deleted) from `public/` to git-ignored `owner-assets/menu-originals/`; optimized copies in `src/assets/menu/`.
 
 ### Tooling note
 `eslint-plugin-jsx-a11y` does not support ESLint 10; the maintained fork `eslint-plugin-jsx-a11y-x` (officially supported by `eslint-plugin-astro`) is used. `role="list"` on styled lists is allowed on purpose (Safari/VoiceOver drops list semantics otherwise).

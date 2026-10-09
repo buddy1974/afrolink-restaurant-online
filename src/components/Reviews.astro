@@ -176,24 +176,6 @@ const partial = google.rating - full;
     letter-spacing: 0.06em;
     text-align: center;
   }
-  /* dark card inside a paper section: use the on-ink button scheme */
-  .score .btn--solid {
-    background: var(--ochre);
-    border-color: var(--ochre);
-    color: var(--ink);
-  }
-  .score .btn--solid:hover {
-    background: var(--on-ink);
-    border-color: var(--on-ink);
-  }
-  .score .btn--line {
-    color: var(--on-ink);
-    border-color: var(--on-ink);
-  }
-  .score .btn--line:hover {
-    background: var(--on-ink);
-    color: var(--ink);
-  }
   .score :focus-visible {
     outline-color: var(--ochre);
   }
@@ -236,7 +218,7 @@ const partial = google.rating - full;
     scroll-snap-align: start;
     padding: 1.5rem;
     border: 1px solid var(--paper-line);
-    background: #fffdf8;
+    background: var(--ink-raised);
   }
   .quote blockquote {
     margin: 0;
