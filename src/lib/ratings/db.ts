@@ -49,9 +49,10 @@ let devDb: Promise<Db> | null = null;
 /** The database for the current runtime, or null when none is configured. */
 export async function getDb(env: Record<string, string | undefined> = process.env): Promise<Db | null> {
   if (env.DATABASE_URL) return neonDb(env.DATABASE_URL);
-  if (env.RATINGS_DEV_DB === 'pglite' && env.VERCEL_ENV !== 'production') {
+  // `import.meta.env.DEV` is false in production builds, so this branch (and the PGlite
+  // import) is removed by the bundler and never traced into the Vercel Function.
+  if (import.meta.env.DEV && env.RATINGS_DEV_DB === 'pglite' && env.VERCEL_ENV !== 'production') {
     devDb ??= (async () => {
-      // Variable specifier: keeps the dev-only package out of the production bundle.
       const mod = '@electric-sql/pglite';
       const { PGlite } = await import(/* @vite-ignore */ mod);
       const pg = new PGlite(env.RATINGS_DEV_DB_PATH ?? './.data/pglite');
