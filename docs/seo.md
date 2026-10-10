@@ -148,4 +148,62 @@ No `aggregateRating`, `Review`, `FAQPage`, awards or fabricated offers. Dish rat
 
 ## Search Console / Bing: status
 
-Unchanged: not verified, sitemap not submitted, indexing unconfirmed (owner logins needed). After deployment, submit `https://www.afrolink-restaurant.online/sitemap.xml` and inspect `/speisekarte/`, `/speisekarte/egusi-soup/`, `/lieferung/` and `/catering/`.
+Superseded by the Google Search Console record below (2026-10-10). Bing: not started.
+
+# Google Search Console — finalization (2026-10-10)
+
+Done in the owner's authenticated Chrome session. No DNS changes were needed.
+
+| Item | Result |
+|---|---|
+| Property | **Domain property** `sc-domain:afrolink-restaurant.online` (covers www and non-www, http and https). This is the only Afrolink property in the account. |
+| Ownership | **Verified owner** — method "Domain name provider", "Successfully verified". |
+| Sitemaps before | None submitted (no obsolete entries to remove). |
+| Sitemap submitted | `https://www.afrolink-restaurant.online/sitemap.xml` (the live endpoint; `/sitemap-index.xml` returns 404 — Astro generates a single `sitemap.xml` here). Submitted **2026-10-10**, last read 2026-10-10, status **Success**, **138 discovered pages**, 0 errors. |
+| robots.txt | `Allow: /`, `Disallow: /admin/`, `Disallow: /api/`, `Sitemap: https://www.afrolink-restaurant.online/sitemap.xml`. |
+| Reports | Performance / Pages / Experience / Enhancements: "Processing data" (new property). |
+
+### URL Inspection (2026-10-10)
+| URL | Google index status before | Live test | Indexing request |
+|---|---|---|---|
+| `/` | **Indexed** (last crawl 2026-10-09 19:35, Googlebot smartphone; Google-selected canonical = declared canonical) | — | Requested (recrawl for current release) |
+| `/speisekarte/` | Not indexed — URL unknown to Google | Available; can be indexed; Breadcrumbs 1 valid | Requested |
+| `/en/menu/` | Not indexed — Discovered, currently not indexed (via sitemap) | Available; Breadcrumbs valid | Requested |
+| `/fr/carte/` | Not indexed — URL unknown to Google | Available; Breadcrumbs valid | Requested |
+| `/speisekarte/egusi-soup/` | Not indexed — URL unknown to Google | Available; Breadcrumbs valid | Requested |
+| `/speisekarte/jollof-rice/` | Not indexed — URL unknown to Google | Available; Breadcrumbs valid | Requested |
+| `/speisekarte/tilapia/` (fish) | Not indexed — Discovered, currently not indexed | Available; Breadcrumbs valid | Requested |
+| `/catering/` | Not indexed — Discovered, currently not indexed | Available; Breadcrumbs valid | Requested |
+| `/lieferung/` | Not indexed — Discovered, currently not indexed | Available; Breadcrumbs valid | Requested |
+
+"Requested" means *added to Google's priority crawl queue* — **not indexed**. Mackerel Fish Slices is not in production (preview only) and was not inspected or submitted. Recheck in 3–7 days: Pages report, then re-inspect the URLs above.
+
+### Production technical audit (all 138 sitemap URLs, 2026-10-10)
+- All 200; no `noindex` / `X-Robots-Tag`.
+- Titles and descriptions unique (138/138).
+- Canonical = self = sitemap URL, `https://www.` host.
+- `og:url` matches; OG title/description/image present.
+- `twitter:card` summary_large_image.
+- Exactly one H1 per page.
+- hreflang de-DE/en/fr/x-default on every page, reciprocal, identical to the sitemap alternates.
+- Redirects: `http://`, non-www → 308 to `https://www.`; unknown URL → 404.
+- JSON-LD parses on every page:
+  - Restaurant + WebSite on the home pages;
+  - WebPage + BreadcrumbList + Menu / MenuSection / MenuItem / Service on the other pages.
+  - The 64 live price lines (36 food, 28 drinks) match `src/data/menu.ts` / `drinks.ts` on `main`.
+- Icons: favicon.ico, favicon-32.png, apple-touch-icon.png, site.webmanifest and its 192/512/maskable icons all 200.
+- `og-image.jpg` is 1200×630 JPEG; the 35 OG images used are all reachable.
+- The logo has `alt=""` on purpose (decorative; the link text names Afrolink).
+- **Found and fixed (preview only):**
+  - the home H1 read "AfrolinkRestaurant & Bar" (no space between spans);
+  - the home title was 72 characters (truncated) and did not name "Nigerian";
+  - the home description was 192 characters.
+- **Accepted:**
+  - `/speisekarte` without a trailing slash and `/index.html` also answer 200, but carry the canonical to the slash URL. A platform-wide trailing-slash redirect would also affect `/api/*`, so it was not changed;
+  - some dish titles are 61–72 characters.
+- **Core Web Vitals:**
+  - PageSpeed Insights API quota was exhausted on 2026-10-10, and the web UI did not finish;
+  - the Lighthouse runs on this production build earlier on 2026-10-10 gave mobile 92–94 (home), 94 (menu), 98 (dish page), CLS 0 (change-log);
+  - Search Console field data: not yet available.
+
+Keyword research and page mapping: `docs/seo-keyword-map.md`.

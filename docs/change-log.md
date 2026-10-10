@@ -1,5 +1,19 @@
 # Change Log — `afrolink-restaurant-online`
 
+## 2026-10-10 — Google Search Console finalization + on-page SEO (branch `discovery-ratings-2026-10`)
+- Search Console (production, no deploy needed):
+  - Domain property verified;
+  - `https://www.afrolink-restaurant.online/sitemap.xml` submitted → Success, 138 pages discovered;
+  - URL Inspection and live tests for 9 priority URLs, each with an indexing request. Only `/` was already indexed. Details in docs/seo.md.
+- Production audit of all 138 URLs: canonicals, hreflang, OG/Twitter, icons, JSON-LD and prices all correct.
+- On-page fixes (preview only, awaiting approval):
+  - home H1 text "Afrolink Restaurant & Bar" (missing space);
+  - home titles shortened and naming Nigerian cuisine (DE/EN/FR);
+  - home descriptions ≤ 162 characters naming Essen-Frohnhausen;
+  - contact descriptions name Essen-Frohnhausen (confirmed by OpenStreetMap);
+  - EN delivery title "African & Nigerian Food Delivery in Essen".
+- New docs/seo-keyword-map.md (autocomplete-based intent research and page mapping). Tests: 79.
+
 ## 2026-10-10 — New item: Mackerel Fish Slices (branch `discovery-ratings-2026-10`, owner brief 2026-10-10)
 - Fish category: "Makrelenstücke / Mackerel Fish Slices / Tranches de maquereau", €5.00 **per slice** (shown as "€5 pro Stück / per slice / la tranche"); no accompaniment included. Fried yam or fried plantain on request — no accompaniment price shown (none approved).
 - Owner image `fish-slice-mackerel.png` → `src/assets/menu/mackerel-fish-slices.jpg` (original kept in `owner-assets/menu-originals/`, no longer in `public/`).

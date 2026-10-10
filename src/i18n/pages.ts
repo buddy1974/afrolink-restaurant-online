@@ -162,7 +162,7 @@ const de = {
   contactPage: {
     title: 'Kontakt & Anfahrt – Afrolink Restaurant & Bar, Essen',
     description:
-      'Afrolink Restaurant & Bar, Berzeliusstraße 7, 45144 Essen. Telefon 0201 84674196, mobil 01521 7130788, WhatsApp. Öffnungszeiten und Route.',
+      'Afrolink Restaurant & Bar, Berzeliusstraße 7, 45144 Essen-Frohnhausen. Telefon 0201 84674196, mobil 01521 7130788, WhatsApp. Öffnungszeiten und Route.',
     h1: 'Kontakt & Anfahrt',
     lede: 'Rufen Sie an, schreiben Sie per WhatsApp oder besuchen Sie uns in Essen.',
   },
@@ -285,7 +285,7 @@ const en: Shape<PagesDict> = {
     empty: 'Not enough ratings yet for a ranking.',
   },
   delivery: {
-    title: 'African Food Delivery in Essen | Afrolink',
+    title: 'African & Nigerian Food Delivery in Essen | Afrolink',
     description:
       'West African and Nigerian food from Afrolink delivered in Essen by arrangement: choose your dishes, send an enquiry, and we confirm the area, cost and time.',
     h1: 'Delivery in Essen',
@@ -335,7 +335,7 @@ const en: Shape<PagesDict> = {
   contactPage: {
     title: 'Contact & Directions – Afrolink Restaurant & Bar, Essen',
     description:
-      'Afrolink Restaurant & Bar, Berzeliusstraße 7, 45144 Essen, Germany. Phone +49 201 84674196, mobile +49 1521 7130788, WhatsApp. Opening hours and directions.',
+      'Afrolink Restaurant & Bar, Berzeliusstraße 7, 45144 Essen-Frohnhausen, Germany. Phone +49 201 84674196, mobile +49 1521 7130788, WhatsApp. Opening hours and directions.',
     h1: 'Contact & directions',
     lede: 'Call us, send a WhatsApp message or visit us in Essen.',
   },
@@ -505,7 +505,7 @@ const fr: Shape<PagesDict> = {
   contactPage: {
     title: 'Contact & accès – Afrolink Restaurant & Bar, Essen',
     description:
-      'Afrolink Restaurant & Bar, Berzeliusstraße 7, 45144 Essen, Allemagne. Tél. +49 201 84674196, mobile +49 1521 7130788, WhatsApp. Horaires et itinéraire.',
+      'Afrolink Restaurant & Bar, Berzeliusstraße 7, 45144 Essen-Frohnhausen, Allemagne. Tél. +49 201 84674196, mobile +49 1521 7130788, WhatsApp. Horaires et itinéraire.',
     h1: 'Contact & accès',
     lede: 'Appelez-nous, écrivez-nous sur WhatsApp ou venez nous voir à Essen.',
   },

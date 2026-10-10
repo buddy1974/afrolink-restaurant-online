@@ -7,9 +7,9 @@ import type { Lang } from './config';
 
 const de = {
   meta: {
-    title: 'Afrolink Restaurant & Bar Essen – Afrikanisches Restaurant | Speisekarte',
+    title: 'Afrolink Essen – Afrikanisches & nigerianisches Restaurant',
     description:
-      'Afrikanisches Restaurant in Essen: westafrikanische und nigerianische Küche mit Egusi Soup, Jollof Rice, Pounded Yam und Tilapia. Vor Ort, zum Mitnehmen, Lieferung und Catering nach Absprache.',
+      'Afrikanisches und nigerianisches Restaurant in Essen-Frohnhausen: Egusi Soup, Jollof Rice und Suya. Vor Ort, zum Mitnehmen, Lieferung und Catering nach Absprache.',
     ogAlt: 'Egusi-Suppe mit Pounded Yam bei Afrolink Restaurant & Bar',
   },
   a11y: {
@@ -328,9 +328,9 @@ type Shape<T> = T extends string ? string : T extends readonly string[] ? string
 
 const en: Shape<Dict> = {
   meta: {
-    title: 'Afrolink Restaurant & Bar Essen – African Restaurant | Menu',
+    title: 'Afrolink Essen – African & Nigerian Restaurant',
     description:
-      'African restaurant in Essen serving West African and Nigerian food – egusi soup, jollof rice, pounded yam and tilapia. Dine in, takeaway, delivery and catering by arrangement.',
+      'African and Nigerian restaurant in Essen-Frohnhausen: egusi soup, jollof rice, suya and tilapia. Dine in, takeaway, delivery and catering by arrangement.',
     ogAlt: 'Egusi soup with pounded yam at Afrolink Restaurant & Bar',
   },
   a11y: {
@@ -644,9 +644,9 @@ const en: Shape<Dict> = {
 
 const fr: Shape<Dict> = {
   meta: {
-    title: 'Afrolink Restaurant & Bar Essen – Restaurant africain | Carte',
+    title: 'Afrolink Essen – Restaurant africain et nigérian',
     description:
-      'Restaurant africain à Essen : cuisine ouest-africaine et nigériane – soupe egusi, riz jollof, pounded yam et tilapia. Sur place, à emporter, livraison et traiteur sur demande.',
+      'Restaurant africain et nigérian à Essen-Frohnhausen : soupe egusi, riz jollof, suya et tilapia. Sur place, à emporter, livraison et traiteur sur demande.',
     ogAlt: 'Soupe egusi avec pounded yam chez Afrolink Restaurant & Bar',
   },
   a11y: {
