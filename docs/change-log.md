@@ -1,5 +1,10 @@
 # Change Log — `afrolink-restaurant-online`
 
+## 2026-10-10 — Released to production (`main` fast-forwarded to `fb64faa`, approved by Marcel: "push all changes to vercel")
+- Live checks: apex/http → 308; language redirect correct in 7 header scenarios; 24 routes OK (404 for unknown); sitemap 138; `/api/ratings` → `{"enabled":false}` (ratings off); no Set-Cookie on any response; no cookies/storage/third-party requests on first visit (browser); 580 home assets OK.
+- Lighthouse (real network, mobile): home 92–94, menu 94, dish page 98; desktop 100; accessibility/best practices/SEO 100; CLS 0.
+- Open: owner legal data (Impressum), processor agreements, on-site allergen information, ratings activation (separate approval).
+
 ## 2026-10-10 — Cookie & consent compliance (branch `discovery-ratings-2026-10`)
 - Removed client-side language detection (navigator.languages/localStorage); language redirect on "/" now server-side from Accept-Language (vercel.json), never for bots, internal navigation or with a saved choice.
 - Privacy settings dialog (Allow all / Necessary only / Save selection, granular, nothing preselected) from every footer; consent record `afl-consent` (local, 12 months, no identifiers); withdrawal deletes affected storage immediately.
