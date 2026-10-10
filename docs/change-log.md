@@ -16,6 +16,24 @@
   - stale comment about the language redirect corrected.
 - **Tests:** 79 → 123, covering IndexNow, the monitor (with an R-032 replay) and site-wide SEO integrity.
 - **Unchanged:** prices, menu, photos, allergen information, business data and DNS.
+- **Evidence:**
+  - local `npm run verify`: lint clean, typecheck 0 errors, build OK, 123/123 tests;
+  - GitHub CI on be34893: the same;
+  - the IndexNow and monitor workflows were *skipped* for the Preview deployment event (Production-only filter works).
+- **Preview** `afrolink-restaurant-online-14oygg4l6`:
+  - key file served exactly;
+  - `X-Robots-Tag: noindex` on vercel.app;
+  - sitemap 141 URLs;
+  - OG images without `dpl` (the page still has 41 `dpl` asset URLs, so Skew Protection is intact);
+  - White Rice OG declared 1086×570.
+- **Fingerprint diff, production vs preview (all 141 URLs):**
+  - exactly 15 changed: the 5 dishes × 3 languages, in OG/Twitter/JSON-LD image fields only;
+  - 0 added, 0 removed, 126 unchanged;
+  - these are the URLs IndexNow would announce after merge and activation.
+- **Browser:**
+  - 10 representative pages × 390/320/1440 px: one H1, canonical, 4 hreflang, no horizontal overflow, all images decode, no 4xx or JS errors;
+  - language switch DE→EN→FR→DE keeps the dish.
+- **Production check after the work:** 22 pass, 1 expected warning (noindex header not yet deployed); DNS records unchanged; `main` still 13ceb78.
 
 ## 2026-10-10 — Bing Webmaster Tools setup (no code change, no deploy)
 - Site added and verified via a DNS CNAME at the apex (Vercel DNS).
