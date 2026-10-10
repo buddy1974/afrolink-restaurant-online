@@ -246,3 +246,74 @@ Done in the owner's authenticated Chrome session, after the Google phase was rev
   - Never create DNS names under `www` (or under any other host served only by the wildcard).
   - Add verification records at the apex, or add an explicit `www` record first.
   - After any DNS change, resolve `www` and the apex on the authoritative nameservers.
+
+# Hardening pass: DNS forensics, IndexNow, full technical audit (2026-10-10, preview only)
+
+Branch `discovery-ratings-2026-10`. Nothing here changed DNS or production. IndexNow is built but not activated. Architecture and runbook: docs/indexnow.md.
+
+## DNS forensics (read-only)
+| Item | Finding |
+|---|---|
+| Nameservers | ns1/ns2.vercel-dns.com. Intended = current (`vercel domains inspect`). |
+| Domain assignment | `afrolink-restaurant.online` and `www.` → project `afrolink-restaurant-online`. Registrar: third party. |
+| Apex | Vercel-managed default ALIAS. A records from Vercel anycast (216.150.x.x, rotating per resolver). |
+| Wildcard | `*` ALIAS → `cname.vercel-dns-016.com`. **`www` has no record of its own; it resolves only through the wildcard.** |
+| Other records | Google verification CNAME and Bing verification CNAME, both directly under the apex (tokens not reproduced here). CAA `0 issue` for letsencrypt.org, pki.goog and sectigo.com. |
+| IPv6 | No AAAA for the apex or `www` (IPv4 only). |
+| DNSSEC | Not enabled. There is no DS at the `.online` parent, which is itself signed. This is normal for Vercel DNS and not a defect. |
+| Unknown subdomains | They resolve through the wildcard but answer **404** over HTTPS, so no duplicate site exists. |
+| TLS | Let's Encrypt `*.afrolink-restaurant.online` (chain YR2 → Root YR → cross-signed by ISRG Root X1). Valid until 2027-01-05 and auto-renewed by Vercel. TLS 1.2 and 1.3 work. HSTS max-age is 2 years, without includeSubDomains (intentionally). |
+| Redirects | `http://apex` → `https://apex` → `https://www` (2 × 308); `https://apex/x` → `https://www/x` (308); `http://www` → `https://www` (308). An unknown path answers 404. |
+| Resolvers | `www` and the apex resolve at Cloudflare, Google, Quad9 and OpenDNS, and directly at ns1/ns2.vercel-dns.com. |
+
+**Root cause of incident R-032** (the mechanism is established; this is not speculation):
+- A record named `<token>.www` made `www` an existing but empty node.
+- Under RFC 4592 a wildcard does not answer for names that exist, so `www` returned NODATA, even from the authoritative servers.
+- The apex kept working throughout, which matches what was observed during the incident.
+
+**Residual architectural weakness:** `www`, the canonical host, depends on the wildcard. Any future record created *below* `www` would repeat the outage.
+
+**Proposed infrastructure change** (needs owner approval; not executed):
+- **Change:** add an explicit `www` record in Vercel DNS whose value is the wildcard's current target (`cname.vercel-dns-016.com`; confirm it in the dashboard first).
+- **Expected effect:** `www` stays resolvable even if a record is ever created below it. Today's answers do not change.
+- **Risk:** a wrong target would break `www`. Add the record only with the exact value the wildcard uses, then run `node scripts/check-production.mjs`.
+- **Rollback:** delete the record (`vercel dns rm <record-id>`). That restores today's wildcard-only setup within the 600 s TTL.
+
+Whatever is decided about that change, the hourly monitor (`scripts/check-production.mjs`) now queries `www` directly at both authoritative nameservers. It would have flagged R-032 within the hour; a unit test replays the incident.
+
+## Technical SEO audit (built site + production, all 141 URLs)
+The checks are automated in `tests/seo-integrity.test.ts`, `tests/discovery.test.ts` and `tests/rendered.test.ts`, which run in CI on every push.
+
+| Area | Result |
+|---|---|
+| Sitemap | Valid sitemaps.org urlset with 141 URLs, all on `https://www.`, no duplicates. **Built pages = sitemap URLs exactly** (no orphans, no gaps). No `lastmod`: no reliable per-page modification date exists, and none is invented. robots.txt references the sitemap. |
+| Canonical | One self-referencing canonical per page, equal to its sitemap URL. |
+| hreflang | Every page has `de-DE`, `en`, `fr` and `x-default` (= the German page). `<html lang>` equals the page's own hreflang. All alternates are reciprocal, and the HTML alternates equal the sitemap alternates. The server-side language redirect applies only to `/` and never to crawlers. |
+| Titles / descriptions | Unique on all 141 pages. **Recommendation (content, not changed):** 44 descriptions are 161–177 characters. Bing flags anything over 160; Google only cuts off the tail ("… – mit Preisen."). Shortening them is a DE/EN/FR copy edit that needs owner approval. |
+| Headings | Exactly one H1 per page and no skipped levels. |
+| Images | Every `<img>` has an `alt`. The logo is decorative: `alt=""`, which Astro renders as a bare `alt`. |
+| Social images | OG and Twitter images are on the canonical host, present in the build, at 1.91:1. **Fixed:** five dish images (Beans & Plantain, Extra Pounded Yam, Fried Fish & Plantain, Mackerel, White Rice & Stew) were declared 1200×630 but were actually narrower. They are now generated at the largest true 1.91:1 size the photo allows, and declared accurately. **Fixed:** the og:image, twitter:image and JSON-LD image URLs no longer carry Vercel's per-deployment `?dpl=` parameter, so they stay stable across deployments (proven with a build that simulates Skew Protection). |
+| Icons / manifest | favicon.ico, favicon-32, apple-touch-icon (180×180) and the manifest icons are present, with sizes verified from the files. |
+| Structured data | Parses on every page. The Restaurant node on the home pages matches the data files: name, address, landline, opening hours, cuisine, menu. No AggregateRating, Review or certification markup anywhere. The menu JSON-LD offer prices are exactly the approved food and drink prices (DE/EN/FR). Mackerel: €5.00 with a UnitPriceSpecification "pro Stück". |
+| Internal links | Every internal `href` resolves to a built file. |
+| 404 | Unknown paths answer HTTP 404. The page is Astro's default, in English and unbranded. **Recommendation:** a trilingual branded 404 page (design work, not done). |
+| Duplicate hosts | `afrolink-restaurant-online.vercel.app` (the public production alias) served indexable pages, with a canonical to `www`. **Fixed:** `X-Robots-Tag: noindex` for `*.vercel.app` hosts only (vercel.json); the alias stays reachable as a fallback. `/kontakt` (no slash) and `/index.html` answer 200, with canonicals pointing to `/kontakt/` and `/`. They are left as they are, because a trailing-slash redirect would also affect `/api/` calls. |
+
+## Local SEO and business consistency (all 141 pages)
+- **Name:** "Afrolink Restaurant & Bar" on every page.
+- **Street:** "Berzeliusstraße 7" (261×); "45144 Essen" (postal form) everywhere.
+- **Landline:** shown as "0201 84674196", or "+49 201 84674196" in international contexts. All 1,050 `tel:` links use `+4920184674196`.
+- **Mobile:** "+49 1521 7130788" (312×).
+- **WhatsApp:** all 429 links go to `4920184674196`.
+- **Hours:** the displayed ranges equal `src/data/hours.ts` (Tue–Thu 15–00, Fri–Sat 15–01, Sun–Mon 16–00).
+- **Social:** one set of profile links. `sameAs` lists only verified profiles. Instagram is shown but is still marked unverified (an owner check).
+- **Frohnhausen:** appears only in the home and contact meta descriptions. The visible postal address deliberately stays "45144 Essen", the form Google Business Profile and directories use, for NAP consistency. Adding "Essen-Frohnhausen" to visible copy (for example the contact intro) is an owner content decision.
+- **Delivery, catering and reservations:** "by arrangement" wording only. No fees, areas, times or online payment are claimed (tested).
+
+## Search engines: observed status (read-only, 2026-10-10 about 17:00)
+| Engine | Observed | Stage |
+|---|---|---|
+| Google | Domain property verified. Sitemap **Success, 138 discovered**, last read 2026-10-10, before the 141-URL release (Google re-reads it on its own schedule). Pages report and Crawl stats show "processing" / "no data" (new property). The homepage is indexed (inspection earlier today). 9 priority URLs have had indexing *requested*. | Submitted and discovered; 1 indexed |
+| Bing | Site verified. Sitemap **Success, 141 discovered**. `/` is **indexed**, from an older copy. `/speisekarte/`: crawled at 16:29, fetch successful, "Indexing allowed: No". The live test now says "URL can be indexed", and the page sends `index, follow` with no X-Robots-Tag. The "No" belongs to the crawl at the end of the DNS incident; recheck. `/catering/` and `/kontakt/`: discovered, not crawled. | 1 indexed; the rest discovered or crawled |
+
+Google has no DNS-error data yet (Crawl stats is empty), so the evidence can neither confirm nor rule out an effect of the outage on Googlebot. Recheck Crawl stats → Host status in a few days.

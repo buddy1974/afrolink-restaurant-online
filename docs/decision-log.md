@@ -28,6 +28,7 @@
 | ADR-016 | 2026-10-09 | Retire old grilled-fish / porridge-yam photos; second owner image batch (12 dishes); water notice; SEO package | Accepted (owner brief 2026-10-09) |
 | ADR-017 | 2026-10-09 | Search-discovery architecture: dedicated menu, soups, 31 dish, delivery, catering, reservations, gallery and contact pages (DE/EN/FR); no city/doorway pages; no fufu page | Implemented on preview — awaiting Marcel's production approval |
 | ADR-018 | 2026-10-09 | Allergen baseline = Afrolink's previous-menu declarations (first-party), shown with source status; absence of codes ≠ allergen-free | Implemented (owner correction 2026-10-09) |
+| ADR-023 | 2026-10-10 | IndexNow via GitHub Actions on Vercel deployment events; state = content fingerprints in git tag `indexnow-state`; gated by `INDEXNOW_ENABLED`; hourly read-only production monitor | Implemented on preview — activation pending Marcel |
 | ADR-022 | 2026-10-10 | Public brand voice: Afrolink presents its allergen/additive declarations as its own menu information (no provenance, verification or audit wording); provenance, original codes and reconciliation notes stay internal | Implemented (owner instruction 2026-10-10) — supersedes the public labelling part of ADR-018 |
 | ADR-021 | 2026-10-10 | Consent architecture: no device access without need; server-side language redirect; language memory, external videos and rating memory opt-in; no arrival banner; settings dialog + cookie policy | Implemented on preview |
 | ADR-020 | 2026-10-10 | Legal release gate: privacy policy generated from verified behaviour (config-dependent sections), Impressum with supervisory authority + § 36 VSBG, no ODR link, three-state operator data | Implemented — owner data outstanding |
@@ -115,3 +116,28 @@ Delivery, catering, reservations, dietary questions and group orders are enquiri
 
 ### Tooling note
 `eslint-plugin-jsx-a11y` does not support ESLint 10; the maintained fork `eslint-plugin-jsx-a11y-x` (officially supported by `eslint-plugin-astro`) is used. `role="list"` on styled lists is allowed on purpose (Safari/VoiceOver drops list semantics otherwise).
+
+### ADR-023 — IndexNow and production monitoring (2026-10-10)
+**Context:**
+- Bing and other engines accept IndexNow change notifications.
+- The brief requires sending only real changes, never preview or private URLs, and no new services.
+- Incident R-032 showed that a DNS regression can go unnoticed.
+
+**Decision:**
+- **Trigger:** a GitHub Actions workflow on `deployment_status` (Vercel already reports Production deployments to GitHub) plus a daily reconciliation run.
+- **Change detection:** a fingerprint of what search engines read on each live sitemap URL, compared with the last state IndexNow *accepted*.
+- **State:** JSON in an annotated git tag. No database, branch or Vercel build is involved.
+- **Gate:** submission only with `INDEXNOW_ENABLED=true`.
+- **Monitoring:** a separate hourly read-only monitor checks DNS (including the authoritative nameservers), TLS and HTTP.
+
+**Rejected:**
+- **Vercel deploy hook:** no post-deploy hook exists for static output, and it would need a function plus a secret.
+- **Sitemap diff only:** it misses content changes at unchanged URLs.
+- **Building the previous commit in CI:** two builds per deploy, and the baseline is wrong after a failed submission.
+- **Artifact or cache storage:** expires.
+- **State branch:** Vercel would build it.
+
+**Evidence:**
+- The fingerprint is equal between Vercel production and a local build for 141/141 pages.
+- 27 IndexNow tests and 8 monitor tests pass with mocked network.
+- Mutation checks (gate, retry bound, `dpl` normalisation) are each caught by a test.

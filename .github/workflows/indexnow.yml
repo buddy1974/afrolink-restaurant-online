@@ -1,0 +1,99 @@
+# IndexNow notifications for www.afrolink-restaurant.online — docs/indexnow.md.
+#
+# Gate: nothing is submitted unless the repository variable INDEXNOW_ENABLED is "true"
+# (owner approval). Until then every trigger only runs a dry-run plan.
+#
+# State: the last successfully announced snapshot lives in the annotated tag `indexnow-state`
+# (JSON in the tag message). No database, branch or Vercel build is involved; Vercel does not
+# deploy tags.
+name: IndexNow
+
+on:
+  # Vercel reports deployments to GitHub; only successful Production deployments are used.
+  deployment_status:
+  # Daily reconciliation: catches anything a deployment run missed (failure, race, outage).
+  schedule:
+    - cron: '23 5 * * *'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'plan = dry run · run = announce changes · bootstrap = record the live site without submitting · full = announce every URL once'
+        type: choice
+        options: [plan, run, bootstrap, full]
+        default: plan
+
+permissions:
+  contents: write # push the indexnow-state tag; nothing else
+
+concurrency:
+  group: indexnow
+  cancel-in-progress: false
+
+jobs:
+  indexnow:
+    if: >-
+      github.event_name != 'deployment_status' ||
+      (github.event.deployment_status.state == 'success' &&
+       github.event.deployment.environment == 'Production')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      INDEXNOW_ENABLED: ${{ vars.INDEXNOW_ENABLED }}
+      STATE: /tmp/indexnow-state.json
+      STATE_OUT: /tmp/indexnow-state-out.json
+      REPORT: /tmp/indexnow-report.json
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24 # the scripts use Node built-ins only; no npm install
+
+      - name: Load announced state
+        run: |
+          if git fetch --no-tags origin "+refs/tags/indexnow-state:refs/tags/indexnow-state" 2>/dev/null; then
+            git for-each-ref --format='%(contents)' refs/tags/indexnow-state > "$STATE"
+            echo "state from tag indexnow-state ($(git rev-parse --short 'indexnow-state^{commit}'))"
+          else
+            echo "no indexnow-state tag yet"
+          fi
+
+      - name: Plan or announce
+        env:
+          MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.mode || 'run' }}
+          WAIT: ${{ github.event_name == 'deployment_status' && '60' || '0' }}
+          COMMIT: ${{ github.sha }}
+        run: |
+          set -u
+          if [ "$INDEXNOW_ENABLED" != "true" ] && [ "$MODE" != "plan" ]; then
+            echo "::notice::INDEXNOW_ENABLED is not 'true' - running a dry-run plan instead of '$MODE'"
+            MODE=plan
+          fi
+          case "$MODE" in
+            plan)      node scripts/indexnow.mjs plan --state "$STATE" --report "$REPORT" --wait-seconds "$WAIT" ;;
+            bootstrap) node scripts/indexnow.mjs bootstrap --state-out "$STATE_OUT" --commit "$COMMIT" ;;
+            run)       node scripts/indexnow.mjs run --submit --state "$STATE" --state-out "$STATE_OUT" --report "$REPORT" --commit "$COMMIT" --wait-seconds "$WAIT" ;;
+            full)      node scripts/indexnow.mjs run --submit --full --state "$STATE" --state-out "$STATE_OUT" --report "$REPORT" --commit "$COMMIT" ;;
+          esac
+
+      # Runs after a partial failure too: URLs that were accepted must not be sent again.
+      - name: Save announced state
+        if: always()
+        run: |
+          if [ -s "$STATE_OUT" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git tag -a -f --cleanup=verbatim -F "$STATE_OUT" indexnow-state "$GITHUB_SHA"
+            git push -f origin refs/tags/indexnow-state
+            echo "indexnow-state advanced to $GITHUB_SHA"
+          else
+            echo "state unchanged"
+          fi
+
+      - name: Keep the report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: indexnow-report-${{ github.run_id }}
+          path: /tmp/indexnow-report.json
+          if-no-files-found: ignore
+          retention-days: 30

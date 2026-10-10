@@ -1,5 +1,22 @@
 # Change Log — `afrolink-restaurant-online`
 
+## 2026-10-10 — SEO hardening: IndexNow (gated), production monitor, CI, audit fixes (branch `discovery-ratings-2026-10`, preview only)
+- **IndexNow** (not activated):
+  - key file `public/<key>.txt`;
+  - content-fingerprint change detection against the last *accepted* state (git tag `indexnow-state`);
+  - URL and page validation; bounded retries (429/5xx/network);
+  - workflow triggered by successful Production deployments plus a daily reconciliation;
+  - submission only when `INDEXNOW_ENABLED=true` (docs/indexnow.md).
+- **Production monitor:** hourly read-only checks of nameservers, `www`/apex A (public DoH + authoritative), verification CNAMEs, TLS, redirects, homepage, sitemap, robots, 404, IndexNow key and the vercel.app noindex header.
+- **CI:** `npm run verify` on every push.
+- **Fixes:**
+  - og:image / twitter:image / JSON-LD image URLs no longer carry Vercel's per-deployment `?dpl=` parameter;
+  - five dish OG images now have their true 1.91:1 size declared (they were narrower than the declared 1200×630);
+  - `X-Robots-Tag: noindex` on `*.vercel.app` hosts;
+  - stale comment about the language redirect corrected.
+- **Tests:** 79 → 123, covering IndexNow, the monitor (with an R-032 replay) and site-wide SEO integrity.
+- **Unchanged:** prices, menu, photos, allergen information, business data and DNS.
+
 ## 2026-10-10 — Bing Webmaster Tools setup (no code change, no deploy)
 - Site added and verified via a DNS CNAME at the apex (Vercel DNS).
 - Sitemap submitted → Success, 141 URLs.

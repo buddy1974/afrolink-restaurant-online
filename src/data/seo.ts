@@ -16,6 +16,19 @@ export function absolute(pathname: string): string {
   return `${siteUrl}${pathname}`;
 }
 
+/**
+ * Absolute URL of a built asset for metadata that search engines and social networks store
+ * (og:image, twitter:image, JSON-LD image). With Vercel Skew Protection the adapter appends a
+ * per-deployment `?dpl=` parameter to every asset URL, so the stored image URL would change on
+ * each deploy although the hashed file name already makes it immutable. Visible <img>/<link>
+ * URLs keep the parameter (that is what Skew Protection is for).
+ */
+export function absoluteAsset(src: string): string {
+  const url = new URL(src, siteUrl);
+  url.searchParams.delete('dpl');
+  return url.href;
+}
+
 /** hreflang alternates for a page's localized paths (German is x-default). */
 export function alternates(paths: Paths) {
   return [

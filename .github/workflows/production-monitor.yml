@@ -1,0 +1,32 @@
+# Read-only production watch: DNS (public and authoritative), TLS, canonical host, redirects,
+# homepage, sitemap, robots.txt, 404, verification records, IndexNow key — docs/indexnow.md.
+# A failed run is the alert (GitHub e-mails the repository owner). It never changes anything.
+name: Production monitor
+
+on:
+  schedule:
+    - cron: '7 * * * *' # hourly
+  deployment_status:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    if: >-
+      github.event_name != 'deployment_status' ||
+      (github.event.deployment_status.state == 'success' &&
+       github.event.deployment.environment == 'Production')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Check production
+        env:
+          # "name=target,…" for the Google and Bing verification CNAMEs (repository variable).
+          DNS_VERIFICATION_RECORDS: ${{ vars.DNS_VERIFICATION_RECORDS }}
+        run: node scripts/check-production.mjs

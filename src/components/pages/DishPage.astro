@@ -12,8 +12,8 @@ import { dishHeading, dishName, type MenuItem, type MenuCategory } from '../../d
 import { dishImages } from '../../data/dish-images';
 import { dishContent } from '../../data/dish-content';
 import { formatPrice } from '../../data/format';
-import { menuItemJsonLd } from '../../data/seo';
-import { business, mapsHref, phones, siteUrl, whatsappWithText } from '../../data/business';
+import { absoluteAsset, menuItemJsonLd } from '../../data/seo';
+import { business, mapsHref, phones, whatsappWithText } from '../../data/business';
 import { galleryImage } from '../../lib/images';
 import { dishPaths, routes, type Lang } from '../../i18n/config';
 import { useT } from '../../i18n/ui';
@@ -35,7 +35,12 @@ const di = dishImages[item.id];
 const paths = dishPaths(item.id);
 const photo = di ? galleryImage(di.file, `dish page (${item.id})`) : null;
 const full = photo ? await getImage({ src: photo, width: Math.min(1600, photo.width), format: 'webp' }) : null;
-const og = photo ? await getImage({ src: photo, width: 1200, height: 630, fit: 'cover', format: 'jpg' }) : null;
+// Social image: 1200×630 (1.91:1), scaled down for photos smaller than that box — images are
+// never enlarged, so asking for 1200 px from a narrower photo would yield a narrower image
+// than the declared og:image:width.
+const ogScale = photo ? Math.min(1, photo.width / 1200, photo.height / 630) : 1;
+const ogSize = { width: Math.floor(1200 * ogScale), height: Math.floor(630 * ogScale) };
+const og = photo ? await getImage({ src: photo, ...ogSize, fit: 'cover', format: 'jpg' }) : null;
 
 const priceLine = item.variants
   ? item.variants.map((v) => `${v.label[lang]} ${formatPrice(v.price)}`).join(' · ')
@@ -70,8 +75,8 @@ const related = category.items
   });
 
 const orderText = `${t.enquiry.msgGreeting}\n${d.order}: ${name}\n`;
-const jsonLd = [menuItemJsonLd(item, lang, paths[lang], content.summary[lang], og ? `${siteUrl}${og.src}` : null)];
-const image = og && di ? { url: `${siteUrl}${og.src}`, width: 1200, height: 630, alt: di.alt[lang] } : undefined;
+const jsonLd = [menuItemJsonLd(item, lang, paths[lang], content.summary[lang], og ? absoluteAsset(og.src) : null)];
+const image = og && di ? { url: absoluteAsset(og.src), ...ogSize, alt: di.alt[lang] } : undefined;
 ---
 
 <PageShell lang={lang} route="menu" paths={paths} title={title} description={description} crumbs={crumbs} jsonLd={jsonLd} image={image} bare>

@@ -2,8 +2,9 @@
  * Multilingual architecture.
  * - German is the default and lives at "/" (x-default) — the printed QR codes point here.
  * - English at /en/, French at /fr/ — distinct URLs, linked with hreflang.
- * - A small head script may move a first-time visitor whose browser prefers EN/FR
- *   (and who never chose a language) from "/" to /en/ or /fr/. Bots are never redirected.
+ * - A server-side redirect (vercel.json, Accept-Language) may move a first-time visitor whose
+ *   browser prefers EN/FR (and who never chose a language) from "/" to /en/ or /fr/.
+ *   Crawlers, internal navigation and a saved choice are never redirected.
  */
 
 export const locales = ['de', 'en', 'fr'] as const;
