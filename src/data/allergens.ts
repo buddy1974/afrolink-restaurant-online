@@ -118,10 +118,10 @@ export const HISTORICAL_CODES = {
   '1': { original: 'Krebstiere / Crustaceans', kind: 'allergen', allergen: 'B', possible: false, label: { de: 'Krebstiere', en: 'Crustaceans', fr: 'Crustacés' } },
   '2': { original: 'Fisch / Fish', kind: 'allergen', allergen: 'D', possible: false, label: { de: 'Fisch', en: 'Fish', fr: 'Poisson' } },
   '3': { original: 'Senf / Mustard', kind: 'allergen', allergen: 'J', possible: false, label: { de: 'Senf', en: 'Mustard', fr: 'Moutarde' } },
-  '4': { original: 'Geschmacksverstärker / Flavour Enhancer', kind: 'additive', additive: '5', possible: false, label: { de: 'mit Geschmacksverstärker', en: 'with flavour enhancer', fr: 'avec exhausteur de goût' } },
+  '4': { original: 'Geschmacksverstärker / Flavour Enhancer', kind: 'additive', additive: '5', possible: false, label: { de: 'Geschmacksverstärker', en: 'Flavour enhancer', fr: 'Exhausteur de goût' } },
   '5': { original: 'Ei / Egg', kind: 'allergen', allergen: 'C', possible: false, label: { de: 'Eier', en: 'Eggs', fr: 'Œufs' } },
   '7': { original: 'Sellerie (möglich) / Celery (possible)', kind: 'allergen', allergen: 'I', possible: true, label: { de: 'Sellerie (möglich)', en: 'Celery (possible)', fr: 'Céleri (possible)' } },
-  '8': { original: 'Farbstoffe / Artificial Colourants', kind: 'additive', additive: '1', possible: false, label: { de: 'mit Farbstoff', en: 'with colouring', fr: 'avec colorant' } },
+  '8': { original: 'Farbstoffe / Artificial Colourants', kind: 'additive', additive: '1', possible: false, label: { de: 'Farbstoffe', en: 'Colourings', fr: 'Colorants' } },
 } as const satisfies Record<string, { original: string; kind: 'allergen' | 'additive'; allergen?: AllergenCode; additive?: AdditiveCode; possible: boolean; label: L10n }>;
 
 export type HistoricalCode = keyof typeof HISTORICAL_CODES;
@@ -192,8 +192,8 @@ export interface PublicAllergenInfo {
 }
 
 const ADDITIVE_LABELS: Partial<Record<AdditiveCode, L10n>> = {
-  '1': { de: 'mit Farbstoff', en: 'with colouring', fr: 'avec colorant' },
-  '5': { de: 'mit Geschmacksverstärker', en: 'with flavour enhancer', fr: 'avec exhausteur de goût' },
+  '1': { de: 'Farbstoffe', en: 'Colourings', fr: 'Colorants' },
+  '5': { de: 'Geschmacksverstärker', en: 'Flavour enhancer', fr: 'Exhausteur de goût' },
 };
 
 /** Investigations derived from Afrolink's own printed-menu descriptions or the dish/product name. */

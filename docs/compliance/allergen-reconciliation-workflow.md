@@ -2,7 +2,11 @@
 
 _Created 2026-10-09 following the owner's correction: the codes on Afrolink's previous menu are the first-party baseline._
 
-## Where things stand
+## Public presentation (owner instruction 2026-10-10)
+
+Guests see Afrolink's declarations as Afrolink's own menu information — plain "Allergene / Zusatzstoffe" lists, no source or verification labels. Dishes without a declaration invite guests to ask the team. The status columns below are **internal only**.
+
+## Where things stand (internal)
 
 | Status (website) | Meaning | Dishes |
 |---|---|---|

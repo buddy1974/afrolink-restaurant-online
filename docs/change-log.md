@@ -1,5 +1,11 @@
 # Change Log — `afrolink-restaurant-online`
 
+## 2026-10-10 — Brand voice & allergen presentation (branch `discovery-ratings-2026-10`)
+- Removed all public provenance / audit wording ("Angabe aus der bisherigen Afrolink-Speisekarte", "Declared on Afrolink’s previous menu", reconciliation notes, "noch keine geprüfte Kennzeichnung", "In Prüfung", "laut unserer Karte", "keine Live-Anzeige", description-source line) in DE/EN/FR — menu cards, dish pages, allergen page, menu notice, dietary section, reviews.
+- Allergen panel: plain "Allergene: … / Zusatzstoffe: …" using the original Afrolink wording (incl. "Sellerie (möglich)", "Geschmacksverstärker", "Farbstoffe"); no old footnote codes; dishes without declaration invite guests to ask (never "allergen-free"); help line "Fragen zu Allergenen oder Zutaten? Unser Team hilft Ihnen gerne weiter."; cross-contact note kept on dish and allergen pages.
+- Markup no longer exposes internal status names. Internal register, codes and reconciliation notes unchanged (src/data/allergens.ts, docs/compliance/historical-allergen-register.md).
+- Tests: 77 (site-wide banned-phrase check on all 138 pages; declarations shown per dish; internal records intact).
+
 ## 2026-10-10 — Released to production (`main` fast-forwarded to `fb64faa`, approved by Marcel: "push all changes to vercel")
 - Live checks: apex/http → 308; language redirect correct in 7 header scenarios; 24 routes OK (404 for unknown); sitemap 138; `/api/ratings` → `{"enabled":false}` (ratings off); no Set-Cookie on any response; no cookies/storage/third-party requests on first visit (browser); 580 home assets OK.
 - Lighthouse (real network, mobile): home 92–94, menu 94, dish page 98; desktop 100; accessibility/best practices/SEO 100; CLS 0.

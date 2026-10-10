@@ -15,10 +15,10 @@ These codes are **restaurant-sourced (first-party) declarations**, not assumptio
 | ¹ (1) | Krebstiere / Crustaceans | allergen | Allergen B |  |
 | ² (2) | Fisch / Fish | allergen | Allergen D |  |
 | ³ (3) | Senf / Mustard | allergen | Allergen J |  |
-| ⁴ (4) | Geschmacksverstärker / Flavour Enhancer | additive | Additive class "mit Geschmacksverstärker" |  |
+| ⁴ (4) | Geschmacksverstärker / Flavour Enhancer | additive | Additive class "Geschmacksverstärker" |  |
 | ⁵ (5) | Ei / Egg | allergen | Allergen C |  |
 | ⁷ (7) | Sellerie (möglich) / Celery (possible) | allergen | Allergen I | Original says "possible" — kept as possible |
-| ⁸ (8) | Farbstoffe / Artificial Colourants | additive | Additive class "mit Farbstoff" |  |
+| ⁸ (8) | Farbstoffe / Artificial Colourants | additive | Additive class "Farbstoffe" |  |
 
 Code 6 does not appear in the original legend.
 
@@ -66,30 +66,30 @@ Coded dishes: 14. Discontinued: UKAZI SOUP, UGU SOUP, OFE AKWU, PORRIDGE COCOYAM
 | Afang Soup | 4 · Not previously declared — ask staff | — | — | yes — absence of codes is NOT "allergen-free" |
 | Edikaikong | 1/3 · Previously declared — reconciliation pending | Krebstiere¹, Fisch² | — |  |
 | Ogbono Soup | 4 · Not previously declared — ask staff | — | — | yes — absence of codes is NOT "allergen-free" |
-| Ofe Nsala | 1/3 · Previously declared — reconciliation pending | Krebstiere¹, Fisch² | mit Geschmacksverstärker⁴ |  |
+| Ofe Nsala | 1/3 · Previously declared — reconciliation pending | Krebstiere¹, Fisch² | Geschmacksverstärker⁴ |  |
 | Okra Soup | 4 · Not previously declared — ask staff | — | — | yes — absence of codes is NOT "allergen-free" |
 | Banga Soup | 4 · Not previously declared — ask staff | — | — | not on old menu |
-| Efo Riro | 1/3 · Previously declared — reconciliation pending | Fisch², Senf³ | mit Geschmacksverstärker⁴ |  |
+| Efo Riro | 1/3 · Previously declared — reconciliation pending | Fisch², Senf³ | Geschmacksverstärker⁴ |  |
 | Bitterleaf Soup | 1/3 · Previously declared — reconciliation pending | Krebstiere¹, Fisch², Senf³ | — |  |
 | Fisherman's Soup | 4 · Not previously declared — ask staff | — | — | not on old menu |
 | Black Soup | 4 · Not previously declared — ask staff | — | — | not on old menu |
 | Oha Soup | 4 · Not previously declared — ask staff | — | — | yes — absence of codes is NOT "allergen-free" |
-| Fried Rice | 1/3 · Previously declared — reconciliation pending | Eier⁵ | mit Geschmacksverstärker⁴ |  |
-| Jollof Rice | 1/3 · Previously declared — reconciliation pending | Sellerie (möglich)⁷ | mit Geschmacksverstärker⁴, mit Farbstoff⁸ |  |
-| White Rice | 1/3 · Previously declared — reconciliation pending | Krebstiere¹, Fisch² | mit Geschmacksverstärker⁴ |  |
+| Fried Rice | 1/3 · Previously declared — reconciliation pending | Eier⁵ | Geschmacksverstärker⁴ |  |
+| Jollof Rice | 1/3 · Previously declared — reconciliation pending | Sellerie (möglich)⁷ | Geschmacksverstärker⁴, Farbstoffe⁸ |  |
+| White Rice | 1/3 · Previously declared — reconciliation pending | Krebstiere¹, Fisch² | Geschmacksverstärker⁴ |  |
 | Coconut Rice | 4 · Not previously declared — ask staff | — | — | not on old menu |
-| Beans & Plantain | 1/3 · Previously declared — reconciliation pending | Sellerie (möglich)⁷ | mit Geschmacksverstärker⁴ |  |
+| Beans & Plantain | 1/3 · Previously declared — reconciliation pending | Sellerie (möglich)⁷ | Geschmacksverstärker⁴ |  |
 | Porridge Yam | 4 · Not previously declared — ask staff | — | — | yes — absence of codes is NOT "allergen-free" |
 | Fried Yam & Egg Sauce | 4 · Not previously declared — ask staff | — | — | yes — absence of codes is NOT "allergen-free" |
 | Assorted Plate with Yam or Plantain | 4 · Not previously declared — ask staff | — | — | yes — absence of codes is NOT "allergen-free" |
 | Suya | 4 · Not previously declared — ask staff | — | — | yes — absence of codes is NOT "allergen-free" |
-| Pepper Soup | 1/3 · Previously declared — reconciliation pending | Krebstiere¹, Fisch² | mit Geschmacksverstärker⁴, mit Farbstoff⁸ |  |
+| Pepper Soup | 1/3 · Previously declared — reconciliation pending | Krebstiere¹, Fisch² | Geschmacksverstärker⁴, Farbstoffe⁸ |  |
 | Stockfish | 1/3 · Previously declared — reconciliation pending | Fisch² | — |  |
 | Snail | 4 · Not previously declared — ask staff | — | — | yes — absence of codes is NOT "allergen-free" |
 | Okpa | 4 · Not previously declared — ask staff | — | — | not on old menu |
 | Abacha | 4 · Not previously declared — ask staff | — | — | yes — absence of codes is NOT "allergen-free" |
-| Nkwobi | 1/3 · Previously declared — reconciliation pending | Fisch², Senf³ | mit Geschmacksverstärker⁴ |  |
-| Isiewu | 1/3 · Previously declared — reconciliation pending | Fisch², Senf³ | mit Geschmacksverstärker⁴ |  |
+| Nkwobi | 1/3 · Previously declared — reconciliation pending | Fisch², Senf³ | Geschmacksverstärker⁴ |  |
+| Isiewu | 1/3 · Previously declared — reconciliation pending | Fisch², Senf³ | Geschmacksverstärker⁴ |  |
 | Tilapia | 4 · Not previously declared — ask staff | — | — | yes — absence of codes is NOT "allergen-free" |
 | Fried Fish & Plantain | 4 · Not previously declared — ask staff | — | — | not on old menu |
 | Extra Pounded Yam | 4 · Not previously declared — ask staff | — | — | not on old menu |

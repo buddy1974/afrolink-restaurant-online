@@ -4,7 +4,7 @@
  */
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { foodMenu, allFoodItems } from '../src/data/menu.ts';
 import { dishContent } from '../src/data/dish-content.ts';
@@ -86,7 +86,8 @@ test('public allergen info: allergens and additives separated, "possible" kept, 
   const jollof = publicAllergenInfo('jollof-rice');
   assert.equal(jollof.status, 'previous-menu');
   assert.deepEqual(jollof.allergens.map((a) => [a.code, a.possible]), [['I', true]]);
-  assert.deepEqual(jollof.additives.map((a) => a.label.de), ['mit Geschmacksverstärker', 'mit Farbstoff']);
+  assert.deepEqual(jollof.additives.map((a) => a.label.de), ['Geschmacksverstärker', 'Farbstoffe']);
+  assert.deepEqual(jollof.allergens.map((a) => a.label.de), ['Sellerie (möglich)']);
   const pepper = publicAllergenInfo('pepper-soup');
   assert.deepEqual(pepper.allergens.map((a) => a.code), ['B', 'D']);
   assert.deepEqual(pepper.additives.map((a) => a.historicalCode), ['4', '8']);
@@ -157,10 +158,17 @@ test('dish pages: exact prices, breadcrumbs, MenuItem schema without ratings, al
       assert.deepEqual(prices, expected, `${item.id} schema prices`);
       for (const v of item.variants ?? [{ price: item.price! }]) assert.ok(html.includes(formatPrice(v.price)), `${item.id} visible price`);
       assert.ok(!/aggregateRating|"Review"/.test(html), `${item.id} rating markup`);
-      const status = publicAllergenInfo(item.id).status;
-      assert.ok(html.includes(`data-allergen-status="${status}"`), `${item.id} allergen status`);
-      if (status === 'not-declared') assert.ok(html.includes(pagesUi[lang].allergen.noneNote), `${item.id} missing "ask staff" note (${lang})`);
-      if (status === 'previous-menu') assert.ok(html.includes(pagesUi[lang].allergen.previous), `${item.id} missing source label (${lang})`);
+      // Declarations shown plainly in Afrolink's voice; otherwise an invitation to ask.
+      const info = publicAllergenInfo(item.id);
+      const panel = html.slice(html.indexOf('data-allergen='), html.indexOf('data-allergen=') + 3000);
+      if (info.allergens.length + info.additives.length > 0) {
+        assert.ok(panel.startsWith('data-allergen="listed"'), `${item.id} state`);
+        for (const x of [...info.allergens, ...info.additives]) assert.ok(panel.includes(x.label[lang]), `${item.id} lacks ${x.label[lang]} (${lang})`);
+      } else {
+        assert.ok(panel.startsWith('data-allergen="ask"'), `${item.id} state`);
+        assert.ok(html.includes(pagesUi[lang].allergen.noInfo), `${item.id} missing invitation to ask (${lang})`);
+      }
+      assert.ok(html.includes(pagesUi[lang].allergen.help), `${item.id} missing help line (${lang})`);
     }
   }
 });
@@ -236,4 +244,34 @@ test('every category shows the real number of dishes (all languages)', opt, () =
       assert.match(count, new RegExp(`^${c.items.length} `), `${lang} ${c.id} count label "${count}"`);
     }
   }
+});
+
+/* ───────────── Brand voice (owner instruction 2026-10-10) ───────────── */
+
+const BANNED = [
+  /bisherigen Afrolink-Speisekarte/i, /früheren Speisekarte/i, /Abgleich mit der aktuellen Rezeptur/i,
+  /previous menu/i, /historical declaration/i, /source status/i, /unverified historical/i, /independently verified/i,
+  /ancienne carte/i, /ancien menu/i, /déclaration issue/i,
+  /Laut unserer (Speise)?karte/i, /according to our menu/i, /selon notre carte/i,
+  /noch keine geprüfte/i, /not yet available on this website/i, /in Prüfung/i, /being verified/i, /en cours de vérification/i,
+  /keine Live-Anzeige/i, /not a live display/i, /Beschreibungen laut/i, /Descriptions from the Afrolink menu/i,
+  /previous-menu/, /not-declared/,
+];
+
+test('no internal-audit or provenance wording anywhere in the public site', opt, () => {
+  const pages: string[] = [];
+  const w = (d: string) => { for (const f of readdirSync(d)) { const p = join(d, f); if (statSync(p).isDirectory()) w(p); else if (f === 'index.html') pages.push(p); } };
+  w('dist/client');
+  assert.ok(pages.length >= 138);
+  for (const p of pages) {
+    if (p.includes('admin')) continue;
+    const h = readFileSync(p, 'utf8');
+    for (const re of BANNED) assert.ok(!re.test(h), `${p} contains ${re}`);
+  }
+});
+
+test('internal records keep the original Afrolink codes and sources', () => {
+  assert.equal(historicalRegister.length, 29);
+  assert.ok(HISTORICAL_CODES['7'].original.includes('möglich'));
+  assert.equal(historicalRegister.find((h) => h.currentId === 'pepper-soup')?.menuNo, '22');
 });
