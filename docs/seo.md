@@ -148,7 +148,7 @@ No `aggregateRating`, `Review`, `FAQPage`, awards or fabricated offers. Dish rat
 
 ## Search Console / Bing: status
 
-Superseded by the Google Search Console record below (2026-10-10). Bing: not started.
+Superseded by the Google Search Console and Bing Webmaster Tools records below (2026-10-10).
 
 # Google Search Console — finalization (2026-10-10)
 
@@ -207,3 +207,42 @@ Done in the owner's authenticated Chrome session. No DNS changes were needed.
   - Search Console field data: not yet available.
 
 Keyword research and page mapping: `docs/seo-keyword-map.md`.
+
+# Bing Webmaster Tools — setup (2026-10-10)
+
+Done in the owner's authenticated Chrome session, after the Google phase was reviewed.
+
+| Item | Result |
+|---|---|
+| Site | `https://www.afrolink-restaurant.online/` added manually (it was not in the account). The GSC import (OAuth grant) was not used. |
+| Ownership | Verified by a **DNS CNAME** at the apex (`<token>.afrolink-restaurant.online` → `verify.bing.com`) in Vercel DNS. Keep this record; Bing re-checks ownership. |
+| Sitemap | `https://www.afrolink-restaurant.online/sitemap.xml` submitted → **Success, 141 URLs discovered**, 0 errors, 0 warnings. |
+| URL submission | 48 priority URLs submitted (home, menu, delivery, catering, reservation, contact, gallery, allergens, soups hub, Egusi, Jollof, Suya, Pepper Soup, Tilapia, Mackerel, Pounded Yam; DE/EN/FR). They were submitted twice because the first batch fell inside the DNS incident below. Daily quota is 100. |
+| Index status | `/` **indexed in Bing** (an older copy; that copy still shows a short title / description and no markup). Live test of the current page: **"URL can be indexed by Bing"**, no SEO/GEO issues, 2 markup types. `/kontakt/`: "Discovered but not crawled". The other pages are not indexed yet. |
+| IndexNow | Not set up. It needs a key file served from the site, i.e. a code change plus a production deploy that needs approval. Recommended next step. |
+
+"Submitted" means queued for Bing's crawler; it is **not** indexing. Recheck in 3–7 days in Site Explorer and URL Inspection.
+
+## Incident: `www` DNS outage during Bing verification (~16:08–16:30 CEST)
+- **What happened:**
+  - Bing shows one CNAME name without saying which host it belongs to.
+  - I added it at the apex and also under `www` (`<token>.www`).
+  - `www` itself had no record; it was served by the `*` wildcard ALIAS.
+  - Creating a name *below* `www` turned `www` into an existing (empty) DNS node, and wildcards do not match existing names (RFC 4592).
+  - So `www.afrolink-restaurant.online` returned **no address** on every resolver, including Vercel's own nameservers.
+  - The site was unreachable for visitors whose resolvers looked it up in that window.
+- **How it was found:**
+  - Bing's live test failed for Afrolink but passed for two other sites in the same account (one Cloudflare-hosted, one Vercel-hosted).
+  - A direct DNS check then showed the missing address.
+- **Fix:**
+  - Removed the `<token>.www` record.
+  - `www` resolved again on the authoritative and public resolvers within a minute.
+  - The negative-cache TTL is 600 s, so stale failures could last until about 16:40.
+  - Bing's live test then passed; the sitemap was resubmitted and succeeded.
+- **Impact:**
+  - About 20–30 minutes of partial unreachability for `www`.
+  - Google or Bing crawls in that window may have recorded DNS errors; both retry automatically.
+- **Rule from now on:**
+  - Never create DNS names under `www` (or under any other host served only by the wildcard).
+  - Add verification records at the apex, or add an explicit `www` record first.
+  - After any DNS change, resolve `www` and the apex on the authoritative nameservers.

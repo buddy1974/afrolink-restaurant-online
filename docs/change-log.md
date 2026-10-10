@@ -1,5 +1,15 @@
 # Change Log — `afrolink-restaurant-online`
 
+## 2026-10-10 — Bing Webmaster Tools setup (no code change, no deploy)
+- Site added and verified via a DNS CNAME at the apex (Vercel DNS).
+- Sitemap submitted → Success, 141 URLs.
+- 48 priority URLs submitted.
+- Homepage live test: can be indexed, no issues. Details in docs/seo.md.
+- **Incident:**
+  - A second verification CNAME under `www` broke wildcard resolution of `www` for about 20–30 min (~16:08–16:30 CEST).
+  - Fixed by removing that record; verified on the authoritative and public resolvers and with a live HTTP check.
+  - New risk R-032.
+
 ## 2026-10-10 — Released to production (`main` fast-forwarded 42b6bd9 → c82b71a, approved by Marcel: "approve production, push")
 - Contains: brand voice / allergen presentation (f390e6d), Mackerel Fish Slices (5687a84), SEO metadata fixes (c82b71a).
 - Live checks on www.afrolink-restaurant.online:
