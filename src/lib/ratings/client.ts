@@ -4,6 +4,7 @@
  * /api/ratings reports { enabled: true }.
  */
 import { FAVOURITE_MIN_RATINGS, MIN_RATINGS_TOP } from './ranking';
+import { readChoices, setChoice } from '../consent';
 
 interface DishSummary {
   n: number;
@@ -80,6 +81,7 @@ async function init(t: Strings) {
           <legend class="rt__legend"></legend>
           <div class="rt__pick"></div>
         </fieldset>
+        <label class="rt__remember"><input type="checkbox" name="remember" /> <span class="rt__remember-text"></span></label>
         <div class="rt__hp"><label>Website <input name="website" tabindex="-1" autocomplete="off" /></label></div>
         <button type="submit" class="rt__submit"></button>
         <p class="rt__msg" role="status" aria-live="polite"></p>
@@ -91,12 +93,18 @@ async function init(t: Strings) {
     slot.querySelector('.rt__legend')!.textContent = `${t.yourRating}: ${name}`;
     slot.querySelector('.rt__submit')!.textContent = t.submit;
     slot.querySelector('.rt__note')!.textContent = t.note;
+    slot.querySelector('.rt__remember-text')!.textContent = t.remember;
+    // Optional consent: unticked unless the visitor allowed "remember ratings" before.
+    const rememberBox = form.querySelector<HTMLInputElement>('input[name="remember"]')!;
+    rememberBox.checked = readChoices().ratings;
     const pick = slot.querySelector<HTMLElement>('.rt__pick')!;
     let saved: string | null = null;
-    try {
-      saved = localStorage.getItem(`afl-rated:${id}`);
-    } catch {
-      /* storage unavailable */
+    if (readChoices().ratings) {
+      try {
+        saved = localStorage.getItem(`afl-rated:${id}`);
+      } catch {
+        /* storage unavailable */
+      }
     }
     for (let n = 1; n <= 5; n++) {
       const label = document.createElement('label');
@@ -155,15 +163,20 @@ async function init(t: Strings) {
             stars,
             website: (form.elements.namedItem('website') as HTMLInputElement).value,
             elapsed: Math.round(performance.now() - openedAt),
+            remember: rememberBox.checked,
           }),
         });
         const body = (await res.json().catch(() => ({}))) as { ok?: boolean; action?: string; n?: number; avg?: number | null; error?: string };
         if (res.ok && body.ok) {
           msg.textContent = body.action === 'revised' ? t.updated : t.thanks;
-          try {
-            localStorage.setItem(`afl-rated:${id}`, String(stars));
-          } catch {
-            /* storage unavailable */
+          // The tick box is the consent decision for this category (and its withdrawal).
+          if (rememberBox.checked !== readChoices().ratings) setChoice('ratings', rememberBox.checked);
+          if (rememberBox.checked) {
+            try {
+              localStorage.setItem(`afl-rated:${id}`, String(stars));
+            } catch {
+              /* storage unavailable */
+            }
           }
           if (typeof body.n === 'number') {
             dishes[id] = { ...(dishes[id] ?? { score: null, n30: 0, last: null }), n: body.n, avg: body.avg ?? null };

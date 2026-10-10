@@ -7,13 +7,14 @@
  */
 import { type Lang } from '../i18n/config';
 import { usePages } from '../i18n/pages';
+import { useConsentUi } from '../i18n/consent';
 
 interface Props {
   lang: Lang;
 }
 const { lang } = Astro.props;
 const r = usePages(lang).rating;
-const strings = JSON.stringify({ ...r, locale: lang === 'en' ? 'en-GB' : lang });
+const strings = JSON.stringify({ ...r, remember: useConsentUi(lang).rating.remember, locale: lang === 'en' ? 'en-GB' : lang });
 ---
 
 <script type="application/json" data-rating-i18n set:html={strings} />
@@ -129,6 +130,22 @@ const strings = JSON.stringify({ ...r, locale: lang === 'en' ? 'en-GB' : lang })
   .rt__star:focus-within {
     outline: 2px solid var(--gold);
     outline-offset: 1px;
+  }
+  .rt__remember {
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-start;
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    color: var(--on-paper-muted);
+    cursor: pointer;
+  }
+  .rt__remember input {
+    flex: none;
+    width: 1.15rem;
+    height: 1.15rem;
+    margin-top: 0.05rem;
+    accent-color: var(--gold);
   }
   .rt__hp {
     position: absolute;

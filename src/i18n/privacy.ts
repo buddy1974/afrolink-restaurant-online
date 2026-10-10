@@ -1,10 +1,10 @@
 /**
  * Privacy policy (Art. 13 DSGVO) — German is binding; EN/FR are courtesy translations.
- * Describes ONLY what this website technically does (verified in code, 2026-10-10):
- * - storage: `afl-lang` (language choice); with ratings enabled: cookie `afl_rv`, local storage
- *   `afl-rated:<dish>`, staff cookie `afl_admin` — see src/components/LanguageSwitcher.astro,
- *   src/lib/ratings/*.
- * - external content only after a click (YouTube via youtube-nocookie.com, Facebook video).
+ * Describes ONLY what this website technically does (verified in code and browser, 2026-10-10):
+ * - storage: see src/data/storage-inventory.ts (consent record; optional language cookie,
+ *   optional rating memory, staff cookie) — nothing without a visitor action.
+ * - language redirect server-side from the Accept-Language header (vercel.json).
+ * - external videos only after an informed two-click consent (src/components/VideoCard.astro).
  * - no analytics, no ads, fonts self-hosted, enquiry assistant sends nothing by itself.
  * Operator identity comes from src/data/legal.ts and is never guessed.
  * Sections depending on configuration are included only when that configuration is active.
@@ -54,20 +54,22 @@ const de: Copy = {
     {
       h: 'Cookies und Speicherung auf Ihrem Gerät',
       p: [
-        'Wir verwenden keine Analyse-, Tracking- oder Werbedienste. Schriftarten werden von unserem eigenen Server geladen (keine Verbindung zu Google Fonts).',
-        'Sprachwahl: Wenn Sie über die Sprachauswahl eine Sprache wählen, speichern wir diese Wahl unter „afl-lang“ im lokalen Speicher Ihres Browsers, damit die Website Sie beim nächsten Besuch in dieser Sprache anzeigt. Beim ersten Aufruf der Startseite liest die Website außerdem die Spracheinstellung Ihres Browsers aus, um Ihnen gegebenenfalls die englische oder französische Fassung zu zeigen; dabei wird nichts gespeichert oder übermittelt. Grundlage ist § 25 Abs. 2 Nr. 2 TDDDG (unbedingt erforderlich für den von Ihnen gewünschten Dienst). Sie können den Eintrag jederzeit in Ihren Browsereinstellungen löschen.',
+        'Beim normalen Besuch setzt diese Website keine Cookies, nutzt keinen lokalen Speicher und lädt nichts von Drittanbietern. Wir verwenden keine Analyse-, Tracking- oder Werbedienste; Schriftarten werden von unserem eigenen Server geladen. Eine vollständige Übersicht mit Speicherdauern finden Sie in der Cookie-Richtlinie.',
+        'Sprache: Beim Aufruf der Startseite leiten wir Sie anhand der Spracheinstellung, die Ihr Browser mit jeder Anfrage ohnehin übermittelt (HTTP-Header „Accept-Language“), gegebenenfalls zur englischen oder französischen Fassung weiter; dafür wird auf Ihrem Gerät nichts gelesen oder gespeichert. Nur wenn Sie „Sprache merken“ erlauben, speichern wir Ihre gewählte Sprache 12 Monate lang im Cookie „afl_lang“.',
+        'Ihre Datenschutz-Einstellungen speichern wir unter „afl-consent“ im lokalen Speicher Ihres Browsers (12 Monate), damit wir Ihre Wahl beachten können; dies ist unbedingt erforderlich (§ 25 Abs. 2 Nr. 2 TDDDG). Der Eintrag enthält keine personenbezogenen Angaben und wird nicht an uns übermittelt.',
         ...(o.ratingsOn
           ? [
-              'Bewertungen: Nur wenn Sie selbst ein Gericht bewerten, setzen wir das Cookie „afl_rv“ (Laufzeit 12 Monate) und speichern Ihre Sternzahl unter „afl-rated:<Gericht>“ im lokalen Speicher, damit Ihre Bewertung angezeigt wird und Sie sie später ändern können (§ 25 Abs. 2 Nr. 2 TDDDG). Für die Anmeldung von Mitarbeitenden im internen Verwaltungsbereich wird ein Sitzungs-Cookie („afl_admin“, höchstens 8 Stunden) gesetzt.',
+              'Bewertungen: Nur wenn Sie beim Bewerten „Auf diesem Gerät merken“ wählen, setzen wir das Cookie „afl_rv“ (12 Monate) und speichern Ihre Sternzahl unter „afl-rated:<Gericht>“, damit Sie Ihre Bewertung später ändern können. Für die Anmeldung von Mitarbeitenden im internen Verwaltungsbereich wird ein Sitzungs-Cookie („afl_admin“, höchstens 8 Stunden) gesetzt, das für die Anmeldung unbedingt erforderlich ist.',
             ]
           : []),
-        'Weitere Cookies setzen wir nicht. Externe Inhalte (Videos) werden erst nach Ihrem Klick geladen, siehe nächster Abschnitt.',
+        'Optionale Speicherungen erfolgen nur mit Ihrer Einwilligung (§ 25 Abs. 1 TDDDG, Art. 6 Abs. 1 lit. a DSGVO). Sie können sie jederzeit über „Cookie-Einstellungen“ am Ende jeder Seite mit Wirkung für die Zukunft widerrufen; die betroffenen Einträge löschen wir dann sofort.',
       ],
     },
     {
-      h: 'Videos von YouTube und Facebook (erst nach Klick)',
+      h: 'Videos von YouTube und Facebook (erst nach Ihrer Freigabe)',
       p: [
-        'Videos werden zunächst nur als Vorschaubild von unserem Server angezeigt. Erst wenn Sie auf „Abspielen“ klicken, wird das Video von YouTube (Google Ireland Limited, über youtube-nocookie.com) bzw. Facebook (Meta Platforms Ireland Limited) geladen. Dabei werden Daten wie Ihre IP-Adresse an den jeweiligen Anbieter übertragen; die Anbieter können Cookies setzen und Daten auch in den USA verarbeiten (Google und Meta sind unter dem EU-US Data Privacy Framework zertifiziert). Rechtsgrundlage ist Ihre Einwilligung durch den Klick (Art. 6 Abs. 1 lit. a DSGVO; § 25 Abs. 1 TDDDG). Ohne Klick findet keine Verbindung statt.',
+        'Videos werden zunächst nur als Vorschaubild von unserem Server angezeigt. Klicken Sie darauf, erklären wir Ihnen zuerst, welcher Anbieter das Video bereitstellt und welche Daten übertragen werden. Erst wenn Sie „Video laden“ wählen, wird das Video von YouTube (Google Ireland Limited, über youtube-nocookie.com) bzw. Facebook (Meta Platforms Ireland Limited) geladen. Mit „Externe Videos immer erlauben“ speichern wir diese Wahl in Ihren Datenschutz-Einstellungen.',
+        'Beim Laden werden Daten wie Ihre IP-Adresse an den Anbieter übertragen; die Anbieter können Cookies oder vergleichbare Speicherungen nutzen und Daten auch in den USA verarbeiten (Google und Meta sind unter dem EU-US Data Privacy Framework zertifiziert). Rechtsgrundlage ist Ihre Einwilligung (Art. 6 Abs. 1 lit. a DSGVO; § 25 Abs. 1 TDDDG), die Sie jederzeit über die Cookie-Einstellungen widerrufen können. Ohne Ihre Freigabe findet keine Verbindung statt.',
       ],
     },
     {
@@ -85,7 +87,7 @@ const de: Copy = {
             h: 'Bewertung von Gerichten',
             p: [
               'Sie können Gerichte anonym mit 1 bis 5 Sternen bewerten. Gespeichert werden das Gericht, die Sternzahl, Datum und Uhrzeit sowie ein pseudonymer Schlüssel. Namen, E-Mail-Adressen oder Konten werden nicht erhoben.',
-              'Damit jede Person ein Gericht nur einmal bewertet und die eigene Bewertung ändern kann, enthält das Cookie „afl_rv“ eine Zufallskennung; in der Datenbank wird nur ein daraus berechneter, nicht umkehrbarer Schlüssel gespeichert.',
+              'Wenn Sie „Auf diesem Gerät merken“ wählen (Einwilligung), enthält das Cookie „afl_rv“ eine Zufallskennung, damit Sie Ihre Bewertung später ändern können; in der Datenbank wird nur ein daraus berechneter, nicht umkehrbarer Schlüssel gespeichert. Ohne diese Wahl wird auf Ihrem Gerät nichts gespeichert; dann zählt je Netzwerk, Gericht und Tag eine Bewertung.',
               'Zum Schutz vor Missbrauch (z. B. automatisierte Massenbewertungen) wird Ihre IP-Adresse nicht gespeichert, sondern nur ein täglich wechselnder, nicht umkehrbarer Schlüssel daraus gebildet und nach spätestens 30 Tagen gelöscht; Daten zur Begrenzung von Anfragen werden nach 2 Tagen gelöscht.',
               `Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an zuverlässigen Bewertungen und an der Verbesserung unserer Speisekarte). Die Bewertungen werden in einer Datenbank von Neon (Region Frankfurt am Main) gespeichert; Neon ist unter dem EU-US Data Privacy Framework zertifiziert.${o.neonDpa ? ' Mit Neon besteht ein Vertrag zur Auftragsverarbeitung (Art. 28 DSGVO).' : ''} Bewertungen bleiben für die Auswertung gespeichert, solange die Bewertungsfunktion besteht; sie lassen sich keiner Person zuordnen.`,
             ],
@@ -136,20 +138,22 @@ const en: Copy = {
     {
       h: 'Cookies and storage on your device',
       p: [
-        'We use no analytics, tracking or advertising services. Fonts are served from our own server (no connection to Google Fonts).',
-        'Language choice: when you choose a language in the language selector, we store that choice as “afl-lang” in your browser’s local storage so the site opens in that language next time. On your first visit to the home page, the site also reads your browser’s language setting to show you the English or French version if appropriate; nothing is stored or transmitted. Legal basis: § 25(2) no. 2 TDDDG (strictly necessary for the service you requested). You can delete the entry at any time in your browser settings.',
+        'During a normal visit this website sets no cookies, uses no local storage and loads nothing from third parties. We use no analytics, tracking or advertising services; fonts are served from our own server. A full overview with storage periods is in the cookie policy.',
+        'Language: when you open the home page, we may redirect you to the English or French version based on the language setting your browser sends with every request anyway (HTTP header “Accept-Language”); nothing is read from or stored on your device for this. Only if you allow “Remember language” do we store your chosen language for 12 months in the cookie “afl_lang”.',
+        'We store your privacy settings as “afl-consent” in your browser’s local storage (12 months) so that we can respect your choice; this is strictly necessary (§ 25(2) no. 2 TDDDG). The entry contains no personal details and is not sent to us.',
         ...(o.ratingsOn
           ? [
-              'Ratings: only when you rate a dish yourself do we set the cookie “afl_rv” (12 months) and store your stars as “afl-rated:<dish>” in local storage, so that your rating is shown and you can change it later (§ 25(2) no. 2 TDDDG). Staff logging in to the internal management area receive a session cookie (“afl_admin”, at most 8 hours).',
+              'Ratings: only if you choose “Remember on this device” when rating do we set the cookie “afl_rv” (12 months) and store your stars as “afl-rated:<dish>”, so that you can change your rating later. Staff logging in to the internal management area receive a session cookie (“afl_admin”, at most 8 hours), which is strictly necessary for the login.',
             ]
           : []),
-        'We set no other cookies. External content (videos) is only loaded after you click, see the next section.',
+        'Optional storage only takes place with your consent (§ 25(1) TDDDG, Art. 6(1)(a) GDPR). You can withdraw it at any time with effect for the future via “Cookie settings” at the bottom of every page; we then delete the affected entries immediately.',
       ],
     },
     {
-      h: 'Videos from YouTube and Facebook (only after you click)',
+      h: 'Videos from YouTube and Facebook (only after you allow them)',
       p: [
-        'Videos are first shown only as a preview image from our server. Only when you click “Play” is the video loaded from YouTube (Google Ireland Limited, via youtube-nocookie.com) or Facebook (Meta Platforms Ireland Limited). Data such as your IP address is then transmitted to that provider, which may set cookies and also process data in the USA (Google and Meta are certified under the EU-US Data Privacy Framework). Legal basis: your consent given by clicking (Art. 6(1)(a) GDPR; § 25(1) TDDDG). Without a click, no connection is made.',
+        'Videos are first shown only as a preview image from our server. When you click it, we first explain which provider supplies the video and which data is transmitted. Only when you choose “Load video” is the video loaded from YouTube (Google Ireland Limited, via youtube-nocookie.com) or Facebook (Meta Platforms Ireland Limited). “Always allow external videos” stores this choice in your privacy settings.',
+        'When a video loads, data such as your IP address is transmitted to the provider; the providers may use cookies or similar storage and also process data in the USA (Google and Meta are certified under the EU-US Data Privacy Framework). Legal basis: your consent (Art. 6(1)(a) GDPR; § 25(1) TDDDG), which you can withdraw at any time in the cookie settings. Without your permission, no connection is made.',
       ],
     },
     {
@@ -167,7 +171,7 @@ const en: Copy = {
             h: 'Rating dishes',
             p: [
               'You can rate dishes anonymously with 1 to 5 stars. We store the dish, the number of stars, date and time and a pseudonymous key. No names, e-mail addresses or accounts are collected.',
-              'So that each person rates a dish only once and can change their rating, the cookie “afl_rv” contains a random identifier; only an irreversible key derived from it is stored in the database.',
+              'If you choose “Remember on this device” (consent), the cookie “afl_rv” contains a random identifier so that you can change your rating later; only an irreversible key derived from it is stored in the database. Without that choice nothing is stored on your device; one rating then counts per network, dish and day.',
               'To prevent abuse (e.g. automated mass ratings), your IP address is not stored; only a daily-changing, irreversible key derived from it is kept for at most 30 days; rate-limiting data is deleted after 2 days.',
               `Legal basis: Art. 6(1)(f) GDPR (legitimate interest in reliable ratings and improving our menu). Ratings are stored in a Neon database (Frankfurt region); Neon is certified under the EU-US Data Privacy Framework.${o.neonDpa ? ' A data processing agreement with Neon is in place (Art. 28 GDPR).' : ''} Ratings are kept for evaluation for as long as the rating function exists; they cannot be linked to a person.`,
             ],
@@ -218,20 +222,22 @@ const fr: Copy = {
     {
       h: 'Cookies et stockage sur votre appareil',
       p: [
-        'Nous n’utilisons aucun service d’analyse, de suivi ou de publicité. Les polices sont chargées depuis notre propre serveur (aucune connexion à Google Fonts).',
-        'Choix de langue : lorsque vous choisissez une langue dans le sélecteur, nous enregistrons ce choix sous « afl-lang » dans le stockage local de votre navigateur afin que le site s’affiche dans cette langue lors de votre prochaine visite. Lors de votre première visite de la page d’accueil, le site lit en outre la langue de votre navigateur pour vous proposer, le cas échéant, la version anglaise ou française ; rien n’est enregistré ni transmis. Base juridique : § 25, al. 2, n° 2 TDDDG (strictement nécessaire au service demandé). Vous pouvez supprimer cette entrée à tout moment dans les réglages de votre navigateur.',
+        'Lors d’une visite normale, ce site ne dépose aucun cookie, n’utilise pas le stockage local et ne charge rien depuis des tiers. Nous n’utilisons aucun service d’analyse, de suivi ou de publicité ; les polices sont chargées depuis notre propre serveur. Un aperçu complet avec les durées de conservation figure dans la politique relative aux cookies.',
+        'Langue : à l’ouverture de la page d’accueil, nous pouvons vous rediriger vers la version anglaise ou française en fonction de la langue que votre navigateur transmet de toute façon à chaque requête (en-tête HTTP « Accept-Language ») ; rien n’est lu ni enregistré sur votre appareil pour cela. Ce n’est que si vous autorisez « Mémoriser la langue » que nous enregistrons votre langue pendant 12 mois dans le cookie « afl_lang ».',
+        'Nous enregistrons vos paramètres de confidentialité sous « afl-consent » dans le stockage local de votre navigateur (12 mois) afin de respecter votre choix ; cela est strictement nécessaire (§ 25, al. 2, n° 2 TDDDG). L’entrée ne contient aucune donnée personnelle et ne nous est pas transmise.',
         ...(o.ratingsOn
           ? [
-              'Notes : uniquement si vous notez vous-même un plat, nous déposons le cookie « afl_rv » (12 mois) et enregistrons vos étoiles sous « afl-rated:<plat> » dans le stockage local, afin d’afficher votre note et de vous permettre de la modifier (§ 25, al. 2, n° 2 TDDDG). Le personnel qui se connecte à l’espace de gestion interne reçoit un cookie de session (« afl_admin », 8 heures au maximum).',
+              'Notes : uniquement si vous choisissez « Mémoriser sur cet appareil » en notant, nous déposons le cookie « afl_rv » (12 mois) et enregistrons vos étoiles sous « afl-rated:<plat> », afin que vous puissiez modifier votre note. Le personnel qui se connecte à l’espace de gestion interne reçoit un cookie de session (« afl_admin », 8 heures au maximum), strictement nécessaire à la connexion.',
             ]
           : []),
-        'Nous ne déposons aucun autre cookie. Les contenus externes (vidéos) ne sont chargés qu’après votre clic, voir la section suivante.',
+        'Les stockages facultatifs n’ont lieu qu’avec votre consentement (§ 25, al. 1 TDDDG, art. 6, par. 1, point a) RGPD). Vous pouvez le retirer à tout moment pour l’avenir via « Paramètres des cookies » en bas de chaque page ; nous supprimons alors immédiatement les entrées concernées.',
       ],
     },
     {
-      h: 'Vidéos YouTube et Facebook (uniquement après un clic)',
+      h: 'Vidéos YouTube et Facebook (uniquement après votre autorisation)',
       p: [
-        'Les vidéos s’affichent d’abord sous forme d’image d’aperçu depuis notre serveur. Ce n’est que lorsque vous cliquez sur « Lire » que la vidéo est chargée depuis YouTube (Google Ireland Limited, via youtube-nocookie.com) ou Facebook (Meta Platforms Ireland Limited). Des données comme votre adresse IP sont alors transmises au fournisseur, qui peut déposer des cookies et traiter des données aux États-Unis (Google et Meta sont certifiés au titre du Data Privacy Framework UE-États-Unis). Base juridique : votre consentement par le clic (art. 6, par. 1, point a) du RGPD ; § 25, al. 1 TDDDG). Sans clic, aucune connexion n’a lieu.',
+        'Les vidéos s’affichent d’abord sous forme d’image d’aperçu depuis notre serveur. Lorsque vous cliquez dessus, nous vous expliquons d’abord quel fournisseur diffuse la vidéo et quelles données sont transmises. Ce n’est que lorsque vous choisissez « Charger la vidéo » qu’elle est chargée depuis YouTube (Google Ireland Limited, via youtube-nocookie.com) ou Facebook (Meta Platforms Ireland Limited). « Toujours autoriser les vidéos externes » enregistre ce choix dans vos paramètres de confidentialité.',
+        'Au chargement, des données comme votre adresse IP sont transmises au fournisseur ; les fournisseurs peuvent utiliser des cookies ou des stockages similaires et traiter des données aux États-Unis (Google et Meta sont certifiés au titre du Data Privacy Framework UE-États-Unis). Base juridique : votre consentement (art. 6, par. 1, point a) RGPD ; § 25, al. 1 TDDDG), que vous pouvez retirer à tout moment dans les paramètres des cookies. Sans votre autorisation, aucune connexion n’a lieu.',
       ],
     },
     {
@@ -249,7 +255,7 @@ const fr: Copy = {
             h: 'Notation des plats',
             p: [
               'Vous pouvez noter les plats de façon anonyme de 1 à 5 étoiles. Nous enregistrons le plat, le nombre d’étoiles, la date et l’heure ainsi qu’une clé pseudonyme. Aucun nom, adresse e-mail ou compte n’est collecté.',
-              'Pour que chaque personne ne note un plat qu’une seule fois et puisse modifier sa note, le cookie « afl_rv » contient un identifiant aléatoire ; seule une clé irréversible dérivée de celui-ci est enregistrée dans la base de données.',
+              'Si vous choisissez « Mémoriser sur cet appareil » (consentement), le cookie « afl_rv » contient un identifiant aléatoire afin que vous puissiez modifier votre note ; seule une clé irréversible dérivée de celui-ci est enregistrée. Sans ce choix, rien n’est enregistré sur votre appareil ; une note compte alors par réseau, plat et jour.',
               'Pour prévenir les abus (p. ex. notes automatisées en masse), votre adresse IP n’est pas enregistrée ; seule une clé irréversible, renouvelée chaque jour, est conservée 30 jours au plus ; les données de limitation des requêtes sont supprimées après 2 jours.',
               `Base juridique : art. 6, par. 1, point f) du RGPD (intérêt légitime à des notes fiables et à l’amélioration de notre carte). Les notes sont enregistrées dans une base de données Neon (région Francfort) ; Neon est certifié au titre du Data Privacy Framework UE-États-Unis.${o.neonDpa ? ' Un contrat de sous-traitance a été conclu avec Neon (art. 28 RGPD).' : ''} Les notes sont conservées pour l’évaluation tant que la fonction existe ; elles ne permettent pas d’identifier une personne.`,
             ],

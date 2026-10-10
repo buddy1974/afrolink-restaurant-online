@@ -82,6 +82,6 @@ test('legal pages show the incompleteness notice while operator data is missing'
 
 test('sitemap lists all localized URLs', opt, () => {
   const xml = read('sitemap.xml');
-  // 11 fixed routes + 34 dish pages, each in three languages (details: tests/discovery.test.ts).
-  assert.equal((xml.match(/<loc>/g) ?? []).length, 135);
+  // 12 fixed routes + 34 dish pages, each in three languages (details: tests/discovery.test.ts).
+  assert.equal((xml.match(/<loc>/g) ?? []).length, 138);
 });

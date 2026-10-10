@@ -1,5 +1,5 @@
 ---
-/** DE / EN / FR switcher. Links to the same page in each language; remembers the choice. */
+/** DE / EN / FR switcher. Links to the same page in each language; remembers the choice only with consent. */
 import { langName, locales, routes, type Lang, type Paths, type RouteKey } from '../i18n/config';
 import { useT } from '../i18n/ui';
 
@@ -39,14 +39,11 @@ const t = useT(lang);
 </nav>
 
 <script>
+  import { rememberLanguage } from '../lib/consent';
+  // The URL carries the language. Only with "Remember language" consent is the choice kept in a
+  // cookie for the next visit (read by the server-side redirect on "/").
   document.querySelectorAll<HTMLAnchorElement>('[data-set-lang]').forEach((a) =>
-    a.addEventListener('click', () => {
-      try {
-        localStorage.setItem('afl-lang', a.dataset.setLang!);
-      } catch {
-        /* storage unavailable — the URL still carries the language */
-      }
-    }),
+    a.addEventListener('click', () => rememberLanguage(a.dataset.setLang!)),
   );
 </script>
 

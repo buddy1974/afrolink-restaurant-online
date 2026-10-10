@@ -1,5 +1,14 @@
 # Change Log — `afrolink-restaurant-online`
 
+## 2026-10-10 — Cookie & consent compliance (branch `discovery-ratings-2026-10`)
+- Removed client-side language detection (navigator.languages/localStorage); language redirect on "/" now server-side from Accept-Language (vercel.json), never for bots, internal navigation or with a saved choice.
+- Privacy settings dialog (Allow all / Necessary only / Save selection, granular, nothing preselected) from every footer; consent record `afl-consent` (local, 12 months, no identifiers); withdrawal deletes affected storage immediately.
+- Two-click consent step for YouTube/Facebook videos ("Load video" once or "Always allow external videos").
+- "Remember language" (cookie `afl_lang`) only with consent.
+- Ratings (still off): device memory only with an unticked opt-in box; otherwise no device storage; `DELETE /api/ratings` expires the cookie on withdrawal.
+- New cookie policy page (DE/EN/FR, /cookies/), generated from `src/data/storage-inventory.ts`; privacy policy updated; operator Emeka Nwokorie shown.
+- Tests: 75. Evidence: docs/compliance/cookie-consent-2026-10-10.md.
+
 ## 2026-10-10 — Legal release gate (branch `discovery-ratings-2026-10`)
 - Privacy policy rewritten from verified behaviour (storage keys, hosting/DPF, click-to-load videos, contact + Art. 9 health data, ratings section only when enabled, Art. 21, LDI NRW address); processor agreements claimed only when confirmed.
 - Impressum: supervisory authority (Gaststättenerlaubnis), § 36 VSBG, hidden "not applicable" items, no ODR link; operator data model with null/false/value.

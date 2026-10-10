@@ -10,8 +10,12 @@
 export type Supplied = string | false | null;
 
 export const legal = {
-  /** Full name of the natural person (sole trader) or the company name exactly as registered. */
-  operatorName: null as string | null,
+  /**
+   * Full name of the natural person (sole trader) or the company name exactly as registered.
+   * Supplied by Marcel on 2026-10-10 (operator and controller). Legal form still to be confirmed —
+   * if the restaurant is run by a company, replace with the company name and add the representative.
+   */
+  operatorName: 'Emeka Nwokorie' as string | null,
   /** Legal form, e.g. "Einzelunternehmen", "GbR", "UG (haftungsbeschränkt)", "GmbH". */
   legalForm: null as string | null,
   /** Authorised representative(s) — required for companies (e.g. Geschäftsführer/in). false for sole traders. */

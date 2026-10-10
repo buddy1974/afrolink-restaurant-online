@@ -22,6 +22,7 @@ export const routes = {
   imprint: { de: '/impressum/', en: '/en/imprint/', fr: '/fr/mentions-legales/' },
   privacy: { de: '/datenschutz/', en: '/en/privacy/', fr: '/fr/confidentialite/' },
   allergens: { de: '/allergene/', en: '/en/allergens/', fr: '/fr/allergenes/' },
+  cookies: { de: '/cookies/', en: '/en/cookies/', fr: '/fr/cookies/' },
   // Search-discovery pages (2026-10): dedicated, crawlable destinations for the main intents.
   menu: { de: '/speisekarte/', en: '/en/menu/', fr: '/fr/carte/' },
   soups: { de: '/speisekarte/suppen/', en: '/en/menu/soups/', fr: '/fr/carte/soupes/' },

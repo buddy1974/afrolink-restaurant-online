@@ -10,16 +10,17 @@ import SoupsPage from '../components/pages/SoupsPage.astro';
 import DishPage from '../components/pages/DishPage.astro';
 import ServicePage from '../components/pages/ServicePage.astro';
 import SimplePages from '../components/pages/SimplePages.astro';
+import CookiesPage from '../components/pages/CookiesPage.astro';
 import { foodMenu, type MenuCategory, type MenuItem } from '../data/menu';
 import { dishPaths, locales, routes, type Lang } from '../i18n/config';
 
 type Page =
-  | { type: 'menu' | 'soups' | 'delivery' | 'catering' | 'reservations' | 'gallery' | 'contact'; lang: Lang }
+  | { type: 'menu' | 'soups' | 'delivery' | 'catering' | 'reservations' | 'gallery' | 'contact' | 'cookies'; lang: Lang }
   | { type: 'dish'; lang: Lang; item: MenuItem; category: MenuCategory };
 
 export function getStaticPaths() {
   const slug = (path: string) => path.replace(/^\/|\/$/g, '');
-  const fixed = ['menu', 'soups', 'delivery', 'catering', 'reservations', 'gallery', 'contact'] as const;
+  const fixed = ['menu', 'soups', 'delivery', 'catering', 'reservations', 'gallery', 'contact', 'cookies'] as const;
   return locales.flatMap((lang) => [
     ...fixed.map((type) => ({ params: { slug: slug(routes[type][lang]) }, props: { page: { type, lang } as Page } })),
     ...foodMenu.flatMap((category) =>
@@ -38,3 +39,4 @@ const { page } = Astro.props as { page: Page };
 {page.type === 'dish' && <DishPage lang={page.lang} item={page.item} category={page.category} />}
 {(page.type === 'delivery' || page.type === 'catering' || page.type === 'reservations') && <ServicePage lang={page.lang} kind={page.type} />}
 {(page.type === 'gallery' || page.type === 'contact') && <SimplePages lang={page.lang} kind={page.type} />}
+{page.type === 'cookies' && <CookiesPage lang={page.lang} />}

@@ -114,7 +114,7 @@ const allPages = (): { path: string; lang: Lang; paths: Record<Lang, string> }[]
 
 test('every page exists with self-canonical, 4 hreflang alternates and indexable robots', opt, () => {
   const pages = allPages();
-  assert.equal(pages.length, 135);
+  assert.equal(pages.length, 138);
   for (const p of pages) {
     const html = read(p.path);
     assert.match(html, new RegExp(`<link rel="canonical" href="${SITE}${p.path}"`), `${p.path} canonical`);
@@ -126,7 +126,7 @@ test('every page exists with self-canonical, 4 hreflang alternates and indexable
   }
 });
 
-test('titles and meta descriptions are unique across all 135 pages', opt, () => {
+test('titles and meta descriptions are unique across all 138 pages', opt, () => {
   const titles = new Map<string, string>();
   const descs = new Map<string, string>();
   for (const p of allPages()) {
@@ -200,8 +200,8 @@ test('service pages state only arranged terms (no fees, times, radius or online 
 test('sitemap contains every page once, robots excludes management and API', opt, () => {
   const xml = readFileSync('dist/client/sitemap.xml', 'utf8');
   const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
-  assert.equal(locs.length, 135);
-  assert.equal(new Set(locs).size, 135);
+  assert.equal(locs.length, 138);
+  assert.equal(new Set(locs).size, 138);
   for (const p of allPages()) assert.ok(locs.includes(`${SITE}${p.path}`), p.path);
   const robots = readFileSync('dist/client/robots.txt', 'utf8');
   assert.match(robots, /Disallow: \/admin\//);

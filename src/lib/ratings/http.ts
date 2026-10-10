@@ -61,6 +61,8 @@ export interface PostBody {
   website?: unknown;
   /** Milliseconds the form was open before sending (bots send instantly). */
   elapsed?: unknown;
+  /** Guest consented to "remember on this device" (cookie). Without it no cookie is set. */
+  remember?: unknown;
 }
 
 export type Validation = { ok: true; dish: string; stars: number } | { ok: false; error: 'invalid-dish' | 'invalid-stars' | 'bad-request' };
@@ -101,19 +103,26 @@ export async function handleSubmit(request: Request, db: Db | null, cfg: RatingC
     return json({ ok: true, action: 'created' });
   }
 
-  let voterId = readCookie(request.headers, VOTER_COOKIE);
-  const headers: Record<string, string> = {};
-  if (!isVoterId(voterId)) {
-    voterId = newVoterId();
-    headers['set-cookie'] = cookieHeader(VOTER_COOKIE, voterId, {
-      maxAge: 365 * 24 * 3600,
-      path: '/api/ratings',
-      sameSite: 'Lax',
-      secure: cfg.secureCookies,
-    });
-  }
-  const vHash = voterHash(cfg.secret, voterId);
   const ipHash = ipDayHash(cfg.secret, clientIp(request.headers), now);
+  const headers: Record<string, string> = {};
+  let vHash: string;
+  if (body.remember === true) {
+    // With consent: a random identifier in a cookie lets the guest revise the rating later.
+    let voterId = readCookie(request.headers, VOTER_COOKIE);
+    if (!isVoterId(voterId)) {
+      voterId = newVoterId();
+      headers['set-cookie'] = cookieHeader(VOTER_COOKIE, voterId, {
+        maxAge: 365 * 24 * 3600,
+        path: '/api/ratings',
+        sameSite: 'Lax',
+        secure: cfg.secureCookies,
+      });
+    }
+    vHash = voterHash(cfg.secret, voterId);
+  } else {
+    // Without consent nothing is stored on the device: one rating per network, dish and day.
+    vHash = voterHash(cfg.secret, `network-day:${ipHash}`);
+  }
 
   try {
     const allowed = await allowRate(db, [
@@ -130,4 +139,15 @@ export async function handleSubmit(request: Request, db: Db | null, cfg: RatingC
   } catch {
     return json({ ok: false, error: 'unavailable' }, 503, headers);
   }
+}
+
+/** Withdrawal of the "remember ratings" consent: expire the HttpOnly cookie. Always allowed. */
+export function handleForget(cfg: RatingConfig): Response {
+  return new Response(null, {
+    status: 204,
+    headers: {
+      'cache-control': 'no-store',
+      'set-cookie': cookieHeader(VOTER_COOKIE, '', { maxAge: 0, path: '/api/ratings', sameSite: 'Lax', secure: cfg.secureCookies }),
+    },
+  });
 }

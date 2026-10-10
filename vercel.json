@@ -16,6 +16,86 @@
       ],
       "destination": "https://www.afrolink-restaurant.online/:path*",
       "permanent": true
+    },
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "afl_lang",
+          "value": "en"
+        }
+      ],
+      "destination": "/en/",
+      "permanent": false
+    },
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "afl_lang",
+          "value": "fr"
+        }
+      ],
+      "destination": "/fr/",
+      "permanent": false
+    },
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "header",
+          "key": "accept-language",
+          "value": "^en(?:-[A-Za-z0-9]+)?(?:[,;].*)?$"
+        }
+      ],
+      "missing": [
+        {
+          "type": "cookie",
+          "key": "afl_lang"
+        },
+        {
+          "type": "header",
+          "key": "referer",
+          "value": "^(?:https?://(?:www\\.)?afrolink-restaurant\\.online|https?://[^/]+\\.vercel\\.app)(?:/.*)?$"
+        },
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*(?:[Bb]ot|[Cc]rawl|[Ss]pider|[Ss]lurp|Lighthouse|HeadlessChrome|facebookexternalhit|WhatsApp|[Pp]review).*"
+        }
+      ],
+      "destination": "/en/",
+      "permanent": false
+    },
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "header",
+          "key": "accept-language",
+          "value": "^fr(?:-[A-Za-z0-9]+)?(?:[,;].*)?$"
+        }
+      ],
+      "missing": [
+        {
+          "type": "cookie",
+          "key": "afl_lang"
+        },
+        {
+          "type": "header",
+          "key": "referer",
+          "value": "^(?:https?://(?:www\\.)?afrolink-restaurant\\.online|https?://[^/]+\\.vercel\\.app)(?:/.*)?$"
+        },
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*(?:[Bb]ot|[Cc]rawl|[Ss]pider|[Ss]lurp|Lighthouse|HeadlessChrome|facebookexternalhit|WhatsApp|[Pp]review).*"
+        }
+      ],
+      "destination": "/fr/",
+      "permanent": false
     }
   ],
   "headers": [

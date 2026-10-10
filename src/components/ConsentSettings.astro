@@ -1,0 +1,214 @@
+---
+/**
+ * Privacy settings dialog. Opened by any element with `data-open-consent` (footer link,
+ * cookie policy page). No banner on arrival: nothing optional runs until the visitor allows it.
+ * "Allow all" and "Necessary only" are equally prominent; optional toggles start unchecked.
+ */
+import { routes, type Lang } from '../i18n/config';
+import { useConsentUi } from '../i18n/consent';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const c = useConsentUi(lang).settings;
+const ratingsOn = process.env.RATINGS_ENABLED === 'true';
+const options = [
+  { key: 'media', title: c.mediaTitle, text: c.mediaText },
+  { key: 'prefs', title: c.prefsTitle, text: c.prefsText },
+  ...(ratingsOn ? [{ key: 'ratings', title: c.ratingsTitle, text: c.ratingsText }] : []),
+];
+---
+
+<dialog class="consent" aria-labelledby="consent-title" data-consent-dialog>
+  <form method="dialog" class="consent__box" data-consent-form>
+    <h2 id="consent-title" class="consent__title">{c.title}</h2>
+    <p class="consent__intro">{c.intro}</p>
+    <ul role="list" class="consent__list">
+      <li class="consent__item">
+        <div class="consent__text">
+          <p class="consent__name">{c.necessaryTitle}</p>
+          <p>{c.necessaryText}</p>
+        </div>
+        <span class="consent__always">{c.always}</span>
+      </li>
+      {
+        options.map((o) => (
+          <li class="consent__item">
+            <div class="consent__text">
+              <label class="consent__name" for={`consent-${o.key}`}>
+                {o.title}
+              </label>
+              <p id={`consent-${o.key}-desc`}>{o.text}</p>
+            </div>
+            <input class="consent__switch" type="checkbox" id={`consent-${o.key}`} name={o.key} aria-describedby={`consent-${o.key}-desc`} />
+          </li>
+        ))
+      }
+    </ul>
+    <div class="consent__actions">
+      <button type="button" class="btn btn--line" data-consent="reject">{c.rejectAll}</button>
+      <button type="button" class="btn btn--line" data-consent="save">{c.save}</button>
+      <button type="button" class="btn btn--line" data-consent="accept">{c.acceptAll}</button>
+    </div>
+    <p class="consent__status" role="status" aria-live="polite" data-consent-status></p>
+    <p class="consent__links">
+      <a href={routes.cookies[lang]}>{c.policy}</a>
+      <a href={routes.privacy[lang]}>{c.privacy}</a>
+    </p>
+    <button type="button" class="consent__close" data-consent="close">
+      <span aria-hidden="true">×</span><span class="visually-hidden">{c.close}</span>
+    </button>
+  </form>
+</dialog>
+<template data-consent-saved>{c.saved}</template>
+
+<script>
+  import { readChoices, saveChoices, type Choices } from '../lib/consent';
+
+  const dialog = document.querySelector<HTMLDialogElement>('[data-consent-dialog]');
+  if (dialog && typeof dialog.showModal === 'function') {
+    const form = dialog.querySelector<HTMLFormElement>('[data-consent-form]')!;
+    const status = dialog.querySelector<HTMLElement>('[data-consent-status]')!;
+    const savedText = document.querySelector<HTMLTemplateElement>('[data-consent-saved]')?.innerHTML ?? '';
+    const boxes = [...form.querySelectorAll<HTMLInputElement>('input[type="checkbox"]')];
+    let opener: HTMLElement | null = null;
+
+    const sync = () => {
+      const c = readChoices();
+      boxes.forEach((b) => (b.checked = !!c[b.name as keyof Choices]));
+    };
+    const apply = (mode: 'accept' | 'reject' | 'save') => {
+      const current = readChoices();
+      const next: Choices = { ...current };
+      for (const b of boxes) next[b.name as keyof Choices] = mode === 'accept' ? true : mode === 'reject' ? false : b.checked;
+      // Categories not offered in this build (e.g. ratings while disabled) are never switched on.
+      for (const k of Object.keys(next) as (keyof Choices)[]) if (!boxes.some((b) => b.name === k)) next[k] = false;
+      saveChoices(next);
+      sync();
+      status.textContent = savedText;
+    };
+
+    document.addEventListener('click', (ev) => {
+      const trigger = (ev.target as Element | null)?.closest<HTMLElement>('[data-open-consent]');
+      if (!trigger) return;
+      ev.preventDefault();
+      opener = trigger;
+      sync();
+      status.textContent = '';
+      dialog.showModal();
+    });
+    dialog.addEventListener('click', (ev) => {
+      const btn = (ev.target as Element | null)?.closest<HTMLButtonElement>('button[data-consent]');
+      if (btn) {
+        const action = btn.dataset.consent;
+        if (action === 'close') dialog.close();
+        else apply(action as 'accept' | 'reject' | 'save');
+        return;
+      }
+      if (ev.target === dialog) dialog.close();
+    });
+    dialog.addEventListener('close', () => opener?.focus());
+  }
+</script>
+
+<style>
+  .consent {
+    width: min(36rem, calc(100vw - 2rem));
+    max-height: calc(100dvh - 2rem);
+    padding: 0;
+    border: 1px solid rgb(214 168 78 / 0.55);
+    background: var(--ink-raised);
+    color: var(--on-ink);
+  }
+  .consent::backdrop {
+    background: rgb(20 17 15 / 0.8);
+  }
+  .consent__box {
+    position: relative;
+    display: grid;
+    gap: 1rem;
+    padding: clamp(1.25rem, 1rem + 1.5vw, 2rem);
+  }
+  .consent__title {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: var(--step-2);
+    padding-right: 2.5rem;
+  }
+  .consent__intro,
+  .consent__text p:not(.consent__name) {
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    color: var(--on-ink-muted);
+  }
+  .consent__list {
+    display: grid;
+    gap: 0;
+    border-top: 1px solid var(--ink-line);
+  }
+  .consent__item {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 1rem;
+    align-items: start;
+    padding-block: 0.9rem;
+    border-bottom: 1px solid var(--ink-line);
+  }
+  .consent__name {
+    display: block;
+    margin-bottom: 0.2rem;
+    font-weight: 650;
+    color: var(--on-ink);
+  }
+  .consent__always {
+    font-size: var(--step--1);
+    color: var(--gold);
+    white-space: nowrap;
+  }
+  .consent__switch {
+    width: 1.4rem;
+    height: 1.4rem;
+    margin-top: 0.1rem;
+    accent-color: var(--gold);
+    cursor: pointer;
+  }
+  .consent__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .consent__actions .btn {
+    flex: 1 1 10rem;
+    justify-content: center;
+  }
+  .consent__status {
+    font-weight: 600;
+    color: var(--gold);
+  }
+  .consent__status:empty {
+    display: none;
+  }
+  .consent__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.25rem;
+    font-size: var(--step--1);
+  }
+  .consent__links a {
+    color: var(--gold);
+  }
+  .consent__close {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 1.5rem;
+    line-height: 1;
+    color: var(--on-ink);
+    background: transparent;
+    border: 1px solid var(--ink-line);
+    cursor: pointer;
+  }
+</style>

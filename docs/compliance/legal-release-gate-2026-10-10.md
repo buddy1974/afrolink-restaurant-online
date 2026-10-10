@@ -25,7 +25,7 @@ Branch `discovery-ratings-2026-10`. Nothing in this review was guessed: operator
 
 ## 3. Questions for the owner (only what the law needs and only the owner knows)
 
-1. **Operator:** full legal name of the owner (if sole trader) or the exact company name — and the **legal form** (Einzelunternehmen, GbR, UG, GmbH …).
+1. **Operator:** Emeka Nwokorie is now shown as operator/controller (supplied by Marcel, 2026-10-10). Still needed: the **legal form** (Einzelunternehmen, GbR, UG, GmbH …); if a company runs the restaurant, its exact name replaces the personal name.
 2. **Representative:** if a company, the managing director(s)/partners authorised to represent it (otherwise "not applicable").
 3. **Address for service:** is Berzeliusstraße 7, 45144 Essen the operator's address for legal service? If not, which address?
 4. **E-mail address** for the Impressum (mandatory; must be monitored).

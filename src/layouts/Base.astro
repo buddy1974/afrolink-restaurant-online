@@ -12,6 +12,7 @@ import { htmlLang, ogLocale, locales, routes, type Lang, type Paths, type RouteK
 import { useT } from '../i18n/ui';
 import Lightbox from '../components/Lightbox.astro';
 import RatingsClient from '../components/RatingsClient.astro';
+import ConsentSettings from '../components/ConsentSettings.astro';
 
 interface Props {
   lang: Lang;
@@ -37,8 +38,8 @@ const canonical = absolute(paths[lang]);
 const ogImage = image?.url ?? `${siteUrl}/og-image.jpg`;
 const ld = [...(structuredData ? [restaurantJsonLd(lang, `${siteUrl}/og-image.jpg`, `${siteUrl}/icon-512.png`), websiteJsonLd(lang)] : []), ...extraLd];
 const jsonLd = ld.length ? ld : null;
-// Language auto-detection runs only on the German home page (the QR-code destination).
-const detectLanguage = route === 'home' && lang === 'de';
+// Language detection happens server-side on "/" (vercel.json, Accept-Language header) —
+// no script reads browser properties or storage.
 ---
 
 <!doctype html>
@@ -46,31 +47,6 @@ const detectLanguage = route === 'home' && lang === 'de';
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    {
-      detectLanguage && (
-        <script is:inline>
-          (function () {
-            try {
-              if (/bot|crawl|spider|slurp|lighthouse|headless|preview/i.test(navigator.userAgent)) return;
-              const saved = localStorage.getItem('afl-lang');
-              let target = null;
-              if (saved === 'en' || saved === 'fr') target = saved;
-              else if (!saved) {
-                const prefs = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language];
-                for (let i = 0; i < prefs.length; i++) {
-                  const c = String(prefs[i] || '').slice(0, 2).toLowerCase();
-                  if (c === 'de') break;
-                  if (c === 'en' || c === 'fr') { target = c; break; }
-                }
-              }
-              if (target) location.replace('/' + target + '/' + location.search + location.hash);
-            } catch {
-              /* storage unavailable */
-            }
-          })();
-        </script>
-      )
-    }
     <link rel="preload" href={archivoWdth} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={newsreaderItalic} as="font" type="font/woff2" crossorigin />
     <title>{pageTitle}</title>
@@ -114,5 +90,6 @@ const detectLanguage = route === 'home' && lang === 'de';
     <slot />
     <Lightbox lang={lang} />
     <RatingsClient lang={lang} />
+    <ConsentSettings lang={lang} />
   </body>
 </html>

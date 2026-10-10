@@ -1,13 +1,16 @@
 ---
 /**
- * Click-to-play video facade. Renders a local poster (or a typographic card); the
- * YouTube/Facebook iframe is inserted only after the visitor presses play.
- * Without JS the card is a plain link to the video page.
+ * Two-click video facade. Renders a local poster (or a typographic card). The first click shows
+ * an inline consent step naming the provider and the data transfer; the YouTube/Facebook iframe
+ * is inserted only after "Load video" (once) or "Always allow external videos" (stored consent,
+ * category "media", revocable in the privacy settings). Without JS the card is a plain link to
+ * the video page (the visitor leaves the site).
  */
 import type { ImageMetadata } from 'astro';
 import { Picture } from 'astro:assets';
 import { embedSrc, type VideoEntry } from '../data/videos';
-import { type Lang } from '../i18n/config';
+import { routes, type Lang } from '../i18n/config';
+import { useConsentUi } from '../i18n/consent';
 import { useT } from '../i18n/ui';
 
 interface Props {
@@ -33,6 +36,7 @@ const {
   tone = 'ink',
 } = Astro.props;
 const t = useT(lang);
+const cv = useConsentUi(lang).video;
 const platformName = video.platform === 'youtube' ? (video.format === 'portrait' ? t.videos.short : 'YouTube') : t.videos.fbVideo;
 const title = video.titleL10n ? video.titleL10n[lang] : video.title;
 ---
@@ -70,6 +74,15 @@ const title = video.titleL10n ? video.titleL10n[lang] : video.title;
       </span>
       <span class="visually-hidden">{t.videos.play}: {title} – {video.author} {t.videos.on} {platformName}</span>
     </a>
+    <div class="vcard__consent" role="group" aria-label={cv.title} data-video-consent hidden>
+      <p class="vcard__consent-text">{video.platform === 'youtube' ? cv.youtube : cv.facebook}</p>
+      <div class="vcard__consent-actions">
+        <button type="button" class="vcard__btn vcard__btn--solid" data-video-load>{cv.loadOnce}</button>
+        <button type="button" class="vcard__btn" data-video-always>{cv.always}</button>
+        <button type="button" class="vcard__btn vcard__btn--plain" data-video-cancel>{cv.cancel}</button>
+      </div>
+      <a class="vcard__consent-more" href={routes.privacy[lang]}>{cv.more}</a>
+    </div>
   </div>
   <figcaption class="vcard__cap">
     <span class="vcard__title">{title}</span>
@@ -78,6 +91,8 @@ const title = video.titleL10n ? video.titleL10n[lang] : video.title;
 </figure>
 
 <script>
+  import { onConsentChange, readChoices, setChoice } from '../lib/consent';
+
   // One active video at a time: starting a new one restores the previous facade.
   let active: { frame: HTMLElement; facade: HTMLElement } | null = null;
 
@@ -88,25 +103,53 @@ const title = video.titleL10n ? video.titleL10n[lang] : video.title;
     active = null;
   }
 
+  function load(facade: HTMLAnchorElement) {
+    const frame = facade.closest<HTMLElement>('[data-video-frame]');
+    if (!frame) return;
+    stopActive();
+    const panel = frame.querySelector<HTMLElement>('[data-video-consent]');
+    if (panel) panel.hidden = true;
+    const iframe = document.createElement('iframe');
+    iframe.src = facade.dataset.embed!;
+    iframe.title = facade.dataset.title ?? 'Video';
+    iframe.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+    iframe.allowFullscreen = true;
+    iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+    frame.appendChild(iframe);
+    facade.hidden = true;
+    iframe.focus();
+    active = { frame, facade };
+  }
+
   document.querySelectorAll<HTMLAnchorElement>('[data-video-play]').forEach((facade) => {
+    const frame = facade.closest<HTMLElement>('[data-video-frame]')!;
+    const panel = frame.querySelector<HTMLElement>('[data-video-consent]')!;
     facade.addEventListener('click', (ev) => {
       // Let modified clicks open the platform page in a new tab.
       if (ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.button !== 0) return;
       ev.preventDefault();
-      const frame = facade.closest<HTMLElement>('[data-video-frame]');
-      if (!frame) return;
-      stopActive();
-      const iframe = document.createElement('iframe');
-      iframe.src = facade.dataset.embed!;
-      iframe.title = facade.dataset.title ?? 'Video';
-      iframe.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
-      iframe.allowFullscreen = true;
-      iframe.referrerPolicy = 'strict-origin-when-cross-origin';
-      frame.appendChild(iframe);
-      facade.hidden = true;
-      iframe.focus();
-      active = { frame, facade };
+      if (readChoices().media) {
+        load(facade);
+        return;
+      }
+      // First click: explain the provider and the data transfer before anything is loaded.
+      panel.hidden = false;
+      panel.querySelector<HTMLButtonElement>('[data-video-load]')?.focus();
     });
+    panel.querySelector('[data-video-load]')?.addEventListener('click', () => load(facade));
+    panel.querySelector('[data-video-always]')?.addEventListener('click', () => {
+      setChoice('media', true);
+      load(facade);
+    });
+    panel.querySelector('[data-video-cancel]')?.addEventListener('click', () => {
+      panel.hidden = true;
+      facade.focus();
+    });
+  });
+
+  // Withdrawing consent stops a playing embedded video immediately.
+  onConsentChange((c) => {
+    if (!c.media) stopActive();
   });
 </script>
 
@@ -131,6 +174,59 @@ const title = video.titleL10n ? video.titleL10n[lang] : video.title;
     width: 100%;
     height: 100%;
     border: 0;
+  }
+  /* While the consent step is shown, the frame grows to fit it (narrow cards, long translations). */
+  .vcard__frame:has(> .vcard__consent:not([hidden])) {
+    aspect-ratio: auto;
+    min-height: 12rem;
+  }
+  .vcard__consent {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    align-content: center;
+    min-height: 100%;
+    gap: 0.75rem;
+    padding: clamp(0.9rem, 0.6rem + 1.5vw, 1.5rem);
+    font-size: 0.875rem;
+    line-height: 1.45;
+    color: var(--on-ink);
+    background: rgb(20 17 16 / 0.94);
+  }
+  .vcard__consent[hidden] {
+    display: none;
+  }
+  .vcard__consent-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .vcard__btn {
+    min-height: 2.5rem;
+    padding: 0.35rem 0.8rem;
+    font: inherit;
+    font-weight: 650;
+    color: var(--on-ink);
+    background: transparent;
+    border: 1px solid rgb(214 168 78 / 0.7);
+    cursor: pointer;
+  }
+  .vcard__btn--solid {
+    color: var(--ink);
+    background: var(--gold);
+    border-color: var(--gold);
+  }
+  .vcard__btn--plain {
+    border-color: transparent;
+    text-decoration: underline;
+  }
+  .vcard__btn:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 2px;
+  }
+  .vcard__consent-more {
+    font-size: var(--step--1);
+    color: var(--gold);
   }
   .vcard__facade {
     position: absolute;

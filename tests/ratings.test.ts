@@ -116,11 +116,11 @@ test('HTTP: bots (honeypot / instant submit) get a fake success and nothing is s
 
 test('HTTP: anonymous cookie → revisions instead of duplicates; summary never leaks identifiers', async () => {
   const c = cfg('t5');
-  const first = await handleSubmit(post({ dish: 'abacha', stars: 3, elapsed: 4000 }, { ip: '198.51.100.1' }), db, c);
+  const first = await handleSubmit(post({ dish: 'abacha', stars: 3, elapsed: 4000, remember: true }, { ip: '198.51.100.1' }), db, c);
   assert.equal(first.status, 200);
   const cookie = voterCookie(first)!;
   assert.match(first.headers.get('set-cookie')!, /HttpOnly; SameSite=Lax; Secure/);
-  const again = await handleSubmit(post({ dish: 'abacha', stars: 4, elapsed: 4000 }, { cookie, ip: '198.51.100.1' }), db, c);
+  const again = await handleSubmit(post({ dish: 'abacha', stars: 4, elapsed: 4000, remember: true }, { cookie, ip: '198.51.100.1' }), db, c);
   const body = (await again.json()) as { action: string; n: number; avg: number };
   assert.equal(body.action, 'revised');
   assert.equal(body.n, 1);
@@ -137,11 +137,11 @@ test('HTTP: anonymous cookie → revisions instead of duplicates; summary never 
 
 test('HTTP: rapid repeated submissions are rate limited', async () => {
   const c = cfg('t6');
-  const first = await handleSubmit(post({ dish: 'snail', stars: 3, elapsed: 4000 }, { ip: '192.0.2.50' }), db, c);
+  const first = await handleSubmit(post({ dish: 'snail', stars: 3, elapsed: 4000, remember: true }, { ip: '192.0.2.50' }), db, c);
   const cookie = voterCookie(first)!;
   const statuses: number[] = [];
   for (let i = 0; i < LIMITS.voterPerMinute + 2; i++) {
-    const r = await handleSubmit(post({ dish: 'snail', stars: (i % 5) + 1, elapsed: 4000 }, { cookie, ip: '192.0.2.50' }), db, c);
+    const r = await handleSubmit(post({ dish: 'snail', stars: (i % 5) + 1, elapsed: 4000, remember: true }, { cookie, ip: '192.0.2.50' }), db, c);
     statuses.push(r.status);
   }
   assert.ok(statuses.includes(429), `expected a 429, got ${statuses.join(',')}`);
