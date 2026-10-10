@@ -1,5 +1,15 @@
 # Change Log — `afrolink-restaurant-online`
 
+## 2026-10-10 — Released to production (`main` fast-forwarded 42b6bd9 → c82b71a, approved by Marcel: "approve production, push")
+- Contains: brand voice / allergen presentation (f390e6d), Mackerel Fish Slices (5687a84), SEO metadata fixes (c82b71a).
+- Live checks on www.afrolink-restaurant.online:
+  - 14 key routes return 200; sitemap has 141 URLs;
+  - audit of all 141 pages is clean (titles and descriptions unique, canonicals, hreflang, OG/Twitter, JSON-LD);
+  - Makrelenstücke shows "€5 pro Stück" with UnitPriceSpecification in DE/EN/FR;
+  - other fish prices unchanged (€18, €25/€30);
+  - no provenance wording on the site; `/api/ratings` → `{"enabled":false}`.
+- The Search Console sitemap URL is unchanged; Google re-reads it automatically (141 URLs from now on).
+
 ## 2026-10-10 — Google Search Console finalization + on-page SEO (branch `discovery-ratings-2026-10`)
 - Search Console (production, no deploy needed):
   - Domain property verified;
