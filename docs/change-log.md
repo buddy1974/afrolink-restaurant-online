@@ -1,5 +1,10 @@
 # Change Log — `afrolink-restaurant-online`
 
+## 2026-10-10 — Legal release gate (branch `discovery-ratings-2026-10`)
+- Privacy policy rewritten from verified behaviour (storage keys, hosting/DPF, click-to-load videos, contact + Art. 9 health data, ratings section only when enabled, Art. 21, LDI NRW address); processor agreements claimed only when confirmed.
+- Impressum: supervisory authority (Gaststättenerlaubnis), § 36 VSBG, hidden "not applicable" items, no ODR link; operator data model with null/false/value.
+- Privacy links beside the video click-to-load notices. Tests: 68.
+
 ## 2026-10-09 — Pre-production review (branch `discovery-ratings-2026-10`)
 - Performance: removed `content-visibility` again (it made Chrome count the off-screen soup photo as LCP); rating client now loads on idle via dynamic import; allergen panel markup on menu cards is inserted on first open (full info stays on dish and allergen pages); hover/lightbox text taken from the info panel instead of duplicated; CSS chevrons/zoom icon; fewer srcset variants (cards 360/640, gallery 400/800/1200). Home DOM 2,522 → ~2,200 elements; LCP back to the production build's 3.3 s (same local test setup).
 - Tests: 66 (feature-flag/no-DB/weak-secret behaviour, environment isolation).

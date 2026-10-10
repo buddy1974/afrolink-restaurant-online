@@ -55,4 +55,4 @@ Performance fixes in this review: `content-visibility` removed (it made Chrome t
 ## 4. Must not publish until resolved
 - **Definitive allergen statements.** Nothing is published as kitchen-confirmed; keep it that way until the kitchen reconciles the current recipes (`docs/compliance/allergen-reconciliation-workflow.md`). The site itself may go live with the current, clearly labelled display — but the restaurant must keep its written allergen record / notice on site (online information alone is not sufficient for dine-in guests).
 - **Ratings in production** until steps in section 2 are done and approved.
-- Impressum/Datenschutz operator data remain incomplete (existing, unchanged risk).
+- Impressum/Datenschutz operator data remain incomplete — see `docs/compliance/legal-release-gate-2026-10-10.md` (questions 1–10). The legal texts were corrected on 2026-10-10.

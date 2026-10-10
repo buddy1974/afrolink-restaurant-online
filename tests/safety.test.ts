@@ -86,3 +86,29 @@ test('legal operator data is never guessed (null until supplied)', () => {
     if (typeof v === 'string') assert.ok(v.trim().length > 2, `${k} looks like a placeholder`);
   }
 });
+
+test('privacy policy names every browser storage key the code uses', async () => {
+  const { privacy } = await import('../src/i18n/privacy.ts');
+  const { readFileSync } = await import('node:fs');
+  const code = ['src/components/LanguageSwitcher.astro', 'src/layouts/Base.astro', 'src/lib/ratings/client.ts', 'src/lib/ratings/security.ts']
+    .map((f) => readFileSync(f, 'utf8'))
+    .join('\n');
+  const keys = new Set([...code.matchAll(/localStorage\.(?:get|set)Item\(\s*[`'"]([a-z-]+)/g)].map((m) => m[1]));
+  for (const c of code.matchAll(/(VOTER|ADMIN)_COOKIE = '([a-z_]+)'/g)) keys.add(c[2]);
+  assert.deepEqual([...keys].sort(), ['afl-lang', 'afl-rated', 'afl_admin', 'afl_rv'].sort());
+  for (const lang of ['de', 'en', 'fr'] as const) {
+    const on = JSON.stringify(privacy[lang].sections({ ratingsOn: true, vercelDpa: false, neonDpa: false }));
+    for (const k of keys) assert.ok(on.includes(k.replace(/:$/, '')), `${lang}: ${k} not disclosed`);
+    const off = JSON.stringify(privacy[lang].sections({ ratingsOn: false, vercelDpa: false, neonDpa: false }));
+    assert.ok(off.includes('afl-lang') && !off.includes('afl_rv'), `${lang}: rating storage described while ratings are off`);
+    // processor agreements are only claimed once confirmed
+    assert.ok(!/Auftragsverarbeitung \(Art\. 28|data processing agreement with|contrat de sous-traitance a été/.test(off), `${lang}: unconfirmed DPA claimed`);
+  }
+});
+
+test('Impressum: no EU ODR link (platform closed 20 July 2025), no guessed operator data', async () => {
+  const { readFileSync } = await import('node:fs');
+  const src = readFileSync('src/components/ImprintPage.astro', 'utf8') + readFileSync('src/i18n/legal-content.ts', 'utf8');
+  assert.ok(!/ec\.europa\.eu\/consumers\/odr|ec\.europa\.eu\/odr/.test(src));
+  assert.equal(legal.supervisoryAuthority === false && legal.operatorName === null, false, 'authority cannot be waived before the operator is known');
+});

@@ -62,7 +62,7 @@ Example (tested): one 5★ vote scores ≈ (5·4.3+5)/6 ≈ 4.4 while 100 rating
 
 - Stored: dish, stars, timestamps, `voter_hash` = HMAC(secret, random cookie id), `ip_day_hash` = HMAC(secret, IP + date) — rotates daily, **deleted after 30 days**; rate-limit rows deleted after 2 days. No IP addresses, names, e-mails or user agents.
 - Cookie `afl_rv` (12 months, path `/api/ratings`, HttpOnly, Secure, SameSite=Lax) is set **only when a guest submits a rating** → strictly necessary for the requested function (§ 25(2) no. 2 TDDDG); no consent banner needed for it.
-- Legal basis Art. 6(1)(f) GDPR. The privacy page shows the ratings section (`src/i18n/privacy-ratings.ts`) automatically in builds with `RATINGS_ENABLED=true`. **Owner/legal review required**; the Neon region must be in the EU (Frankfurt) as stated there, and Neon must be added to the processor list.
+- Legal basis Art. 6(1)(f) GDPR. The privacy page shows the ratings section and the rating cookies (`src/i18n/privacy.ts`) automatically in builds with `RATINGS_ENABLED=true`. **Owner/legal review required**; the Neon region must be in the EU (Frankfurt) as stated there, and Neon must be added to the processor list.
 
 ## 6. Structured data
 

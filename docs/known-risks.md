@@ -42,6 +42,8 @@
 | R-027 | Anonymous ratings can be gamed by cookie clearing / network switching | Data quality | Medium | Rate limits, duplicate controls, pattern detection, audited moderation; documented limitation | Marcel | Mitigated |
 | R-028 | Ratings privacy text and Neon processor (EU region) need owner/legal review before activation | Legal | Medium | Activation checklist docs/ratings.md | Marcel | Open |
 | R-029 | Dish background texts are culturally typical descriptions researched from public sources; owner should review for tone and accuracy | Content | Low | Clear "traditionally" framing; Afrolink facts only from menu data | Marcel | Open |
+| R-030 | Impressum/controller data incomplete on the **live** site and on this branch (§ 5 DDG, Art. 13 GDPR) — risk of fines/Abmahnung | Legal | **High** | Owner answers docs/compliance/legal-release-gate-2026-10-10.md (items 1–8) | Marcel / owner | Open |
+| R-031 | No confirmed Art. 28 agreement for hosting (Vercel DPA; Afrolink ↔ Maxpromo Digital) | Legal | Medium | Accept Vercel DPA; sign AV-Vertrag | Marcel | Open |
 
 ## Security Concerns
 None material: static site, no forms, no cookies, no third-party scripts, no secrets. Security headers are set in `vercel.json`.

@@ -6,7 +6,7 @@ import plantainMeat from '../assets/gallery/plantain-peppered-meat.jpg';
 import { videos } from '../data/videos';
 import { gallery } from '../data/gallery';
 import { social } from '../data/business';
-import { type Lang } from '../i18n/config';
+import { routes, type Lang } from '../i18n/config';
 import { useT } from '../i18n/ui';
 
 interface Props {
@@ -28,7 +28,7 @@ const posters: Record<string, { image: ImageMetadata; alt: string }> = {
     <header class="section-head">
       <p class="eyebrow">{t.videos.eyebrow}</p>
       <h2 id="videos-title" class="section-title">{t.videos.title}</h2>
-      <p class="section-lede">{t.videos.lede}</p>
+      <p class="section-lede">{t.videos.lede} <a href={routes.privacy[lang]}>{t.footer.privacy}</a></p>
     </header>
 
     <ul role="list" class="vrow">

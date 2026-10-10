@@ -28,6 +28,7 @@
 | ADR-016 | 2026-10-09 | Retire old grilled-fish / porridge-yam photos; second owner image batch (12 dishes); water notice; SEO package | Accepted (owner brief 2026-10-09) |
 | ADR-017 | 2026-10-09 | Search-discovery architecture: dedicated menu, soups, 31 dish, delivery, catering, reservations, gallery and contact pages (DE/EN/FR); no city/doorway pages; no fufu page | Implemented on preview — awaiting Marcel's production approval |
 | ADR-018 | 2026-10-09 | Allergen baseline = Afrolink's previous-menu declarations (first-party), shown with source status; absence of codes ≠ allergen-free | Implemented (owner correction 2026-10-09) |
+| ADR-020 | 2026-10-10 | Legal release gate: privacy policy generated from verified behaviour (config-dependent sections), Impressum with supervisory authority + § 36 VSBG, no ODR link, three-state operator data | Implemented — owner data outstanding |
 | ADR-019 | 2026-10-09 | Dish ratings: Vercel Functions + Neon Postgres, anonymous cookie + HMAC keys, Bayesian ranking, audited moderation, feature flag OFF until approval | Implemented and tested locally — production activation requires approval |
 
 ## ADR Records

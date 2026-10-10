@@ -1,8 +1,13 @@
 ---
+/**
+ * Privacy policy (Art. 13 DSGVO). The controller block comes from src/data/legal.ts (never
+ * guessed); sections from src/i18n/privacy.ts, including configuration-dependent ones
+ * (ratings only in builds with RATINGS_ENABLED=true).
+ */
 import LegalShell from './LegalShell.astro';
-import { privacyCopy } from '../i18n/legal-content';
-import { ratingsPrivacy } from '../i18n/privacy-ratings';
-import { legalComplete } from '../data/legal';
+import { privacy } from '../i18n/privacy';
+import { legal, legalComplete } from '../data/legal';
+import { business, phones } from '../data/business';
 import { routes, type Lang } from '../i18n/config';
 import { useT } from '../i18n/ui';
 
@@ -10,27 +15,65 @@ interface Props {
   lang: Lang;
 }
 const { lang } = Astro.props;
-const c = privacyCopy[lang];
-// The ratings section appears only in builds where the rating function is switched on.
-const ratingsOn = process.env.RATINGS_ENABLED === 'true';
-const sections = ratingsOn ? [...c.sections, ratingsPrivacy[lang]] : c.sections;
+const c = privacy[lang];
 const t = useT(lang);
+const pending = t.legal.pending;
+const sections = c.sections({
+  ratingsOn: process.env.RATINGS_ENABLED === 'true',
+  vercelDpa: legal.processors.vercel,
+  neonDpa: legal.processors.neon,
+});
 ---
 
 <LegalShell lang={lang} route="privacy" title={c.title} lede={c.lede} incomplete={!legalComplete()}>
+  <section>
+    <h2>1. {c.controller}</h2>
+    <p>{c.controllerText}</p>
+    <p class="controller">
+      <span class:list={{ pending: !legal.operatorName }}>{legal.operatorName ?? `${c.operator}: ${pending}`}</span>
+      {legal.legalForm && <span> ({legal.legalForm})</span>}
+      <br />
+      {
+        legal.operatorAddress ? (
+          legal.operatorAddress
+        ) : (
+          <>
+            {business.address.street}, {business.address.postalCode} {business.address.city}
+          </>
+        )
+      }
+      <br />
+      {c.phone}: <a href={phones.landline.href}>{phones.landline.international}</a>
+      <br />
+      {c.email}: {legal.email ? <a href={`mailto:${legal.email}`}>{legal.email}</a> : <span class="pending">{pending}</span>}
+    </p>
+    <p>
+      <a href={routes.imprint[lang]}>{t.footer.imprint}</a>
+    </p>
+  </section>
   {
     sections.map((s, i) => (
       <section>
-        <h2>{s.h}</h2>
+        <h2>
+          {i + 2}. {s.h}
+        </h2>
         {s.p.map((p) => (
           <p>{p}</p>
         ))}
-        {i === 0 && (
-          <p>
-            <a href={routes.imprint[lang]}>{t.footer.imprint}</a>
-          </p>
-        )}
       </section>
     ))
   }
+  <p class="updated">{c.updated}</p>
 </LegalShell>
+
+<style>
+  .pending {
+    color: var(--burgundy);
+    font-style: italic;
+  }
+  .updated {
+    margin-top: 2rem;
+    font-size: var(--step--1);
+    color: var(--on-paper-muted);
+  }
+</style>

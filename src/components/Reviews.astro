@@ -9,7 +9,7 @@ import { google } from '../data/business';
 import { reviewExcerpts } from '../data/reviews';
 import { featuredVideo } from '../data/videos';
 import { gallery } from '../data/gallery';
-import { type Lang } from '../i18n/config';
+import { routes, type Lang } from '../i18n/config';
 import { fmt, useT } from '../i18n/ui';
 
 interface Props {
@@ -72,7 +72,7 @@ const partial = google.rating - full;
           sizes="(min-width: 64em) 40rem, 100vw"
         />
         <p class="david__text">{t.reviews.videoText}</p>
-        <p class="david__note">{t.reviews.videoNote}</p>
+        <p class="david__note">{t.reviews.videoNote} <a href={routes.privacy[lang]}>{t.footer.privacy}</a></p>
       </div>
     </div>
 
