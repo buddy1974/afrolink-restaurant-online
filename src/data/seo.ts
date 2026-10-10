@@ -4,7 +4,7 @@
  * markup is not eligible for restaurants' own sites.
  */
 import { business, mapsHref, phones, siteUrl, social } from './business';
-import { foodMenu, type MenuItem } from './menu';
+import { dishName, foodMenu, type MenuItem } from './menu';
 import { drinksMenu } from './drinks';
 import { openingHours } from './hours';
 import { schemaPrice } from './format';
@@ -37,6 +37,21 @@ export function priceRange(): string {
 
 const offer = (cents: number) => ({ '@type': 'Offer', price: schemaPrice(cents), priceCurrency: 'EUR' });
 
+/** Offer for an item; per-unit prices (e.g. per slice) carry a UnitPriceSpecification. */
+function offerFor(item: MenuItem, lang: Lang) {
+  const base = offer(item.price!);
+  if (!item.priceUnit) return base;
+  return {
+    ...base,
+    priceSpecification: {
+      '@type': 'UnitPriceSpecification',
+      price: schemaPrice(item.price!),
+      priceCurrency: 'EUR',
+      referenceQuantity: { '@type': 'QuantitativeValue', value: 1, unitText: item.priceUnit[lang] },
+    },
+  };
+}
+
 export function restaurantJsonLd(lang: Lang, imageUrl: string, logoUrl: string) {
   const foodSections = foodMenu
     .map((c) => ({ ...c, items: c.items.filter((i) => i.available !== false) }))
@@ -46,13 +61,13 @@ export function restaurantJsonLd(lang: Lang, imageUrl: string, logoUrl: string) 
       name: c.title[lang],
       hasMenuItem: c.items.flatMap((i) =>
         i.variants
-          ? i.variants.map((v) => ({ '@type': 'MenuItem', name: `${i.name}, ${v.label[lang]}`, offers: offer(v.price) }))
+          ? i.variants.map((v) => ({ '@type': 'MenuItem', name: `${dishName(i, lang)}, ${v.label[lang]}`, offers: offer(v.price) }))
           : [
               {
                 '@type': 'MenuItem',
-                name: i.name,
+                name: dishName(i, lang),
                 ...(i.description ? { description: i.description[lang] } : {}),
-                offers: offer(i.price!),
+                offers: offerFor(i, lang),
               },
             ],
       ),
@@ -154,12 +169,12 @@ export function webPageJsonLd(lang: Lang, href: string, name: string, descriptio
 export function menuItemJsonLd(item: MenuItem, lang: Lang, href: string, description: string, image: string | null) {
   const offers = item.variants
     ? item.variants.map((v) => ({ ...offer(v.price), name: v.label[lang] }))
-    : [offer(item.price!)];
+    : [offerFor(item, lang)];
   return {
     '@context': 'https://schema.org',
     '@type': 'MenuItem',
     '@id': `${absolute(href)}#dish`,
-    name: item.name,
+    name: dishName(item, lang),
     description,
     url: absolute(href),
     ...(image ? { image } : {}),

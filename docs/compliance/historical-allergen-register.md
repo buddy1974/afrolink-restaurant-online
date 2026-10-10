@@ -58,7 +58,7 @@ Code 6 does not appear in the original legend.
 
 Coded dishes: 14. Discontinued: UKAZI SOUP, UGU SOUP, OFE AKWU, PORRIDGE COCOYAM, UGBA.
 
-## 3. Current menu (31 items) — what the website shows
+## 3. Current menu (35 items) — what the website shows
 
 | Current dish | Website status | Allergens | Additives | On old menu without codes? |
 |---|---|---|---|---|
@@ -92,6 +92,7 @@ Coded dishes: 14. Discontinued: UKAZI SOUP, UGU SOUP, OFE AKWU, PORRIDGE COCOYAM
 | Isiewu | 1/3 · Previously declared — reconciliation pending | Fisch², Senf³ | Geschmacksverstärker⁴ |  |
 | Tilapia | 4 · Not previously declared — ask staff | — | — | yes — absence of codes is NOT "allergen-free" |
 | Fried Fish & Plantain | 4 · Not previously declared — ask staff | — | — | not on old menu |
+| Mackerel Fish Slices | Declared by the owner for a new item (2026-10-10) | Fisch | — |  |
 | Extra Pounded Yam | 4 · Not previously declared — ask staff | — | — | not on old menu |
 | Extra Garri | 4 · Not previously declared — ask staff | — | — | not on old menu |
 | Extra Rice | 4 · Not previously declared — ask staff | — | — | not on old menu |

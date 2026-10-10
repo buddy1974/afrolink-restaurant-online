@@ -45,6 +45,7 @@ Batch 2 (new in this release, 12 images incorporated):
 | File (`src/assets/menu/`) | Original (`owner-assets/menu-originals/`) | Size | Subject seen | Menu item |
 |---|---|---|---|---|
 | fried-fish-plantain.jpg | FISH AND PLAINTAINS.png | 1086×1448 (3:4) | Fried whole fish, plantain, onion rings, peppers. A **different** photo from the retired grilled-fish image | Fried Fish & Plantain |
+| mackerel-fish-slices.jpg | fish-slice-mackerel.png (owner, 2026-10-10; previously in `public/`) | 1086×1448 (3:4) | One golden-brown fried mackerel piece on a white plate | Mackerel Fish Slices |
 | yam-porridge.jpg | Porridge Yam.png | 1254×1254 | Yam cubes with greens in red sauce | Porridge Yam |
 | abacha.jpg | abacha.png | 1374×1145 | Shredded cassava salad | Abacha |
 | beans-plantain.jpg | beans-and-plaintains.png | 1133×1388 | Beans in red sauce + fried plantain | Beans & Plantain |

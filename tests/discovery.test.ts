@@ -23,7 +23,7 @@ const read = (path: string) => readFileSync(join('dist', 'client', path, 'index.
 /* ───────────── Content ───────────── */
 
 test('every current food item has original content in DE, EN and FR', () => {
-  assert.equal(items.length, 34);
+  assert.equal(items.length, 35);
   for (const { item } of items) {
     const c = dishContent[item.id];
     assert.ok(c, `${item.id} has no content`);
@@ -115,7 +115,7 @@ const allPages = (): { path: string; lang: Lang; paths: Record<Lang, string> }[]
 
 test('every page exists with self-canonical, 4 hreflang alternates and indexable robots', opt, () => {
   const pages = allPages();
-  assert.equal(pages.length, 138);
+  assert.equal(pages.length, 141);
   for (const p of pages) {
     const html = read(p.path);
     assert.match(html, new RegExp(`<link rel="canonical" href="${SITE}${p.path}"`), `${p.path} canonical`);
@@ -127,7 +127,7 @@ test('every page exists with self-canonical, 4 hreflang alternates and indexable
   }
 });
 
-test('titles and meta descriptions are unique across all 138 pages', opt, () => {
+test('titles and meta descriptions are unique across all 141 pages', opt, () => {
   const titles = new Map<string, string>();
   const descs = new Map<string, string>();
   for (const p of allPages()) {
@@ -152,7 +152,7 @@ test('dish pages: exact prices, breadcrumbs, MenuItem schema without ratings, al
       assert.equal(crumbs.itemListElement.at(-1).item, `${SITE}${dishPaths(item.id)[lang]}`);
       assert.equal(crumbs.itemListElement.length, category.id === 'soups' ? 4 : 3);
       const mi = lds.find((x) => x['@type'] === 'MenuItem');
-      assert.equal(mi.name, item.name);
+      assert.equal(mi.name, item.display?.[lang] ?? item.name);
       const prices = (Array.isArray(mi.offers) ? mi.offers : [mi.offers]).map((o: { price: string }) => o.price);
       const expected = item.variants ? item.variants.map((v) => (v.price / 100).toFixed(2)) : [(item.price! / 100).toFixed(2)];
       assert.deepEqual(prices, expected, `${item.id} schema prices`);
@@ -191,7 +191,7 @@ test('every photographed dish opens a large image in the lightbox', opt, () => {
   for (const lang of locales) {
     const menu = read(routes.menu[lang]);
     const zoom = menu.match(/data-lb data-lb-group="menu"/g) ?? [];
-    assert.equal(zoom.length, 34, `menu ${lang} zoomable images`);
+    assert.equal(zoom.length, 35, `menu ${lang} zoomable images`);
     assert.ok(read(routes.gallery[lang]).includes('data-lb-group="gallery"'));
   }
 });
@@ -208,8 +208,8 @@ test('service pages state only arranged terms (no fees, times, radius or online 
 test('sitemap contains every page once, robots excludes management and API', opt, () => {
   const xml = readFileSync('dist/client/sitemap.xml', 'utf8');
   const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
-  assert.equal(locs.length, 138);
-  assert.equal(new Set(locs).size, 138);
+  assert.equal(locs.length, 141);
+  assert.equal(new Set(locs).size, 141);
   for (const p of allPages()) assert.ok(locs.includes(`${SITE}${p.path}`), p.path);
   const robots = readFileSync('dist/client/robots.txt', 'utf8');
   assert.match(robots, /Disallow: \/admin\//);
@@ -262,7 +262,7 @@ test('no internal-audit or provenance wording anywhere in the public site', opt,
   const pages: string[] = [];
   const w = (d: string) => { for (const f of readdirSync(d)) { const p = join(d, f); if (statSync(p).isDirectory()) w(p); else if (f === 'index.html') pages.push(p); } };
   w('dist/client');
-  assert.ok(pages.length >= 138);
+  assert.ok(pages.length >= 141);
   for (const p of pages) {
     if (p.includes('admin')) continue;
     const h = readFileSync(p, 'utf8');
@@ -274,4 +274,49 @@ test('internal records keep the original Afrolink codes and sources', () => {
   assert.equal(historicalRegister.length, 29);
   assert.ok(HISTORICAL_CODES['7'].original.includes('möglich'));
   assert.equal(historicalRegister.find((h) => h.currentId === 'pepper-soup')?.menuNo, '22');
+});
+
+/* ───────────── Mackerel Fish Slices (owner brief 2026-10-10) ───────────── */
+
+test('Mackerel Fish Slices: €5 per slice in Fish, nothing included, sides optional, fish allergen', () => {
+  const fish = foodMenu.find((c) => c.id === 'fish')!;
+  const m = fish.items.find((i) => i.id === 'mackerel-fish-slices')!;
+  assert.ok(m, 'in the Fish category');
+  assert.equal(m.price, 500);
+  assert.equal(m.variants, undefined);
+  assert.deepEqual(m.display, { de: 'Makrelenstücke', en: 'Mackerel Fish Slices', fr: 'Tranches de maquereau' });
+  assert.deepEqual(m.priceUnit, { de: 'pro Stück', en: 'per slice', fr: 'la tranche' });
+  for (const l of locales) {
+    assert.match(m.description![l], /(ohne Beilage|without sides|sans accompagnement)/);
+    assert.match(m.note![l], /(Wunsch|request|demande)/);
+    assert.ok(!/€|EUR/.test(m.note![l]), `${l}: no accompaniment price may be shown`);
+    assert.match(dishContent[m.id].summary[l], /5/);
+  }
+  assert.equal(dishImages[m.id].file, 'menu/mackerel-fish-slices.jpg');
+  const info = publicAllergenInfo(m.id);
+  assert.deepEqual(info.allergens.map((a) => a.code), ['D']);
+  // existing fish items untouched
+  assert.deepEqual(fish.items.map((i) => [i.id, i.price ?? i.variants?.map((v) => v.price)]), [
+    ['tilapia', [2500, 3000]],
+    ['fried-fish-plantain', 1800],
+    ['mackerel-fish-slices', 500],
+  ]);
+});
+
+test('Mackerel pages: localized names, per-slice price, UnitPriceSpecification', opt, () => {
+  const names = { de: 'Makrelenstücke', en: 'Mackerel Fish Slices', fr: 'Tranches de maquereau' } as const;
+  const units = { de: 'pro Stück', en: 'per slice', fr: 'la tranche' } as const;
+  for (const lang of locales) {
+    const html = read(dishPaths('mackerel-fish-slices')[lang]);
+    assert.match(html.replaceAll(String.fromCharCode(0xad), ''), new RegExp(`<h1 class="dp__title"[^>]*>${names[lang]}</h1>`));
+    assert.ok(html.includes(units[lang]), `${lang} unit`);
+    const ld = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].flatMap((x) => JSON.parse(x[1]));
+    const mi = ld.find((x) => x['@type'] === 'MenuItem');
+    assert.equal(mi.name, names[lang]);
+    assert.equal(mi.offers.price, '5.00');
+    assert.equal(mi.offers.priceSpecification.referenceQuantity.value, 1);
+    const menu = read(routes.menu[lang]);
+    const card = menu.slice(menu.indexOf('id="dish-mackerel-fish-slices"'), menu.indexOf('id="dish-mackerel-fish-slices"') + 4000);
+    assert.ok(card.replaceAll(String.fromCharCode(0xad), '').includes(names[lang]) && card.includes('€5') && card.includes(units[lang]), `${lang} card`);
+  }
 });

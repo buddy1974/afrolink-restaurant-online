@@ -431,6 +431,20 @@ export const dishContent: Record<string, DishContent> = {
     },
   },
 
+  'mackerel-fish-slices': {
+    kind: { de: 'Makrele, pro Stück', en: 'Mackerel, by the slice', fr: 'Maquereau, à la tranche' },
+    summary: {
+      de: 'Saftige Makrele mit kräftigem Geschmack – einzeln bestellbar für €5 pro Stück. Gebratenen Yam oder gebratene Kochbananen gibt es auf Wunsch dazu.',
+      en: 'Juicy, full-flavoured mackerel – order it by the slice for €5 each. Fried yam or fried plantain on request.',
+      fr: 'Un maquereau savoureux et fondant – à commander à la tranche pour 5 € pièce. Igname frite ou banane plantain frite sur demande.',
+    },
+    typical: {
+      de: 'Makrele gehört in Westafrika zu den beliebtesten Fischen – in Nigeria wird sie oft einfach „Titus“ genannt. Ihr festes, aromatisches Fleisch passt gut zu würzigen Saucen und wird traditionell gern gebraten oder gegrillt und mit Yam oder Kochbananen gegessen.',
+      en: 'Mackerel is one of the most popular fish in West Africa – in Nigeria it is often simply called “Titus”. Its firm, flavourful flesh goes well with spicy sauces and is traditionally fried or grilled and eaten with yam or plantain.',
+      fr: 'Le maquereau est l’un des poissons les plus appréciés d’Afrique de l’Ouest – au Nigeria, on l’appelle souvent simplement « Titus ». Sa chair ferme et savoureuse accompagne bien les sauces relevées ; on le mange traditionnellement frit ou grillé, avec de l’igname ou de la banane plantain.',
+    },
+  },
+
   // ───────────── Extras ─────────────
   'extra-pounded-yam': {
     kind: { de: 'Pounded Yam – Beilage zu Suppen', en: 'Pounded yam – the classic soup side', fr: 'Pounded yam – l’accompagnement des soupes' },

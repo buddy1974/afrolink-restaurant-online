@@ -1,5 +1,13 @@
 # Change Log — `afrolink-restaurant-online`
 
+## 2026-10-10 — New item: Mackerel Fish Slices (branch `discovery-ratings-2026-10`, owner brief 2026-10-10)
+- Fish category: "Makrelenstücke / Mackerel Fish Slices / Tranches de maquereau", €5.00 **per slice** (shown as "€5 pro Stück / per slice / la tranche"); no accompaniment included. Fried yam or fried plantain on request — no accompaniment price shown (none approved).
+- Owner image `fish-slice-mackerel.png` → `src/assets/menu/mackerel-fish-slices.jpg` (original kept in `owner-assets/menu-originals/`, no longer in `public/`).
+- Dish pages DE/EN/FR (`/speisekarte/mackerel-fish-slices/`, `/en/menu/…`, `/fr/carte/…`), search (all three names), lightbox, hover/tap description, allergen panel "Fisch / Fish / Poisson" (owner-declared, recorded internally in `OWNER_DECLARED`).
+- Data model: optional `display` (owner-supplied localized names), `displayHeading` (soft-hyphen break point), `priceUnit`, `noteIsSides` ("Beilagen / Sides / Accompagnements" label on the dish page). JSON-LD offers carry a `UnitPriceSpecification` for per-unit prices.
+- Menu cards: unit shown in small type under the price; long single-word names may break instead of overflowing (also fixes a pre-existing 320 px overflow on Edikaikong, Fisherman's Soup, Stockfish). No other prices or items changed (data diff vs `main`: added 1, changed 0, removed 0).
+- Sitemap 138 → 141 URLs; fish count 3. Internal allergen register and kitchen matrix regenerated (matrix now also lists the four extras). Tests: 79.
+
 ## 2026-10-10 — Brand voice & allergen presentation (branch `discovery-ratings-2026-10`)
 - Removed all public provenance / audit wording ("Angabe aus der bisherigen Afrolink-Speisekarte", "Declared on Afrolink’s previous menu", reconciliation notes, "noch keine geprüfte Kennzeichnung", "In Prüfung", "laut unserer Karte", "keine Live-Anzeige", description-source line) in DE/EN/FR — menu cards, dish pages, allergen page, menu notice, dietary section, reviews.
 - Allergen panel: plain "Allergene: … / Zusatzstoffe: …" using the original Afrolink wording (incl. "Sellerie (möglich)", "Geschmacksverstärker", "Farbstoffe"); no old footnote codes; dishes without declaration invite guests to ask (never "allergen-free"); help line "Fragen zu Allergenen oder Zutaten? Unser Team hilft Ihnen gerne weiter."; cross-contact note kept on dish and allergen pages.

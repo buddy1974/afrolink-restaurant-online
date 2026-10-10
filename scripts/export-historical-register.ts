@@ -43,13 +43,13 @@ for (const h of historicalRegister) {
 lines.push('');
 lines.push(`Coded dishes: ${historicalRegister.filter((h) => h.codes.length).length}. Discontinued: ${historicalRegister.filter((h) => h.mapping === 'discontinued').map((h) => h.originalName).join(', ')}.`);
 lines.push('');
-lines.push('## 3. Current menu (31 items) — what the website shows');
+lines.push(`## 3. Current menu (${items.length} items) — what the website shows`);
 lines.push('');
 lines.push('| Current dish | Website status | Allergens | Additives | On old menu without codes? |');
 lines.push('|---|---|---|---|---|');
 for (const { item } of items) {
   const info = publicAllergenInfo(item.id);
-  const status = { confirmed: '2 · Confirmed by Afrolink (current recipe)', 'previous-menu': '1/3 · Previously declared — reconciliation pending', 'not-declared': '4 · Not previously declared — ask staff' }[info.status];
+  const status = { confirmed: '2 · Confirmed by Afrolink (current recipe)', 'previous-menu': '1/3 · Previously declared — reconciliation pending', 'owner-declared': 'Declared by the owner for a new item (2026-10-10)', 'not-declared': '4 · Not previously declared — ask staff' }[info.status];
   lines.push(
     `| ${item.name} | ${status} | ${info.allergens.map((a) => `${a.label.de}${a.historicalCode ? sup[a.historicalCode] : ''}`).join(', ') || '—'} | ${info.additives.map((a) => `${a.label.de}${a.historicalCode ? sup[a.historicalCode] : ''}`).join(', ') || '—'} | ${info.listedWithoutCodes ? 'yes — absence of codes is NOT "allergen-free"' : info.status === 'not-declared' ? 'not on old menu' : ''} |`,
   );

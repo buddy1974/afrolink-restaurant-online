@@ -54,6 +54,7 @@ test('food menu matches the brief exactly (names, categories, prices)', () => {
     'Fish|Tilapia, Medium|€25',
     'Fish|Tilapia, Large|€30',
     'Fish|Fried Fish & Plantain|€18',
+    'Fish|Mackerel Fish Slices|€5',
     'Extras|Extra Pounded Yam|€4',
     'Extras|Extra Garri|€4',
     'Extras|Extra Rice|€4',
@@ -72,7 +73,11 @@ test('notes and labels from the brief are preserved (English)', () => {
 test('descriptions only from the printed menu; spice only where the menu says "scharf"', () => {
   const all = foodMenu.flatMap((c) => c.items);
   for (const i of all) {
-    if (i.description) assert.equal(i.descriptionSource, 'printed-menu-2026', `${i.name} description without source`);
+    // Descriptions come from Afrolink's printed menu, or — for items added later — from an owner brief.
+    if (i.description) {
+      const ownerItems = ['mackerel-fish-slices'];
+      assert.equal(i.descriptionSource, ownerItems.includes(i.id) ? 'owner-2026-10-10' : 'printed-menu-2026', `${i.name} description without source`);
+    }
     if (i.spice) assert.match(i.description?.de ?? '', /scharf/i, `${i.name} marked hot without menu basis`);
   }
   assert.deepEqual(

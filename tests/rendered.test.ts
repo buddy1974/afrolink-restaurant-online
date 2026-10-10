@@ -48,7 +48,7 @@ test('home pages carry exact contact data, all prices and no rating markup', opt
     for (const must of ['Berzeliusstraße 7', '45144 Essen', '0201 84674196', '+49 1521 7130788', 'tel:+4920184674196', 'tel:+4915217130788', 'https://wa.me/4920184674196']) {
       assert.ok(html.includes(must), `${f} missing ${must}`);
     }
-    assert.equal((html.match(/class="line__price[^"]*"/g) ?? []).length, 36, `${f} food price lines`);
+    assert.equal((html.match(/class="line__price[^"]*"/g) ?? []).length, 37, `${f} food price lines`);
     assert.equal((html.match(/class="drow__price[^"]*"/g) ?? []).length, 28, `${f} drink price lines`);
     assert.ok(!/aggregateRating|ratingValue|"review"/i.test(html), `${f} rating markup`);
     assert.ok(!/<iframe/i.test(html), `${f} iframe before play`);
@@ -82,6 +82,6 @@ test('legal pages show the incompleteness notice while operator data is missing'
 
 test('sitemap lists all localized URLs', opt, () => {
   const xml = read('sitemap.xml');
-  // 12 fixed routes + 34 dish pages, each in three languages (details: tests/discovery.test.ts).
-  assert.equal((xml.match(/<loc>/g) ?? []).length, 138);
+  // 12 fixed routes + 35 dish pages, each in three languages (details: tests/discovery.test.ts).
+  assert.equal((xml.match(/<loc>/g) ?? []).length, 141);
 });

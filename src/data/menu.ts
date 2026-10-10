@@ -4,7 +4,8 @@
  * Rules:
  * - Do not restore dishes from older printed menus. Do not invent dishes, ingredients,
  *   spice levels, cooking times or availability.
- * - Dish `name` is the authentic name and is never translated.
+ * - Dish `name` is the authentic name and is never translated — unless the owner supplied
+ *   translated names (`display`), e.g. Mackerel Fish Slices / Makrelenstücke (2026-10-10).
  * - Prices are euro cents. `available: false` hides a dish without deleting it.
  * - `description` comes ONLY from Afrolink's own printed menu (2026, German); EN/FR are
  *   translations of that text. Source and status are recorded in `descriptionSource`.
@@ -24,14 +25,22 @@ export interface MenuItem {
   /** Stable id used by allergen records and anchors. Never change once published. */
   id: string;
   name: string;
+  /** Owner-supplied localized names (shown instead of `name`). */
+  display?: L10n;
+  /** Visible heading with soft-hyphen break points for narrow cards (titles/search use `display`). */
+  displayHeading?: Partial<L10n>;
   price?: number;
+  /** Unit the price refers to, e.g. "pro Stück" — shown next to the price. */
+  priceUnit?: L10n;
   variants?: MenuVariant[];
   /** Short supporting line supplied in the 2026-10-07 brief. */
   note?: L10n;
+  /** The note lists optional sides (shown under "Beilagen" instead of "Serviert mit"). */
+  noteIsSides?: boolean;
   /** Small status tag, e.g. "On request only". */
   label?: L10n;
   description?: L10n;
-  descriptionSource?: 'printed-menu-2026';
+  descriptionSource?: 'printed-menu-2026' | 'owner-2026-10-10';
   spice?: 'hot';
   available?: boolean;
 }
@@ -45,6 +54,9 @@ export interface MenuCategory {
 }
 
 const PM = 'printed-menu-2026' as const;
+
+/** Soft hyphen: optional break point in long display headings. */
+const SHY = String.fromCharCode(0xad);
 
 export const foodMenu: MenuCategory[] = [
   {
@@ -308,6 +320,28 @@ export const foodMenu: MenuCategory[] = [
         description: { de: 'Gebratener Fisch mit Kochbananen', en: 'Fried fish with plantain', fr: 'Poisson frit et banane plantain' },
         descriptionSource: PM,
       },
+      {
+        // Owner brief 2026-10-10: €5.00 per slice, no accompaniment included; fried yam or fried
+        // plantain on request (no approved accompaniment price, so none is shown).
+        id: 'mackerel-fish-slices',
+        name: 'Mackerel Fish Slices',
+        display: { de: 'Makrelenstücke', en: 'Mackerel Fish Slices', fr: 'Tranches de maquereau' },
+        displayHeading: { de: `Makrelen${SHY}stücke` },
+        price: 500,
+        priceUnit: { de: 'pro Stück', en: 'per slice', fr: 'la tranche' },
+        noteIsSides: true,
+        description: {
+          de: 'Ein Stück Makrele, einzeln berechnet – ohne Beilage.',
+          en: 'One slice of mackerel, priced individually – served without sides.',
+          fr: 'Une tranche de maquereau, facturée à la pièce – servie sans accompagnement.',
+        },
+        descriptionSource: 'owner-2026-10-10',
+        note: {
+          de: 'Auf Wunsch mit gebratenem Yam oder gebratenen Kochbananen – sprechen Sie uns gerne an.',
+          en: 'Fried yam or fried plantain on request – just ask us.',
+          fr: 'Igname frite ou banane plantain frite sur demande – il suffit de nous le demander.',
+        },
+      },
     ],
   },
   {
@@ -327,4 +361,14 @@ export const foodMenu: MenuCategory[] = [
 /** All items flattened with their category (convenience for search, allergens, tests). */
 export function allFoodItems() {
   return foodMenu.flatMap((c) => c.items.map((item) => ({ category: c, item })));
+}
+
+/** Name shown to guests: owner-supplied translation if any, otherwise the authentic name. */
+export function dishName(item: Pick<MenuItem, 'name' | 'display'>, lang: keyof L10n): string {
+  return item.display?.[lang] ?? item.name;
+}
+
+/** Visible heading: like dishName, but with soft-hyphen break points where provided. */
+export function dishHeading(item: Pick<MenuItem, 'name' | 'display' | 'displayHeading'>, lang: keyof L10n): string {
+  return item.displayHeading?.[lang] ?? dishName(item, lang);
 }

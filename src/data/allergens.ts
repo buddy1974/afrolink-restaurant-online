@@ -177,7 +177,15 @@ export const historicalRegister: HistoricalEntry[] = [
   { menuNo: '9', originalName: 'FRIED RICE', codes: ['4', '5'], currentId: 'fried-rice', mapping: 'same-name' },
 ];
 
-export type PublicAllergenStatus = 'confirmed' | 'previous-menu' | 'not-declared';
+export type PublicAllergenStatus = 'confirmed' | 'previous-menu' | 'owner-declared' | 'not-declared';
+
+/**
+ * Declarations supplied by the owner for new menu items (internal source note kept here).
+ * Shown publicly like every other Afrolink declaration.
+ */
+export const OWNER_DECLARED: Record<string, { allergens: AllergenCode[]; additives: AdditiveCode[]; source: string }> = {
+  'mackerel-fish-slices': { allergens: ['D'], additives: [], source: 'Owner brief 2026-10-10 (Mackerel Fish Slices): fish' },
+};
 
 export interface PublicAllergenInfo {
   status: PublicAllergenStatus;
@@ -335,6 +343,15 @@ export function publicAllergenInfo(itemId: string): PublicAllergenInfo {
       })),
       listedWithoutCodes: false,
       verifiedOn: rec.verifiedOn,
+    };
+  }
+  const owner = OWNER_DECLARED[itemId];
+  if (owner) {
+    return {
+      status: 'owner-declared',
+      allergens: owner.allergens.map((code) => ({ code, label: allergenName(code), possible: false })),
+      additives: owner.additives.map((code) => ({ code, label: ADDITIVE_LABELS[code] ?? { de: code, en: code, fr: code } })),
+      listedWithoutCodes: false,
     };
   }
   if (hist && hist.codes.length > 0) {

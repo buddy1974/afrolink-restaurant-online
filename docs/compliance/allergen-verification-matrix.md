@@ -1,12 +1,12 @@
 # Allergen- & Zusatzstoff-Verifizierungsmatrix (intern)
 
-> **Intern – keine Kennzeichnung.** Generiert aus `src/data/allergens.ts` am 2026-10-08 (`npm run allergen-matrix`).
+> **Intern – keine Kennzeichnung.** Generiert aus `src/data/allergens.ts` am 2026-10-10 (`npm run allergen-matrix`).
 > Nichts in Spalte „Mögliche …“ ist eine Deklaration. Veröffentlicht wird erst, wenn ein Eintrag `status: 'verified'`
 > mit `verifiedBy` und `verifiedOn` hat (Rezept + Lieferantenetiketten geprüft).
 
 **Stufen:** 1 = verifiziert (Küche hat Rezept/Etiketten geprüft) · 2 = Küchenbestätigung erforderlich (keine Hinweise vorhanden) · 3 = mögliche Allergene/Zusatzstoffe untersuchen (Hinweis aus Afrolink-Karte, Gerichts- oder Produktname).
 
-**Stand:** 0 von 59 Positionen verifiziert.
+**Stand:** 0 von 63 Positionen verifiziert.
 
 ## Standardfragen an die Küche (für jedes Gericht)
 
@@ -55,7 +55,11 @@
 | Isiewu | Spezialitäten | Ziegenkopf in würziger Senfsauce | 3 – Mögliche Allergene/Zusatzstoffe prüfen | J: PM: „würziger Senfsauce“ | – | – |
 | Tilapia | Fisch | Gebratener oder gekochter Fisch mit Beilage | 3 – Mögliche Allergene/Zusatzstoffe prüfen | D: Name / PM: Fisch | „Mit Beilage“ – welche Beilagen (Pommes, Reis, Salat)? Frittieröl gemeinsam genutzt? | – |
 | Fried Fish & Plantain | Fisch | Gebratener Fisch mit Kochbananen | 3 – Mögliche Allergene/Zusatzstoffe prüfen | D: Name / PM: „Gebratener Fisch“ | – | – |
+| Mackerel Fish Slices | Fisch | Ein Stück Makrele, einzeln berechnet – ohne Beilage. | 2 – Küchenbestätigung erforderlich | – | – | – |
 | Extra Pounded Yam | Extras | – | 2 – Küchenbestätigung erforderlich | – | Reines Yam-Produkt oder Fertigmehl? Etikett des Pounded-Yam-Mehls aufbewahren. | – |
+| Extra Garri | Extras | – | 2 – Küchenbestätigung erforderlich | – | – | – |
+| Extra Rice | Extras | – | 2 – Küchenbestätigung erforderlich | – | – | – |
+| Extra Yam | Extras | – | 2 – Küchenbestätigung erforderlich | – | – | – |
 | Guinness | Bier | – | 3 – Mögliche Allergene/Zusatzstoffe prüfen | A: Bier (Gerstenmalz) – Etikett prüfen | – | – |
 | Krombacher | Bier | – | 3 – Mögliche Allergene/Zusatzstoffe prüfen | A: Bier (Gerstenmalz) – Etikett prüfen | – | – |
 | Warsteiner | Bier | – | 3 – Mögliche Allergene/Zusatzstoffe prüfen | A: Bier (Gerstenmalz) – Etikett prüfen | – | – |

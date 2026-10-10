@@ -19,7 +19,7 @@ export interface DishImage {
   /** "<folder>/<file>" under src/assets. */
   file: string;
   alt: L10n;
-  source: 'owner-2026-10-09' | 'afrolink-photo';
+  source: 'owner-2026-10-09' | 'owner-2026-10-10' | 'afrolink-photo';
   watermarked?: boolean;
 }
 
@@ -61,6 +61,11 @@ export const dishImages: Record<string, DishImage> = {
   nkwobi: photo('nkwobi.jpg', { de: 'Nkwobi mit Zwiebelringen und Paprika', en: 'Nkwobi with onion rings and pepper', fr: 'Nkwobi aux oignons et poivron' }, true),
   // Fish
   tilapia: owner('tilapia.jpg', { de: 'Ganze Tilapia mit Kochbananen', en: 'Whole tilapia with plantain', fr: 'Tilapia entier avec banane plantain' }, true),
+  'mackerel-fish-slices': {
+    file: 'menu/mackerel-fish-slices.jpg',
+    alt: { de: 'Ein goldbraunes Makrelenstück auf einem weißen Teller', en: 'A golden-brown slice of mackerel on a white plate', fr: 'Une tranche de maquereau dorée dans une assiette blanche' },
+    source: 'owner-2026-10-10',
+  },
   'fried-fish-plantain': owner('fried-fish-plantain.jpg', { de: 'Gebratener Fisch mit Kochbananen, Zwiebelringen und Paprika', en: 'Fried fish with plantain, onion rings and peppers', fr: 'Poisson frit avec banane plantain, rondelles d’oignon et poivrons' }),
   // Extras
   'extra-pounded-yam': owner('extra-pounded-yam.jpg', { de: 'Eine Portion Pounded Yam', en: 'A portion of pounded yam', fr: 'Une portion de pounded yam' }),

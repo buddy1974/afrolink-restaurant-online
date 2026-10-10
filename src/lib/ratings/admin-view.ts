@@ -8,7 +8,7 @@ import { foodMenu } from '../../data/menu.ts';
 
 export function dishNames(): Record<string, { name: string; category: string; categoryId: string }> {
   const out: Record<string, { name: string; category: string; categoryId: string }> = {};
-  for (const c of foodMenu) for (const i of c.items) out[i.id] = { name: i.name, category: c.title.de, categoryId: c.id };
+  for (const c of foodMenu) for (const i of c.items) out[i.id] = { name: i.display?.de ?? i.name, category: c.title.de, categoryId: c.id };
   return out;
 }
 

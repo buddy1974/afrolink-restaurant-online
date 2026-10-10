@@ -8,7 +8,7 @@ import { Picture, getImage } from 'astro:assets';
 import PageShell from '../PageShell.astro';
 import AllergenInfo from '../AllergenInfo.astro';
 import Icon from '../Icon.astro';
-import type { MenuItem, MenuCategory } from '../../data/menu';
+import { dishHeading, dishName, type MenuItem, type MenuCategory } from '../../data/menu';
 import { dishImages } from '../../data/dish-images';
 import { dishContent } from '../../data/dish-content';
 import { formatPrice } from '../../data/format';
@@ -28,6 +28,8 @@ const { lang, item, category } = Astro.props;
 const t = useT(lang);
 const p = usePages(lang);
 const d = p.dish;
+const name = dishName(item, lang);
+const unit = item.priceUnit ? ` ${item.priceUnit[lang]}` : '';
 const content = dishContent[item.id];
 const di = dishImages[item.id];
 const paths = dishPaths(item.id);
@@ -37,10 +39,10 @@ const og = photo ? await getImage({ src: photo, width: 1200, height: 630, fit: '
 
 const priceLine = item.variants
   ? item.variants.map((v) => `${v.label[lang]} ${formatPrice(v.price)}`).join(' · ')
-  : formatPrice(item.price!);
+  : `${formatPrice(item.price!)}${unit}`;
 const clip = (s: string, max: number) => (s.length <= max ? s : `${s.slice(0, s.lastIndexOf(' ', max - 1))} …`);
-const fullTitle = `${item.name} ${d.titleSuffix} – ${content.kind[lang]} | Afrolink`;
-const title = fullTitle.length <= 72 ? fullTitle : `${item.name} – ${p.nav.menu} | Afrolink Essen`;
+const fullTitle = `${name} ${d.titleSuffix} – ${content.kind[lang]} | Afrolink`;
+const title = fullTitle.length <= 72 ? fullTitle : `${name} – ${p.nav.menu} | Afrolink Essen`;
 const description = clip(`${content.summary[lang]} ${priceLine} · Afrolink, Essen.`, 175);
 
 // Sides / serving info — only from Afrolink's own menu data.
@@ -49,7 +51,7 @@ const isSoup = category.id === 'soups';
 const crumbs = [
   { name: p.nav.menu, href: routes.menu[lang] },
   ...(isSoup ? [{ name: p.nav.soups, href: routes.soups[lang] }] : []),
-  { name: item.name, href: paths[lang] },
+  { name, href: paths[lang] },
 ];
 
 const related = category.items
@@ -63,11 +65,11 @@ const related = category.items
       img: img ? galleryImage(img.file, `related (${i.id})`) : null,
       alt: img?.alt[lang] ?? '',
       kind: dishContent[i.id]?.kind[lang] ?? '',
-      price: i.variants ? `${formatPrice(Math.min(...i.variants.map((v) => v.price)))}+` : formatPrice(i.price!),
+      price: i.variants ? `${formatPrice(Math.min(...i.variants.map((v) => v.price)))}+` : `${formatPrice(i.price!)}${i.priceUnit ? ` ${i.priceUnit[lang]}` : ''}`,
     };
   });
 
-const orderText = `${t.enquiry.msgGreeting}\n${d.order}: ${item.name}\n`;
+const orderText = `${t.enquiry.msgGreeting}\n${d.order}: ${name}\n`;
 const jsonLd = [menuItemJsonLd(item, lang, paths[lang], content.summary[lang], og ? `${siteUrl}${og.src}` : null)];
 const image = og && di ? { url: `${siteUrl}${og.src}`, width: 1200, height: 630, alt: di.alt[lang] } : undefined;
 ---
@@ -78,7 +80,7 @@ const image = og && di ? { url: `${siteUrl}${og.src}`, width: 1200, height: 630,
       <div class="dp__media">
         {
           photo && full && di ? (
-            <a class="dp__zoom" href={full.src} data-lb data-lb-group="dish" data-lb-title={item.name} data-lb-desc={content.summary[lang]} data-lb-alt={di.alt[lang]}>
+            <a class="dp__zoom" href={full.src} data-lb data-lb-group="dish" data-lb-title={name} data-lb-desc={content.summary[lang]} data-lb-alt={di.alt[lang]}>
               <Picture
                 src={photo}
                 formats={['avif', 'webp']}
@@ -94,7 +96,7 @@ const image = og && di ? { url: `${siteUrl}${og.src}`, width: 1200, height: 630,
                   <path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7" />
                 </svg>
               </span>
-              <span class="visually-hidden">{d.enlarge}: {item.name}</span>
+              <span class="visually-hidden">{d.enlarge}: {name}</span>
             </a>
           ) : null
         }
@@ -103,9 +105,9 @@ const image = og && di ? { url: `${siteUrl}${og.src}`, width: 1200, height: 630,
 
       <div class="dp__intro">
         <p class="eyebrow">{category.title[lang]}</p>
-        <h1 class="dp__title">{item.name}</h1>
+        <h1 class="dp__title">{dishHeading(item, lang)}</h1>
         <p class="dp__kind">{content.kind[lang]}</p>
-        <div class="dp__rating" data-rating-slot data-dish={item.id} data-name={item.name} hidden></div>
+        <div class="dp__rating" data-rating-slot data-dish={item.id} data-name={name} hidden></div>
         <p class="dp__summary">{content.summary[lang]}</p>
 
         <div class="dp__price">
@@ -123,6 +125,7 @@ const image = og && di ? { url: `${siteUrl}${og.src}`, width: 1200, height: 630,
               <p>
                 <span class="visually-hidden">{d.price}: </span>
                 {formatPrice(item.price!)}
+                {item.priceUnit && <span class="dp__unit"> {item.priceUnit[lang]}</span>}
               </p>
             )
           }
@@ -172,7 +175,7 @@ const image = og && di ? { url: `${siteUrl}${og.src}`, width: 1200, height: 630,
           {
             served.length > 0 && (
               <div>
-                <dt>{d.served}</dt>
+                <dt>{item.noteIsSides ? d.sides : d.served}</dt>
                 <dd>{served.join(' ')}</dd>
               </div>
             )
@@ -223,7 +226,7 @@ const image = og && di ? { url: `${siteUrl}${og.src}`, width: 1200, height: 630,
                       class="rel__img"
                     />
                   )}
-                  <span class="rel__name">{r.item.name}</span>
+                  <span class="rel__name">{dishName(r.item, lang)}</span>
                   <span class="rel__kind">{r.kind}</span>
                   <span class="rel__price">{r.price}</span>
                 </a>
@@ -346,6 +349,11 @@ const image = og && di ? { url: `${siteUrl}${og.src}`, width: 1200, height: 630,
     font-weight: 700;
     color: var(--gold);
     font-variant-numeric: tabular-nums;
+  }
+  .dp__unit {
+    font-size: var(--step-0);
+    font-weight: 600;
+    color: var(--on-paper-muted);
   }
   .dp__price dl {
     display: flex;

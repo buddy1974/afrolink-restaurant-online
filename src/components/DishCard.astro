@@ -11,7 +11,7 @@
 import { Image, Picture, getImage } from 'astro:assets';
 import AllergenInfo from './AllergenInfo.astro';
 import logoMark from '../assets/brand/afrolink-logo.png';
-import type { MenuCategory, MenuItem } from '../data/menu';
+import { dishHeading, dishName, type MenuCategory, type MenuItem } from '../data/menu';
 import { dishImages } from '../data/dish-images';
 import { dishContent } from '../data/dish-content';
 import { formatPrice } from '../data/format';
@@ -32,6 +32,8 @@ interface Props {
 const { lang, item, category, group = 'menu', idPrefix = '' } = Astro.props;
 const t = useT(lang);
 const p = usePages(lang);
+const name = dishName(item, lang);
+const heading = dishHeading(item, lang);
 const di = dishImages[item.id];
 const content = dishContent[item.id];
 const href = dishPaths(item.id)[lang];
@@ -40,6 +42,7 @@ const full = photo ? await getImage({ src: photo, width: Math.min(1600, photo.wi
 const aboutId = `${idPrefix}about-${item.id}`;
 const allergenId = `${idPrefix}allergen-${item.id}`;
 const searchText = [
+  name,
   item.name,
   item.description?.[lang],
   item.note?.[lang],
@@ -61,7 +64,7 @@ const searchText = [
           href={full.src}
           data-lb
           data-lb-group={group}
-          data-lb-title={item.name}
+          data-lb-title={name}
           data-lb-desc-from={content ? aboutId : undefined}
           data-lb-alt={di.alt[lang]}
         >
@@ -78,7 +81,7 @@ const searchText = [
           {content && <span class="dish__hover" aria-hidden="true" data-hover-from={aboutId} />}
           <span class="dish__zoomicon" aria-hidden="true"></span>
           <span class="visually-hidden">
-            {p.dish.enlarge}: {item.name}
+            {p.dish.enlarge}: {name}
           </span>
         </a>
       ) : (
@@ -95,7 +98,7 @@ const searchText = [
         <>
           <p class="dish__name">
             <a class="dish__link" href={href}>
-              {item.name}
+              {heading}
             </a>
           </p>
           <ul role="list" class="variants">
@@ -112,15 +115,18 @@ const searchText = [
         <p class="line line--main">
           <span class="line__name dish__name">
             <a class="dish__link" href={href}>
-              {item.name}
+              {heading}
             </a>
           </span>
           <span class="line__leader" aria-hidden="true" />
-          <span class="line__price">{formatPrice(item.price!)}</span>
+          <span class="line__price">
+            {formatPrice(item.price!)}
+            {item.priceUnit && <span class="line__unit"> {item.priceUnit[lang]}</span>}
+          </span>
         </p>
       )
     }
-    <div class="dish__rating" data-rating-slot data-dish={item.id} data-name={item.name} hidden></div>
+    <div class="dish__rating" data-rating-slot data-dish={item.id} data-name={name} hidden></div>
     {item.description && <p class="dish__desc">{item.description[lang]}</p>}
     {item.note && <p class="dish__note">{item.note[lang]}</p>}
     {
@@ -357,6 +363,9 @@ const searchText = [
   }
   .line__name {
     min-width: 0;
+    /* Long single words (e.g. Makrelenstücke) may break on narrow cards instead of overflowing. */
+    hyphens: auto;
+    overflow-wrap: anywhere;
   }
   .line__leader {
     flex: 1 1 1rem;
@@ -370,6 +379,19 @@ const searchText = [
     font-weight: 700;
     font-variant-numeric: tabular-nums lining-nums;
     color: var(--gold);
+  }
+  /* Per-unit prices (e.g. "€5 pro Stück"): unit in small type under the price. */
+  .line__price:has(.line__unit) {
+    display: inline-grid;
+    justify-items: end;
+    line-height: 1.15;
+  }
+  .line__unit {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+    color: var(--on-paper-muted);
   }
   .variants {
     display: grid;
