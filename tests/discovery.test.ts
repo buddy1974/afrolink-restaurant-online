@@ -191,7 +191,7 @@ test('every photographed dish opens a large image in the lightbox', opt, () => {
   for (const lang of locales) {
     const menu = read(routes.menu[lang]);
     const zoom = menu.match(/data-lb data-lb-group="menu"/g) ?? [];
-    assert.equal(zoom.length, 35, `menu ${lang} zoomable images`);
+    assert.equal(zoom.length, 34, `menu ${lang} zoomable images`); // Ugba has no photo yet (2026-10-15)
     assert.ok(read(routes.gallery[lang]).includes('data-lb-group="gallery"'));
   }
 });

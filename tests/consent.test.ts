@@ -120,12 +120,12 @@ test('ratings: cookie only with "remember" consent; DELETE expires it', async ()
       headers: { 'content-type': 'application/json', origin: 'https://www.afrolink-restaurant.online', 'x-forwarded-for': ip },
       body: JSON.stringify(body),
     });
-  const anon = await handleSubmit(req({ dish: 'okpa', stars: 4, elapsed: 3000 }, '203.0.113.20'), db, cfg);
+  const anon = await handleSubmit(req({ dish: 'ugba', stars: 4, elapsed: 3000 }, '203.0.113.20'), db, cfg);
   assert.equal(anon.status, 200);
   assert.equal(anon.headers.get('set-cookie'), null, 'no cookie without consent');
-  const again = (await (await handleSubmit(req({ dish: 'okpa', stars: 5, elapsed: 3000 }, '203.0.113.20'), db, cfg)).json()) as { action: string; n: number };
+  const again = (await (await handleSubmit(req({ dish: 'ugba', stars: 5, elapsed: 3000 }, '203.0.113.20'), db, cfg)).json()) as { action: string; n: number };
   assert.deepEqual([again.action, again.n], ['revised', 1], 'same network, same day → one rating');
-  const remembered = await handleSubmit(req({ dish: 'okpa', stars: 3, elapsed: 3000, remember: true }, '203.0.113.21'), db, cfg);
+  const remembered = await handleSubmit(req({ dish: 'ugba', stars: 3, elapsed: 3000, remember: true }, '203.0.113.21'), db, cfg);
   assert.match(remembered.headers.get('set-cookie') ?? '', /^afl_rv=[0-9a-f-]{36}; Path=\/api\/ratings; Max-Age=31536000; HttpOnly; SameSite=Lax; Secure$/);
   const forget = handleForget(cfg);
   assert.equal(forget.status, 204);

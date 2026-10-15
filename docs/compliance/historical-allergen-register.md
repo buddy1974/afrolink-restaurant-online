@@ -86,7 +86,7 @@ Coded dishes: 14. Discontinued: UKAZI SOUP, UGU SOUP, OFE AKWU, PORRIDGE COCOYAM
 | Pepper Soup | 1/3 · Previously declared — reconciliation pending | Krebstiere¹, Fisch² | Geschmacksverstärker⁴, Farbstoffe⁸ |  |
 | Stockfish | 1/3 · Previously declared — reconciliation pending | Fisch² | — |  |
 | Snail | 4 · Not previously declared — ask staff | — | — | yes — absence of codes is NOT "allergen-free" |
-| Okpa | 4 · Not previously declared — ask staff | — | — | not on old menu |
+| Ugba (listed as "Okpa" until 2026-10-15) | 4 · Not previously declared — ask staff | — | — | not on old menu |
 | Abacha | 4 · Not previously declared — ask staff | — | — | yes — absence of codes is NOT "allergen-free" |
 | Nkwobi | 1/3 · Previously declared — reconciliation pending | Fisch², Senf³ | Geschmacksverstärker⁴ |  |
 | Isiewu | 1/3 · Previously declared — reconciliation pending | Fisch², Senf³ | Geschmacksverstärker⁴ |  |

@@ -64,7 +64,6 @@ test('second owner batch: each image is mapped to the dish it is named for', () 
     'coconut-rice': 'menu/coconut-rice.jpg',
     isiewu: 'menu/isiewu.jpg',
     'fried-yam-egg-sauce': 'menu/fried-yam-egg-sauce.jpg',
-    okpa: 'menu/okpa.jpg',
     snail: 'menu/snail.jpg',
     stockfish: 'menu/stockfish.jpg',
     suya: 'menu/suya.jpg',

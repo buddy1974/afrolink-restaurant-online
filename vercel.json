@@ -18,6 +18,21 @@
       "permanent": true
     },
     {
+      "source": "/speisekarte/okpa{/}?",
+      "destination": "/speisekarte/ugba/",
+      "permanent": true
+    },
+    {
+      "source": "/en/menu/okpa{/}?",
+      "destination": "/en/menu/ugba/",
+      "permanent": true
+    },
+    {
+      "source": "/fr/carte/okpa{/}?",
+      "destination": "/fr/carte/ugba/",
+      "permanent": true
+    },
+    {
       "source": "/",
       "has": [
         {

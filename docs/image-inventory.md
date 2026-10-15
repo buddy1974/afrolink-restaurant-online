@@ -52,7 +52,7 @@ Batch 2 (new in this release, 12 images incorporated):
 | coconut-rice.jpg | coconut-rice.png | 1322×1190 | Rice with peppers and meat | Coconut Rice |
 | isiewu.jpg | esi ewu-goathead.png | 1374×1145 | Goat-head dish in a wooden bowl | Isiewu |
 | fried-yam-egg-sauce.jpg | friedyam-edd-sauce.png | 1254×1254 | Fried yam sticks + egg sauce | Fried Yam & Egg Sauce |
-| okpa.jpg | okpa.png | 1254×1254 | Okpa pieces | Okpa |
+| ~~okpa.jpg~~ (removed 2026-10-15) | okpa.png (kept) | 1254×1254 | Okpa pieces | none. The menu item was corrected to Ugba, a different dish, and the photo does not show Ugba. Ugba waits for an owner photo |
 | snail.jpg | snails.png | 1254×1254 | Snails in tomato-onion sauce | Snail |
 | stockfish.jpg | stockfish-spicy.png | 1254×1254 | Stockfish in red sauce | Stockfish |
 | suya.jpg | suya.png | 1320×1191 | Suya with onion, tomato, cucumber, chilli | Suya (replaces the gallery photo as the menu image) |

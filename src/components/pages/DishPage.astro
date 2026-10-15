@@ -105,7 +105,7 @@ const image = og && di ? { url: absoluteAsset(og.src), ...ogSize, alt: di.alt[la
             </a>
           ) : null
         }
-        <p class="dp__imgnote">{d.imageNote}</p>
+        {photo && <p class="dp__imgnote">{d.imageNote}</p>}
       </div>
 
       <div class="dp__intro">

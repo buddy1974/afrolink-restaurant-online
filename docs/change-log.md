@@ -1,5 +1,18 @@
 # Change Log — `afrolink-restaurant-online`
 
+## 2026-10-15 — Dish correction: Okpa → Ugba (owner instruction; branch `discovery-ratings-2026-10`, not in production)
+- The owner corrected the Specialities item "Okpa" to **"Ugba"**, a different dish (fermented African oil-bean slices, not the Bambara-nut pudding). Price unchanged: €20.
+- **Data:**
+  - menu id and name `okpa`/Okpa → `ugba`/Ugba;
+  - the dish page text (DE/EN/FR) was rewritten as a general description of Ugba/ukpaka; nothing is claimed about Afrolink's own recipe;
+  - the allergen question was changed to the Ugba recipe (kitchen confirmation still required); the allergen matrix was regenerated.
+- **Photo:**
+  - The Okpa photo showed Okpa, so it is no longer used: `src/assets/menu/okpa.jpg` was removed and the original was kept in `owner-assets/menu-originals/`.
+  - Ugba shows no photo until the owner supplies one; the menu shows 34 photographed dishes instead of 35.
+- **URLs:** `/speisekarte/ugba/`, `/en/menu/ugba/` and `/fr/carte/ugba/`, with 308 permanent redirects from the old `okpa` URLs, with or without a trailing slash (`vercel.json`).
+- **Fix:** the "photo is a serving suggestion" note now appears only on dish pages that actually show a photo.
+- **Tests:** a new test covers the rename, the photo absence and the redirects; the rating tests use `ugba` as their sample dish id. Verify: lint clean, typecheck 0 errors, build OK, 124/124 tests.
+
 ## 2026-10-10 — SEO hardening: IndexNow (gated), production monitor, CI, audit fixes (branch `discovery-ratings-2026-10`, preview only)
 - **IndexNow** (not activated):
   - key file `public/<key>.txt`;

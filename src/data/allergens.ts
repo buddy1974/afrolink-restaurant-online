@@ -276,7 +276,7 @@ const QUESTIONS: Record<string, string[]> = {
   'black-soup': ['Keine Beschreibung vorhanden – vollständiges Rezept erfassen.'],
   'oha-soup': ['Keine Beschreibung vorhanden – vollständiges Rezept erfassen.'],
   'coconut-rice': ['Keine Beschreibung vorhanden – vollständiges Rezept erfassen.'],
-  okpa: ['Keine Beschreibung vorhanden – vollständiges Rezept erfassen.'],
+  ugba: ['Keine Beschreibung vorhanden – vollständiges Rezept erfassen (z. B. Crayfish, Fisch, Dressing).'],
   suya: ['Enthält die Suya-Gewürzmischung Erdnüsse? Marke/Rezept der Mischung?'],
   abacha: ['Welche Zutaten (z. B. Ugba/Ölbohnen, Crayfish, Fisch) gehören dazu?'],
   'pepper-soup': ['Welche Gewürzmischung? Mit Reis oder Yam – Beilagen erfassen.'],

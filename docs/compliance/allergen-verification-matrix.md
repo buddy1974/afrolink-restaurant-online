@@ -1,6 +1,6 @@
 # Allergen- & Zusatzstoff-Verifizierungsmatrix (intern)
 
-> **Intern – keine Kennzeichnung.** Generiert aus `src/data/allergens.ts` am 2026-10-10 (`npm run allergen-matrix`).
+> **Intern – keine Kennzeichnung.** Generiert aus `src/data/allergens.ts` am 2026-10-15 (`npm run allergen-matrix`).
 > Nichts in Spalte „Mögliche …“ ist eine Deklaration. Veröffentlicht wird erst, wenn ein Eintrag `status: 'verified'`
 > mit `verifiedBy` und `verifiedOn` hat (Rezept + Lieferantenetiketten geprüft).
 
@@ -49,7 +49,7 @@
 | Pepper Soup | Spezialitäten | Scharfe Ziegensuppe mit Kräutern | 2 – Küchenbestätigung erforderlich | – | Welche Gewürzmischung? Mit Reis oder Yam – Beilagen erfassen. | – |
 | Stockfish | Spezialitäten | Getrockneter Kabeljau | 3 – Mögliche Allergene/Zusatzstoffe prüfen | D: PM: „Getrockneter Kabeljau“ | – | – |
 | Snail | Spezialitäten | Gegrillte Riesenschnecke | 3 – Mögliche Allergene/Zusatzstoffe prüfen | N: PM: „Riesenschnecke“ (Weichtier) | – | – |
-| Okpa | Spezialitäten | – | 2 – Küchenbestätigung erforderlich | – | Keine Beschreibung vorhanden – vollständiges Rezept erfassen. | – |
+| Ugba | Spezialitäten | – | 2 – Küchenbestätigung erforderlich | – | Keine Beschreibung vorhanden – vollständiges Rezept erfassen (z. B. Crayfish, Fisch, Dressing). | – |
 | Abacha | Spezialitäten | Afrikanischer Cassavasalat | 2 – Küchenbestätigung erforderlich | – | Welche Zutaten (z. B. Ugba/Ölbohnen, Crayfish, Fisch) gehören dazu? | – |
 | Nkwobi | Spezialitäten | Rinderfuß in scharfer Senfsauce | 3 – Mögliche Allergene/Zusatzstoffe prüfen | J: PM: „scharfer Senfsauce“ | – | – |
 | Isiewu | Spezialitäten | Ziegenkopf in würziger Senfsauce | 3 – Mögliche Allergene/Zusatzstoffe prüfen | J: PM: „würziger Senfsauce“ | – | – |

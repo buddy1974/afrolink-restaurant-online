@@ -5,6 +5,7 @@
  */
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { foodMenu } from '../src/data/menu.ts';
 import { drinksMenu } from '../src/data/drinks.ts';
 import { openingHours, groupHours } from '../src/data/hours.ts';
@@ -46,7 +47,7 @@ test('food menu matches the brief exactly (names, categories, prices)', () => {
     'Specialities|Pepper Soup|€15',
     'Specialities|Stockfish|€17',
     'Specialities|Snail|€20',
-    'Specialities|Okpa|€20',
+    'Specialities|Ugba|€20',
     'Specialities|Abacha|€17',
     'Specialities|Nkwobi|€17',
     'Specialities|Isiewu, Small Plate|€18',
@@ -218,5 +219,23 @@ test('water stays €1.00 / 0,33 L and the notice says it is charged separately 
   assert.match(ui.fr.drinks.waterNote, /facturée séparément/);
   for (const l of ['de', 'en', 'fr'] as const) {
     assert.ok(!/(muss|must|obligatoire|pflicht|required)/i.test(ui[l].drinks.waterNote), `${l} implies an obligation`);
+  }
+});
+
+test('Okpa was corrected to Ugba (2026-10-15): new dish, no Okpa photo, old URLs redirect permanently', async () => {
+  const items = foodMenu.flatMap((c) => c.items);
+  assert.equal(items.find((i) => i.id === 'ugba')?.name, 'Ugba');
+  assert.equal(items.find((i) => i.id === 'ugba')?.price, 2000);
+  assert.equal(items.some((i) => /okpa/i.test(i.id + i.name)), false);
+  const { dishImages } = await import('../src/data/dish-images.ts');
+  assert.equal(dishImages.ugba, undefined, 'the Okpa photo must not be shown for Ugba');
+  const { dishContent } = await import('../src/data/dish-content.ts');
+  assert.equal(dishContent.okpa, undefined);
+  for (const l of ['de', 'en', 'fr'] as const) assert.match(dishContent.ugba!.typical[l], /ukpaka/i);
+  // `{/}?` makes Vercel match the old path with and without the trailing slash.
+  const redirects: { source: string; destination: string; permanent: boolean; has?: unknown }[] = JSON.parse(readFileSync('vercel.json', 'utf8')).redirects;
+  for (const [from, to] of [['/speisekarte/okpa{/}?', '/speisekarte/ugba/'], ['/en/menu/okpa{/}?', '/en/menu/ugba/'], ['/fr/carte/okpa{/}?', '/fr/carte/ugba/']]) {
+    const r = redirects.find((x) => x.source === from);
+    assert.deepEqual(r && { destination: r.destination, permanent: r.permanent, has: r.has }, { destination: to, permanent: true, has: undefined }, from);
   }
 });

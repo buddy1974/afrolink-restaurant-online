@@ -350,17 +350,17 @@ export const dishContent: Record<string, DishContent> = {
       fr: 'Les gros escargots terrestres (« igbin » en yoruba) sont un mets recherché au Nigeria. Soigneusement nettoyés et précuits, ils sont ensuite grillés aux épices ou cuisinés en sauce poivrée. Leur chair est savoureuse et agréablement ferme.',
     },
   },
-  okpa: {
-    kind: { de: 'Gedämpfter Bambara-Nuss-Kuchen', en: 'Steamed Bambara-nut pudding', fr: 'Gâteau vapeur de pois bambara' },
+  ugba: {
+    kind: { de: 'Fermentierte Ölbohnen-Streifen', en: 'Fermented oil-bean slices', fr: 'Lamelles de graines fermentées' },
     summary: {
-      de: 'Okpa ist ein herzhafter, gedämpfter „Kuchen“ aus Bambara-Nuss-Mehl und Palmöl – sättigend, würzig und typisch für Enugu.',
-      en: 'Okpa is a savoury steamed pudding of Bambara-nut flour and palm oil – filling, spiced and typical of Enugu.',
-      fr: 'L’okpa est un gâteau salé cuit à la vapeur, à base de farine de pois bambara et d’huile de palme – nourrissant, épicé et typique d’Enugu.',
+      de: 'Ugba sind fein geschnittene, fermentierte Samen des afrikanischen Ölbohnenbaums – eine Igbo-Spezialität mit kräftigem, leicht nussigem Aroma.',
+      en: 'Ugba are thinly sliced, fermented seeds of the African oil-bean tree – an Igbo speciality with a bold, slightly nutty flavour.',
+      fr: 'L’ugba, ce sont de fines lamelles de graines fermentées de l’arbre à graines oléagineuses africain – une spécialité igbo au goût prononcé, légèrement noisette.',
     },
     typical: {
-      de: 'Okpa stammt aus dem Igbo-Land, besonders aus Enugu und Nsukka, wo es gern zum Frühstück gegessen wird. Das Mehl der Bambara-Erdnuss – einer Hülsenfrucht – wird mit Palmöl, Chili und Gewürzen zu einem Teig verrührt und traditionell in Blättern oder Förmchen gedämpft.',
-      en: 'Okpa comes from Igboland, especially Enugu and Nsukka, where it is a popular breakfast. Flour from the Bambara groundnut – a legume – is mixed with palm oil, chilli and spices into a batter and traditionally steamed in leaves or moulds.',
-      fr: 'L’okpa vient du pays igbo, notamment d’Enugu et de Nsukka, où on le mange volontiers au petit-déjeuner. La farine de pois bambara – une légumineuse – est mélangée à l’huile de palme, au piment et aux épices, puis cuite à la vapeur, traditionnellement dans des feuilles ou des moules.',
+      de: 'Ugba (auch Ukpaka) kommt aus dem Igbo-Land im Südosten Nigerias. Die Samen werden gekocht, in dünne Streifen geschnitten und mehrere Tage fermentiert. Traditionell wird Ugba mit Palmöl, Zwiebeln und Gewürzen als würziger Salat angemacht oder zu Abacha gegessen. Wie wir es aktuell zubereiten, sagen wir Ihnen gern.',
+      en: 'Ugba (also called ukpaka) comes from Igboland in south-east Nigeria. The seeds are boiled, cut into thin strips and fermented for several days. Traditionally ugba is dressed with palm oil, onions and spices as a savoury salad, or eaten with abacha. Ask us how we are preparing it at the moment.',
+      fr: 'L’ugba (aussi appelé ukpaka) vient du pays igbo, dans le sud-est du Nigeria. Les graines sont cuites, coupées en fines lamelles puis fermentées pendant plusieurs jours. Traditionnellement, on l’assaisonne d’huile de palme, d’oignons et d’épices en salade relevée, ou on le mange avec l’abacha. Demandez-nous comment nous le préparons en ce moment.',
     },
   },
   abacha: {

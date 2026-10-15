@@ -54,7 +54,6 @@ export const dishImages: Record<string, DishImage> = {
   suya: owner('suya.jpg', { de: 'Suya mit Zwiebelringen, Tomate, Gurke und Chili', en: 'Suya with onion rings, tomato, cucumber and chilli', fr: 'Suya avec rondelles d’oignon, tomate, concombre et piment' }),
   stockfish: owner('stockfish.jpg', { de: 'Stockfisch in roter Sauce mit Zwiebeln', en: 'Stockfish in a red sauce with onions', fr: 'Stockfisch en sauce rouge aux oignons' }),
   snail: owner('snail.jpg', { de: 'Riesenschnecken in Tomaten-Zwiebel-Sauce', en: 'Giant snails in a tomato and onion sauce', fr: 'Escargots géants en sauce tomate et oignon' }),
-  okpa: owner('okpa.jpg', { de: 'Okpa in Stücken auf einem Teller', en: 'Okpa cut into pieces on a plate', fr: 'Okpa coupé en morceaux dans une assiette' }),
   abacha: owner('abacha.jpg', { de: 'Abacha (Cassavasalat) mit frischer Garnitur', en: 'Abacha (cassava salad) with a fresh garnish', fr: 'Abacha (salade de manioc) avec garniture fraîche' }),
   isiewu: owner('isiewu.jpg', { de: 'Isiewu in einer Holzschale mit roten Zwiebeln und Kräutern', en: 'Isiewu in a wooden bowl with red onion and herbs', fr: 'Isiewu dans un bol en bois, avec oignon rouge et herbes' }),
   'pepper-soup': photo('pepper-soup.jpg', { de: 'Pepper Soup mit Fleisch und Yam', en: 'Pepper soup with meat and yam', fr: 'Pepper soup avec viande et igname' }, true),

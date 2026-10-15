@@ -95,20 +95,20 @@ test('moderation excludes from averages, is audited, can be restored; excluded r
 
 test('HTTP: origin, content type, size, unknown dish, bad stars', async () => {
   const c = cfg('t3');
-  assert.equal((await handleSubmit(post({ dish: 'okpa', stars: 4, elapsed: 5000 }, { origin: 'https://evil.example' }), db, c)).status, 403);
-  assert.equal((await handleSubmit(post({ dish: 'okpa', stars: 4, elapsed: 5000 }, { type: 'text/plain' }), db, c)).status, 415);
+  assert.equal((await handleSubmit(post({ dish: 'ugba', stars: 4, elapsed: 5000 }, { origin: 'https://evil.example' }), db, c)).status, 403);
+  assert.equal((await handleSubmit(post({ dish: 'ugba', stars: 4, elapsed: 5000 }, { type: 'text/plain' }), db, c)).status, 415);
   assert.equal((await handleSubmit(post('x'.repeat(2000)), db, c)).status, 413);
   assert.equal((await handleSubmit(post('{not json'), db, c)).status, 400);
   assert.equal((await handleSubmit(post({ dish: 'unknown', stars: 4, elapsed: 5000 }), db, c)).status, 404);
-  assert.equal((await handleSubmit(post({ dish: 'okpa', stars: 9, elapsed: 5000 }), db, c)).status, 400);
-  assert.equal((await handleSubmit(post({ dish: 'okpa', stars: 4 }), db, cfg('t3', { enabled: false }))).status, 503);
+  assert.equal((await handleSubmit(post({ dish: 'ugba', stars: 9, elapsed: 5000 }), db, c)).status, 400);
+  assert.equal((await handleSubmit(post({ dish: 'ugba', stars: 4 }), db, cfg('t3', { enabled: false }))).status, 503);
   assert.equal((await dishStats(db, 't3')).length, 0, 'nothing stored');
 });
 
 test('HTTP: bots (honeypot / instant submit) get a fake success and nothing is stored', async () => {
   const c = cfg('t4');
-  const r1 = await handleSubmit(post({ dish: 'okpa', stars: 5, website: 'spam', elapsed: 5000 }), db, c);
-  const r2 = await handleSubmit(post({ dish: 'okpa', stars: 5, elapsed: 50 }), db, c);
+  const r1 = await handleSubmit(post({ dish: 'ugba', stars: 5, website: 'spam', elapsed: 5000 }), db, c);
+  const r2 = await handleSubmit(post({ dish: 'ugba', stars: 5, elapsed: 50 }), db, c);
   assert.equal(r1.status, 200);
   assert.equal(r2.status, 200);
   assert.equal((await dishStats(db, 't4')).length, 0);
@@ -243,11 +243,11 @@ test('feature flag: ratings stay off unless flag AND a strong secret AND a datab
   // enabled but no database → public API reports disabled, submissions are refused
   const sum = (await (await handleSummary(null, on)).json()) as { enabled: boolean };
   assert.equal(sum.enabled, false);
-  assert.equal((await handleSubmit(post({ dish: 'okpa', stars: 4, elapsed: 5000 }), null, on)).status, 503);
+  assert.equal((await handleSubmit(post({ dish: 'ugba', stars: 4, elapsed: 5000 }), null, on)).status, 503);
 });
 
 test('environments never see each other\'s ratings', async () => {
-  await submitRating(db, { env: 'preview', dishId: 'okpa', stars: 1, voterHash: 'qa', ipDayHash: null });
-  assert.equal((await dishStats(db, 'production')).some((d) => d.dishId === 'okpa'), false);
-  assert.equal((await dishStats(db, 'preview')).find((d) => d.dishId === 'okpa')?.n, 1);
+  await submitRating(db, { env: 'preview', dishId: 'ugba', stars: 1, voterHash: 'qa', ipDayHash: null });
+  assert.equal((await dishStats(db, 'production')).some((d) => d.dishId === 'ugba'), false);
+  assert.equal((await dishStats(db, 'preview')).find((d) => d.dishId === 'ugba')?.n, 1);
 });

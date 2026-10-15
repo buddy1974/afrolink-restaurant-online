@@ -267,7 +267,7 @@ export const foodMenu: MenuCategory[] = [
         description: { de: 'Gegrillte Riesenschnecke', en: 'Grilled giant snail', fr: 'Escargot géant grillé' },
         descriptionSource: PM,
       },
-      { id: 'okpa', name: 'Okpa', price: 2000 },
+      { id: 'ugba', name: 'Ugba', price: 2000 },
       {
         id: 'abacha',
         name: 'Abacha',
